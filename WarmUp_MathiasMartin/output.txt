@@ -1,0 +1,16 @@
+\begin{tabular}{|l|l|r|r|r|r|}
+\hline
+Level & Client & Time & Memory & Solution Length & Nodes Generated\\\hline
+SAD1 & Breadth-first Search & 0,22 s & 9,84 MB & 19 &    78\\  \hline
+SAD1 & Depth-first Search & 0,23 s & 6,28 MB & 27 &    64\\  \hline
+SAD2 & Breadth-first Search & 40,90 s & 2044,78 MB & No solution & 8.538\\  \hline
+SAD2 & Depth-first Search & 0,21 s & 10,00 MB & 43 &   157\\  \hline
+friendsofDFS & Breadth-first Search & 20,65 s & 1926,50 MB & 24 & 9.569\\  \hline
+friendsofDFS & Depth-first Search & 0,29 s & 14,06 MB & 164 &   366\\  \hline
+friendsofBFS & Breadth-first Search & 0,40 s & 21,88 MB & 10 &   495\\  \hline
+friendsofBFS & Depth-first Search & 4,07 s & 838,00 MB & 9084 & 8.847\\  \hline
+SAFirefly & Breadth-first Search & 22,04 s & 2029,14 MB & No solution & 9.002\\  \hline
+SAFirefly & Depth-first Search & 19,80 s & 2043,67 MB & No solution & 9.901\\  \hline
+SACrunch & Breadth-first Search & 21,54 s & 2027,60 MB & No solution & 8.770\\  \hline
+SACrunch & Depth-first Search & 21,57 s & 2047,36 MB & No solution & 9.340\\  \hline
+\end{tabular}
