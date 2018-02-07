@@ -12,7 +12,8 @@ import searchclient.Heuristic.*;
 public class SearchClient {
 	public Node initialState;
 
-	public SearchClient(BufferedReader serverMessages) throws Exception {
+
+    public SearchClient(BufferedReader serverMessages) throws Exception {
 		// Read lines specifying colors
 		String line = serverMessages.readLine();
 		if (line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$")) {
@@ -28,8 +29,11 @@ public class SearchClient {
 			for (int col = 0; col < line.length(); col++) {
 				char chr = line.charAt(col);
 
+				if(line.length() > Node.MAX_COL)
+				    Node.MAX_COL = line.length();
+
 				if (chr == '+') { // Wall.
-					this.initialState.walls[row][col] = true;
+					Node.walls[row][col] = true;
 				} else if ('0' <= chr && chr <= '9') { // Agent.
 					if (agentFound) {
 						System.err.println("Error, not a single agent level");
@@ -41,7 +45,7 @@ public class SearchClient {
 				} else if ('A' <= chr && chr <= 'Z') { // Box.
 					this.initialState.boxes[row][col] = chr;
 				} else if ('a' <= chr && chr <= 'z') { // Goal.
-					this.initialState.goals[row][col] = chr;
+					Node.goals[row][col] = chr;
 				} else if (chr == ' ') {
 					// Free space.
 				} else {
@@ -52,6 +56,7 @@ public class SearchClient {
 			line = serverMessages.readLine();
 			row++;
 		}
+		Node.MAX_ROW = row;
 	}
 
 	public LinkedList<Node> Search(Strategy strategy) throws IOException {

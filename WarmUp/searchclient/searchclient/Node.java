@@ -27,9 +27,9 @@ public class Node {
 	// this.walls[row][col] is true if there's a wall at (row, col)
 	//
 
-	public boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
+	public static boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
 	public char[][] boxes = new char[MAX_ROW][MAX_COL];
-	public char[][] goals = new char[MAX_ROW][MAX_COL];
+	public static char[][] goals = new char[MAX_ROW][MAX_COL];
 
 	public Node parent;
 	public Command action;
@@ -123,20 +123,17 @@ public class Node {
 	}
 
 	private boolean cellIsFree(int row, int col) {
-		return !this.walls[row][col] && this.boxes[row][col] == 0;
+		return !walls[row][col] && boxes[row][col] == 0;
 	}
 
 	private boolean boxAt(int row, int col) {
-		return this.boxes[row][col] > 0;
+		return boxes[row][col] > 0;
 	}
 
 	private Node ChildNode() {
 		Node copy = new Node(this);
-		for (int row = 0; row < MAX_ROW; row++) {
-			System.arraycopy(this.walls[row], 0, copy.walls[row], 0, MAX_COL);
-			System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, MAX_COL);
-			System.arraycopy(this.goals[row], 0, copy.goals[row], 0, MAX_COL);
-		}
+		for(int row = 0; row < MAX_ROW; row++)
+		    System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, MAX_COL);
 		return copy;
 	}
 
