@@ -1,16 +1,63 @@
 package searchclient;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 
-import searchclient.NotImplementedException;
+import static java.lang.Math.abs;
 
 public abstract class Heuristic implements Comparator<Node> {
-	public Heuristic(Node initialState) {
+    public HashMap<Character, ArrayList<Pair<Integer, Integer>>> goalsMap = new HashMap<>();
+
+    public Heuristic(Node initialState) {
+        for(int i = 0; i < Node.MAX_ROW; i++)
+        {
+            for(int j = 0; j < Node.MAX_COL; j++)
+            {
+                char chr = Node.goals[i][j];
+                if('a' <= chr && chr <= 'z')
+                {
+                    if(goalsMap.containsKey(chr))
+                        goalsMap.get(chr).add(new Pair(i,j));
+                    else
+                    {
+                        goalsMap.put(chr, new ArrayList<>());
+                        goalsMap.get(chr).add(new Pair(i,j));
+                    }
+                }
+            }
+        }
 		// Here's a chance to pre-process the static parts of the level.
 	}
 
 	public int h(Node n) {
-		throw new NotImplementedException();
+        int minDist = Integer.MAX_VALUE;
+        int sumDist = 0;
+        for(int i = 0; i < Node.MAX_ROW; i++)
+        {
+            for(int j = 0; j < Node.MAX_COL; j++)
+            {
+               char chr = n.boxes[i][j];
+               if('A' <= chr && chr <= 'Z')
+               {
+                   if(Node.goals[i][j] != Character.toLowerCase(chr))
+                   {
+                       minDist = Integer.MAX_VALUE;
+                       int aDist = abs(i - n.agentRow) + abs(j - n.agentCol);
+                       ArrayList<Pair<Integer, Integer>> chrGoals = goalsMap.get(Character.toLowerCase(chr));
+                       for(Pair goal : chrGoals)
+                       {
+                           //if(n.boxes[i][j] == Node.goals[(int) goal.getLeft()][(int) goal.getRight()])
+                           int dist = abs(i - (int) goal.getLeft()) + abs(j - (int) goal.getRight());
+                           minDist = dist + aDist < minDist ? dist + aDist : minDist;
+                           // minDist = dist < minDist ? dist : minDist;
+                       }
+                       sumDist += minDist;
+                   }
+                }
+            }
+        }
+        return sumDist;
 	}
 
 	public abstract int f(Node n);
