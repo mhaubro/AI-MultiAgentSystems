@@ -23,6 +23,7 @@ std::string algorithm[12];
 int main ()
 {
 int i;
+std::cout << "Printing to output.txt now" << std::endl;
 for (i = 0; i < 12; i++){
 	//Read file into string
 	std::stringstream ss;
@@ -123,11 +124,11 @@ void readLength(std::string str, int i){
 	lengthsol[i] = l;
 }
 void readGenerated(std::string str, int i){
-	std::size_t location = str.rfind("Generated:  ");
+	std::size_t location = str.rfind("#Generated:");
 	std::size_t locationOfDot = str.find(",", location);
 
 	//Needs to find area after "strategy" and before "."
-	std::size_t startLocation = location + std::string("Generated:  ").size();
+	std::size_t startLocation = location + std::string("Generated:").size();
 	std::size_t length = - startLocation + locationOfDot;
 	std::string g = str.substr(startLocation, length);
 //	std::string news = noPeriods(l);

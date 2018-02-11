@@ -10,7 +10,7 @@ do
 lvl=$((VAL/2))
 #echo $alg
 #echo ${LEVEL[${lvl}]}
-./runSearchClient.sh ${LEVEL[${lvl}]} $1 $VAL $4 &
+./runSearchClient.sh ${LEVEL[${lvl}]} $1 $VAL $4 $3&
 #./runSearchClient.sh SACrunch $1 $VAL $4 &
 PID0=$!
 ./prober $3 $VAL
@@ -20,7 +20,7 @@ done
 for VAL in {1..11..2}
 do
 lvl=$((VAL/2))
-./runSearchClient.sh "${LEVEL[$lvl]}" $2 $VAL $4 &
+./runSearchClient.sh "${LEVEL[$lvl]}" $2 $VAL $4 $3&
 PID0=$!
 ./prober $3 $VAL
 kill $PID0
