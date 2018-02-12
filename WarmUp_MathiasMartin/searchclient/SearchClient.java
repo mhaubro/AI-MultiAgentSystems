@@ -12,8 +12,18 @@ import searchclient.Heuristic.*;
 public class SearchClient {
 	public Node initialState;
 
+	public int rows;//For memory optimization
+	public int columns;//For memory optimization
+	
 	public SearchClient(BufferedReader serverMessages) throws Exception {
 		// Read lines specifying colors
+	
+		boolean[][] walls = new boolean[70][70];//If this is static, size doesn't matter
+		char[][] boxes = new char[70][70];
+		char[][] goals = new char[70][70];//Same as walls
+		int agentRow = 0;
+		int agentCol = 0;
+		
 		String line = serverMessages.readLine();
 		if (line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$")) {
 			System.err.println("Error, client does not support colors.");
@@ -22,26 +32,28 @@ public class SearchClient {
 
 		int row = 0;
 		boolean agentFound = false;
-		this.initialState = new Node(null);
 
 		while (!line.equals("")) {
+			if (columns < line.length()) {
+				columns = line.length();
+			}
 			for (int col = 0; col < line.length(); col++) {
 				char chr = line.charAt(col);
 
 				if (chr == '+') { // Wall.
-					this.initialState.walls[row][col] = true;
+					walls[row][col] = true;
 				} else if ('0' <= chr && chr <= '9') { // Agent.
 					if (agentFound) {
 						System.err.println("Error, not a single agent level");
 						System.exit(1);
 					}
 					agentFound = true;
-					this.initialState.agentRow = row;
-					this.initialState.agentCol = col;
+					agentRow = row;
+					agentCol = col;
 				} else if ('A' <= chr && chr <= 'Z') { // Box.
-					this.initialState.boxes[row][col] = chr;
+					boxes[row][col] = chr;
 				} else if ('a' <= chr && chr <= 'z') { // Goal.
-					this.initialState.goals[row][col] = chr;
+					goals[row][col] = chr;
 				} else if (chr == ' ') {
 					// Free space.
 				} else {
@@ -51,7 +63,18 @@ public class SearchClient {
 			}
 			line = serverMessages.readLine();
 			row++;
+			rows = row;
 		}
+		Node newI = new Node(null, rows, columns);
+		for (int i = 0; i < rows; i++) {
+			System.arraycopy(walls[i], 0, newI.walls[i], 0, newI.walls[i].length);
+			System.arraycopy(boxes[i], 0, newI.boxes[i], 0, newI.boxes[i].length);
+			System.arraycopy(goals[i], 0, newI.goals[i], 0, newI.goals[i].length);			
+		}
+		newI.agentRow = agentRow;
+		newI.agentCol = agentCol;
+		
+		initialState = newI;		
 	}
 
 	public LinkedList<Node> Search(Strategy strategy) throws IOException {

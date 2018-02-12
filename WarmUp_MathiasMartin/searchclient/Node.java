@@ -11,8 +11,8 @@ import searchclient.Command.Type;
 public class Node {
 	private static final Random RND = new Random(3);
 
-	public static int MAX_ROW = 70;
-	public static int MAX_COL = 70;
+	public static int MAX_ROW = -1;
+	public static int MAX_COL = -1;
 
 	public int agentRow;
 	public int agentCol;
@@ -27,9 +27,9 @@ public class Node {
 	// this.walls[row][col] is true if there's a wall at (row, col)
 	//
 
-	public boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
-	public char[][] boxes = new char[MAX_ROW][MAX_COL];
-	public char[][] goals = new char[MAX_ROW][MAX_COL];
+	public static boolean[][] walls;// = new boolean[MAX_ROW][MAX_COL];//If this is static, size doesn't matter
+	public char[][] boxes;// = new char[MAX_ROW][MAX_COL];
+	public static char[][] goals;// = new char[MAX_ROW][MAX_COL];//Same as walls
 
 	public Node parent;
 	public Command action;
@@ -39,9 +39,26 @@ public class Node {
 	private int _hash = 0;
 
 	public Node(Node parent) {
+		MAX_ROW = 70;
+		MAX_COL = 70;
+		boxes = new char[MAX_ROW][MAX_COL];
 		this.parent = parent;
 		if (parent == null) {
+			this.g = 0;		
+		} else {
+			this.g = parent.g() + 1;
+		}
+	}
+	
+	public Node(Node parent, int cols, int rows) {
+		MAX_ROW = rows;
+		MAX_COL = cols;
+		boxes = new char[MAX_ROW][MAX_COL];
+		this.parent = parent;
+		if (parent == null) {//This should only happen when initialstate is created
 			this.g = 0;
+			walls = new boolean[MAX_ROW][MAX_COL];
+			goals = new char[MAX_ROW][MAX_COL];
 		} else {
 			this.g = parent.g() + 1;
 		}
@@ -131,11 +148,11 @@ public class Node {
 	}
 
 	private Node ChildNode() {
-		Node copy = new Node(this);
+		Node copy = new Node(this, MAX_ROW, MAX_COL);
 		for (int row = 0; row < MAX_ROW; row++) {
-			System.arraycopy(this.walls[row], 0, copy.walls[row], 0, MAX_COL);
-			System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, MAX_COL);
-			System.arraycopy(this.goals[row], 0, copy.goals[row], 0, MAX_COL);
+			//System.arraycopy(this.walls[row], 0, copy.walls[row], 0, copy.walls[row].length);
+			System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, copy.boxes[row].length);
+			//System.arraycopy(this.goals[row], 0, copy.goals[row], 0, copy.goals[row].length);
 		}
 		return copy;
 	}
