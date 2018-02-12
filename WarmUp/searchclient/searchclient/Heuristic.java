@@ -54,12 +54,11 @@ public abstract class Heuristic implements Comparator<Node> {
                            // minDist = dist < minDist ? dist : minDist;
                        }
                        sumDist += minBDist;
-                    
-            }
-        }
-    }
+            	}
+        	}
+    	}
         return sumDist;
-}
+	}
 
 	public abstract int f(Node n);
 
