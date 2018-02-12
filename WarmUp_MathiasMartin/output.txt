@@ -1,16 +1,16 @@
 \begin{tabular}{|l|l|r|r|r|r|}
 \hline
 Level & Client & Time & Memory & Solution Length & Nodes Generated\\\hline
-SAD1 & Breadth-first Search & 0,14 s & 9,84 MB & 19 & :     78\\  \hline
-SAD1 & Depth-first Search & 0,11 s & 6,28 MB & 27 & :     64\\  \hline
-SAD2 & Breadth-first Search & 79,39 s & 4090,24 MB & No solution & : 144.627\\  \hline
-SAD2 & Depth-first Search & 0,12 s & 9,84 MB & 43 & :    157\\  \hline
-friendsofDFS & Breadth-first Search & 18,28 s & 2518,00 MB & 10 & : 84.402\\  \hline
-friendsofDFS & Depth-first Search & 0,20 s & 25,04 MB & 212 & :    678\\  \hline
-friendsofBFS & Breadth-first Search & 0,51 s & 90,00 MB & 4 & :  2.698\\  \hline
-friendsofBFS & Depth-first Search & 20,49 s & 4066,04 MB & No solution & : 143.848\\  \hline
-SAFirefly & Breadth-first Search & 33,78 s & 4078,57 MB & No solution & : 144.426\\  \hline
-SAFirefly & Depth-first Search & 34,81 s & 4094,51 MB & No solution & : 145.255\\  \hline
-SACrunch & Breadth-first Search & 48,25 s & 4091,60 MB & No solution & : 145.037\\  \hline
-SACrunch & Depth-first Search & 40,15 s & 4095,08 MB & No solution & : 145.268\\  \hline
+SAD1 & Breadth-first Search & 0,13 s & 9,84 MB & 19 & :     78\\  \hline
+SAD1 & Depth-first Search & 0,36 s & 6,56 MB & 27 & :     64\\  \hline
+SAD2 & Breadth-first Search & 29,45 s & 3273,50 MB & No solution & : 113.275\\  \hline
+SAD2 & Depth-first Search & 0,30 s & 10,28 MB & 43 & :    157\\  \hline
+friendsofDFS & Breadth-first Search & 29,40 s & 3361,00 MB & No solution & : 114.887\\  \hline
+friendsofDFS & Depth-first Search & 0,38 s & 23,17 MB & 132 & :    688\\  \hline
+friendsofBFS & Breadth-first Search & 1,02 s & 32,91 MB & 4 & :    802\\  \hline
+friendsofBFS & Depth-first Search & 28,26 s & 4020,54 MB & No solution & : 140.946\\  \hline
+SAFirefly & Breadth-first Search & 24,90 s & 3996,50 MB & No solution & : 136.578\\  \hline
+SAFirefly & Depth-first Search & 25,82 s & 3999,00 MB & No solution & : 138.154\\  \hline
+SACrunch & Breadth-first Search & 27,54 s & 4037,50 MB & No solution & : 137.624\\  \hline
+SACrunch & Depth-first Search & 25,83 s & 3987,50 MB & No solution & : 137.907\\  \hline
 \end{tabular}
