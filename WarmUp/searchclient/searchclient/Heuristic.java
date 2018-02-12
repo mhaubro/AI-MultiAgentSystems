@@ -7,9 +7,10 @@ import java.util.HashMap;
 import static java.lang.Math.abs;
 
 public abstract class Heuristic implements Comparator<Node> {
-    public HashMap<Character, ArrayList<Pair<Integer, Integer>>> goalsMap = new HashMap<>();
+    public HashMap<Character, ArrayList<Pair<Integer, Integer>>> goalsMap;
 
     public Heuristic(Node initialState) {
+    	goalsMap = new HashMap<>();
         for(int i = 0; i < Node.MAX_ROW; i++)
         {
             for(int j = 0; j < Node.MAX_COL; j++)
@@ -31,7 +32,8 @@ public abstract class Heuristic implements Comparator<Node> {
 	}
 
 	public int h(Node n) {
-        int minDist = Integer.MAX_VALUE;
+	    int minBDist = Integer.MAX_VALUE;
+	    int minADist = Integer.MAX_VALUE;
         int sumDist = 0;
         for(int i = 0; i < Node.MAX_ROW; i++)
         {
@@ -39,24 +41,22 @@ public abstract class Heuristic implements Comparator<Node> {
             {
                char chr = n.boxes[i][j];
                if('A' <= chr && chr <= 'Z')
-               {
-                   if(Node.goals[i][j] != Character.toLowerCase(chr))
-                   {
-                       minDist = Integer.MAX_VALUE;
+               {   		  
+                       minBDist = Integer.MAX_VALUE;
                        int aDist = abs(i - n.agentRow) + abs(j - n.agentCol);
+                       minADist = (aDist < minADist) ? aDist : minADist;
                        ArrayList<Pair<Integer, Integer>> chrGoals = goalsMap.get(Character.toLowerCase(chr));
                        for(Pair goal : chrGoals)
                        {
                            //if(n.boxes[i][j] == Node.goals[(int) goal.getLeft()][(int) goal.getRight()])
                            int dist = abs(i - (int) goal.getLeft()) + abs(j - (int) goal.getRight());
-                           minDist = dist + aDist < minDist ? dist + aDist : minDist;
+                           minBDist = (dist < minBDist) ? dist : minBDist;
                            // minDist = dist < minDist ? dist : minDist;
                        }
-                       sumDist += minDist;
-                   }
-                }
-            }
-        }
+                       sumDist += minBDist;
+            	}
+        	}
+    	}
         return sumDist;
 	}
 
