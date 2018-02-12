@@ -1,7 +1,11 @@
 package searchclient;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.PriorityQueue;
+
+//import org.w3c.dom.Node;
 
 import searchclient.Memory;
 import searchclient.NotImplementedException;
@@ -140,36 +144,39 @@ public abstract class Strategy {
 	// Ex 3: Best-first Search uses a priority queue (Java contains no implementation of a Heap data structure)
 	public static class StrategyBestFirst extends Strategy {
 		private Heuristic heuristic;
-
+		private PriorityQueue<Node> frontier;
+		
+		
 		public StrategyBestFirst(Heuristic h) {
 			super();
 			this.heuristic = h;
-			throw new NotImplementedException();
+			this.frontier = new PriorityQueue<Node>(heuristic);
+//			throw new NotImplementedException();
 		}
 
 		@Override
 		public Node getAndRemoveLeaf() {
-			throw new NotImplementedException();
+			return frontier.poll();
 		}
 
 		@Override
 		public void addToFrontier(Node n) {
-			throw new NotImplementedException();
+			frontier.add(n);
 		}
 
 		@Override
 		public int countFrontier() {
-			throw new NotImplementedException();
+			return frontier.size();
 		}
 
 		@Override
 		public boolean frontierIsEmpty() {
-			throw new NotImplementedException();
+			return frontier.isEmpty();
 		}
 
 		@Override
 		public boolean inFrontier(Node n) {
-			throw new NotImplementedException();
+			return frontier.contains(n);
 		}
 
 		@Override

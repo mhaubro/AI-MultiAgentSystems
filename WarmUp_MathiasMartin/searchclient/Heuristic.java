@@ -34,6 +34,10 @@ public abstract class Heuristic implements Comparator<Node> {
 		public String toString() {
 			return "A* evaluation";
 		}
+		
+		public int h(Node n) {
+			return 0;
+		}
 	}
 
 	public static class WeightedAStar extends Heuristic {
@@ -53,6 +57,11 @@ public abstract class Heuristic implements Comparator<Node> {
 		public String toString() {
 			return String.format("WA*(%d) evaluation", this.W);
 		}
+		public int h(Node n) {
+			return 0;
+			
+		}
+
 	}
 
 	public static class Greedy extends Heuristic {
@@ -69,5 +78,10 @@ public abstract class Heuristic implements Comparator<Node> {
 		public String toString() {
 			return "Greedy evaluation";
 		}
+		public int h(Node n) {//Get score from distance of nearest box to a goal
+			return 1;
+			
+		}
+
 	}
 }

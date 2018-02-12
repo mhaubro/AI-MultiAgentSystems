@@ -11,8 +11,8 @@ import searchclient.Command.Type;
 public class Node {
 	private static final Random RND = new Random(3);
 
-	public static int MAX_ROW = -1;
-	public static int MAX_COL = -1;
+	public static int MAX_ROW;
+	public static int MAX_COL;
 
 	public int agentRow;
 	public int agentCol;
@@ -39,8 +39,6 @@ public class Node {
 	private int _hash = 0;
 
 	public Node(Node parent) {
-		MAX_ROW = 70;
-		MAX_COL = 70;
 		boxes = new char[MAX_ROW][MAX_COL];
 		this.parent = parent;
 		if (parent == null) {
@@ -50,7 +48,7 @@ public class Node {
 		}
 	}
 	
-	public Node(Node parent, int cols, int rows) {
+	public Node(Node parent, int rows, int cols) {
 		MAX_ROW = rows;
 		MAX_COL = cols;
 		boxes = new char[MAX_ROW][MAX_COL];
@@ -148,11 +146,9 @@ public class Node {
 	}
 
 	private Node ChildNode() {
-		Node copy = new Node(this, MAX_ROW, MAX_COL);
+		Node copy = new Node(this);
 		for (int row = 0; row < MAX_ROW; row++) {
-			//System.arraycopy(this.walls[row], 0, copy.walls[row], 0, copy.walls[row].length);
 			System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, copy.boxes[row].length);
-			//System.arraycopy(this.goals[row], 0, copy.goals[row], 0, copy.goals[row].length);
 		}
 		return copy;
 	}

@@ -74,6 +74,8 @@ public class SearchClient {
 		newI.agentRow = agentRow;
 		newI.agentCol = agentCol;
 		
+		//System.err.println()
+		
 		initialState = newI;		
 	}
 
@@ -89,6 +91,7 @@ public class SearchClient {
 			}
 
 			if (strategy.frontierIsEmpty()) {
+				System.err.println("Empty frontier");
 				return null;
 			}
 
