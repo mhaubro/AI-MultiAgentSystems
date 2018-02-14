@@ -10,6 +10,18 @@ public abstract class Heuristic implements Comparator<Node> {
 	int numberOfGoals;
 	ArrayList<Point> goals;
 	
+	private int calcScore(int i, int j, Node n) {//Calculates distance between a box and a goal
+		int bestScore = 0xfffffff;//Max int
+		for (int s = 0; s < goals.size(); s++) {
+			Point p = goals.get(s);
+			int score = Math.abs(i-p.x) + Math.abs(j-p.y);
+			if (score < bestScore) {
+				bestScore = score;
+			}
+		}
+		bestScore += Math.abs(i-n.agentRow) + Math.abs(j-n.agentCol);
+		return bestScore;
+	}
 	
 	public Heuristic(Node initialState) {
 		goals = new ArrayList<Point>();
@@ -28,7 +40,26 @@ public abstract class Heuristic implements Comparator<Node> {
 	}
 
 	public int h(Node n) {
-		throw new NotImplementedException();
+		int score = 0;
+		int bestScore = 0xfffffff;
+		for (int i = 0; i < n.boxes.length; i++) {
+			for (int j = 0; j < n.boxes[i].length; j++) {
+				if (n.boxes[i][j] == 'A') {//Theres a box at this point
+					Point p = new Point(i,j);
+					if (goals.contains(p)) {
+						score = score - 5;//We have a box on top of a goal
+					} else {
+						int tempScore = calcScore(i, j, n);
+						if (tempScore < bestScore) {
+							bestScore = tempScore;
+						}
+					}
+				}
+			}
+		}
+		
+		return score + bestScore;
+		
 	}
 
 	public abstract int f(Node n);
@@ -42,18 +73,7 @@ public abstract class Heuristic implements Comparator<Node> {
 		public AStar(Node initialState) {
 			super(initialState);
 		}
-		private int calcScore(int i, int j, Node n) {//Calculates distance between a box and a goal
-			int bestScore = 0xffffff;//Max int
-			for (int s = 0; s < goals.size(); s++) {
-				Point p = goals.get(s);
-				int score = Math.abs(i-p.x) + Math.abs(j-p.y);
-				if (score < bestScore) {
-					bestScore = score;
-				}
-			}
-			bestScore += Math.abs(i-n.agentRow) + Math.abs(j-n.agentCol);
-			return bestScore;
-		}
+
 
 		@Override
 		public int f(Node n) {
@@ -65,27 +85,7 @@ public abstract class Heuristic implements Comparator<Node> {
 			return "A* evaluation";
 		}
 		
-		public int h(Node n) {
-			int score = 0;
-			int bestScore = 0;
-			for (int i = 0; i < n.boxes.length; i++) {
-				for (int j = 0; j < n.boxes[i].length; j++) {
-					if (n.boxes[i][j] == 'A') {//Theres a box at this point
-						Point p = new Point(i,j);
-						if (goals.contains(p)) {
-							score = score - 5;//We have a box on top of a goal
-						} else {
-							int tempScore = calcScore(i, j, n);
-							if (tempScore < bestScore) {
-								bestScore = tempScore;
-							}
-						}
-					}
-				}
-			}
-			
-			
-			return score - bestScore;		}
+
 	}
 
 	public static class WeightedAStar extends Heuristic {
@@ -95,18 +95,7 @@ public abstract class Heuristic implements Comparator<Node> {
 			super(initialState);
 			this.W = W;
 		}
-		private int calcScore(int i, int j, Node n) {//Calculates distance between a box and a goal
-			int bestScore = 0xffffff;//Max int
-			for (int s = 0; s < goals.size(); s++) {
-				Point p = goals.get(s);
-				int score = Math.abs(i-p.x) + Math.abs(j-p.y);
-				if (score < bestScore) {
-					bestScore = score;
-				}
-			}
-			bestScore += Math.abs(i-n.agentRow) + Math.abs(j-n.agentCol);
-			return bestScore;
-		}
+
 
 		@Override
 		public int f(Node n) {
@@ -117,28 +106,10 @@ public abstract class Heuristic implements Comparator<Node> {
 		public String toString() {
 			return String.format("WA*(%d) evaluation", this.W);
 		}
-		public int h(Node n) {
-			int score = 0;
-			int bestScore = 0;
-			for (int i = 0; i < n.boxes.length; i++) {
-				for (int j = 0; j < n.boxes[i].length; j++) {
-					if (n.boxes[i][j] == 'A') {//Theres a box at this point
-						Point p = new Point(i,j);
-						if (goals.contains(p)) {
-							score = score - 5;//We have a box on top of a goal
-						} else {
-							int tempScore = calcScore(i, j, n);
-							if (tempScore < bestScore) {
-								bestScore = tempScore;
-							}
-						}
-					}
-				}
-			}
+		
+
 			
 			
-			return score - bestScore;			
-		}
 
 	}
 
@@ -152,46 +123,13 @@ public abstract class Heuristic implements Comparator<Node> {
 			return this.h(n);
 		}
 		
-		private int calcScore(int i, int j, Node n) {//Calculates distance between a box and a goal
-			int bestScore = 0xffffff;//Max int
-			for (int s = 0; s < goals.size(); s++) {
-				Point p = goals.get(s);
-				int score = Math.abs(i-p.x) + Math.abs(j-p.y);
-				if (score < bestScore) {
-					bestScore = score;
-				}
-			}
-			bestScore += Math.abs(i-n.agentRow) + Math.abs(j-n.agentCol);
-			return bestScore;
-		}
+
 
 		@Override
 		public String toString() {
 			return "Greedy evaluation";
 		}
-		public int h(Node n) {//Get score from distance of nearest box to a goal
-			int score = 0;
-			int bestScore = 0;
-			for (int i = 0; i < n.boxes.length; i++) {
-				for (int j = 0; j < n.boxes[i].length; j++) {
-					if (n.boxes[i][j] == 'A') {//Theres a box at this point
-						Point p = new Point(i,j);
-						if (goals.contains(p)) {
-							score = score - 5;//We have a box on top of a goal
-						} else {
-							int tempScore = calcScore(i, j, n);
-							if (tempScore < bestScore) {
-								bestScore = tempScore;
-							}
-						}
-					}
-				}
-			}
-			
-			
-			return score - bestScore;
-			
-		}
+
 
 	}
 }
