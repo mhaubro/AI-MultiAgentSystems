@@ -20,6 +20,10 @@ MultiAgent:
     Perceive current world
     Select goal with highest priority (?)
     Calculate plan to goal
+    if no solution to plan:
+      broadcast for help
+      execute(noop)
+      continue
     Take head of plan
     if head of plan is valid:
       execute head of plan
