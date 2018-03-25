@@ -10,8 +10,7 @@ namespace Node{
 	static std::vector<bool> walls = std::vector<bool>();
 	static std::vector<char> goals; = new char[MAX_ROW][MAX_COL];
 
-	Node initFirstNode
-
+	//This should only be used for the first node. Inits walls & goals.
 	Node(int MAX_COL, int MAX_ROW) {
 		this->parent = NULL;
 		this->MAX_ROW = MAX_ROW;
@@ -26,6 +25,7 @@ namespace Node{
 		this->parent = parent;
 		this->g = parent->g() + 1;
 		}
+		//Inits boxes
 		boxes = std::vector(0, MAX_COL*MAX_ROW);
 	}
 
@@ -52,29 +52,29 @@ namespace Node{
 	}
 
 	std::vector getExpandedNodes() {
-		ArrayList<Node> expandedNodes = new ArrayList<Node>(Command.EVERY.length);
-		for (Command c : Command.EVERY) {
+		std::vector<Node> expandedNodes = std::vector<Node>(Command.EVERY.size());
+		for (Command &c : Command.EVERY) {
 			// Determine applicability of action
-			int newAgentRow = this.agentRow + Command.dirToRowChange(c.dir1);
-			int newAgentCol = this.agentCol + Command.dirToColChange(c.dir1);
+			int newAgentRow = this->agentRow + Command.dirToRowChange(c->dir1);
+			int newAgentCol = this->agentCol + Command.dirToColChange(c->dir1);
 
-			if (c.actionType == Type.Move) {
+			if (c->actionType == Command.Type.Move) {
 				// Check if there's a wall or box on the cell to which the agent is moving
-				if (this.cellIsFree(newAgentRow, newAgentCol)) {
+				if (this->cellIsFree(newAgentRow, newAgentCol)) {
 					Node n = this.ChildNode();
-					n.action = c;
-					n.agentRow = newAgentRow;
-					n.agentCol = newAgentCol;
+					n->action = c;
+					n->agentRow = newAgentRow;
+					n->agentCol = newAgentCol;
 					expandedNodes.add(n);
 				}
-			} else if (c.actionType == Type.Push) {
+			} else if (c->actionType == Command.Type.Push) {
 				// Make sure that there's actually a box to move
 				if (this.boxAt(newAgentRow, newAgentCol)) {
-					int newBoxRow = newAgentRow + Command.dirToRowChange(c.dir2);
-					int newBoxCol = newAgentCol + Command.dirToColChange(c.dir2);
+					int newBoxRow = newAgentRow + Command.dirToRowChange(c->dir2);
+					int newBoxCol = newAgentCol + Command.dirToColChange(c->dir2);
 					// .. and that new cell of box is free
-					if (this.cellIsFree(newBoxRow, newBoxCol)) {
-						Node n = this.ChildNode();
+					if (this->cellIsFree(newBoxRow, newBoxCol)) {
+						Node n = this->ChildNode();
 						n.action = c;
 						n.agentRow = newAgentRow;
 						n.agentCol = newAgentCol;

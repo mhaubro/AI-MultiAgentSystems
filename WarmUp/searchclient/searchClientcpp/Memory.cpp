@@ -1,10 +1,9 @@
 #include "Memory.h"
-#include "centralHeader.h"
+#include <string>
+//#include "centralHeader.h"
+#include <cstring>
 
-namespace Memory{
-
-
-	int parseLine(char* line){
+	int Memory::parseLine(char* line){
 		// This assumes that a digit will be found and the line ends in " Kb".
 		int i = strlen(line);
 		const char* p = line;
@@ -15,7 +14,7 @@ namespace Memory{
 	}
 
 
-	int getValue(){ //Note: this value is in MB!
+	int Memory::getValue(){ //Note: this value is in MB!
 		FILE* file = fopen("/proc/self/status", "r");
 		int result = -1;
 		char line[128];
@@ -30,7 +29,7 @@ namespace Memory{
 		return result/1024;
 	}
 
-	bool checkMemory(){
+	bool Memory::checkMemory(){
 		if (used() > limit){
 			//Throw exception?
 			return false;
@@ -38,19 +37,24 @@ namespace Memory{
 		return true;
 	}
 
-	static double used() {
-		return (getValue) ;
+	int Memory::used() {
+		return getValue();
 	}
 
-	static double free() {
+	int Memory::free() {
 		return (limit - getValue());
 	}
 
-	static double max() {
+	int Memory::max() {
 		return limit;
 	}
 
-	static String stringRep() {
-		return String.format("[Used: %d MB, Free: %d MB, MaxAlloc: %d MB]", used(), free(), max());
+	std::string Memory::stringRep() {
+		//Inspired by https://stackoverflow.com/questions/25169915/is-writing-to-str0-buffer-of-a-stdstring-well-defined-behaviour-in-c11
+		char stemp[100];
+		sprintf(stemp, "[Used: %d MB, Free: %d MB, MaxAlloc: %d MB]", used(), free(), max());
+		std::string s;
+		s.resize(sizeof(stemp)-1);
+		memcpy(&s[0], stemp, strlen(stemp)-1);
+		return s;
 	}
-}

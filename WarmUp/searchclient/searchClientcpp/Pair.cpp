@@ -1,14 +1,18 @@
-#include "Pair.h"
+//#include "Pair.h"
 //#include "centralHeader.h"
+
+/*
+ *Apparently there's a std::pair, so just use pair::first, pair::second.
+ */
 
 /**
  * Source: https://stackoverflow.com/questions/521171/a-java-collection-of-value-pairs-tuples
  * @param <L>
  * @param <R>
  */
-namespace pair {
+/*namespace pair {
 
-  Pair(L left, R right)
+  Pair<typename L, typename R>(L left, R right)
   {
       this.left = left;
       this.right = right;
@@ -18,3 +22,4 @@ namespace pair {
   <typename R> R getRight() { return right; }
 
 }
+*/
