@@ -27,10 +27,9 @@
 			cmds.push_back(Command(d));
 		}
 
-		//This needs to be fixed. Linked list to vector. Requires C++11
 		return 		std::vector<Command> { std::make_move_iterator(std::begin(cmds)),
                   std::make_move_iterator(std::end(cmds)) };;
-	}();
+	}();//Lambda ends here
 
 	bool Command::isOpposite(int d1, int d2) {
 		return d1 + d2 == 3;

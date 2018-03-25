@@ -92,6 +92,12 @@ public class SearchClient {
 	}
 
 	public static void main(String[] args) throws Exception {
+
+		istringstream ss(argv[1]);
+		int x;
+		if (!(ss >> x))
+    	cerr << "Invalid number " << argv[1] << '\n';
+
 		BufferedReader serverMessages = new BufferedReader(new InputStreamReader(System.in));
 
 		// Use stderr to print to console

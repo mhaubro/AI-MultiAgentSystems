@@ -1,27 +1,56 @@
 #include "Memory.h"
 #include "centralHeader.h"
 
-public class Memory {
-	private static final Runtime RUNTIME = Runtime.getRuntime();
-	private static final double MB = 1024 * 1024;
+namespace Memory{
 
-	public static double used() {
-		return (RUNTIME.totalMemory() - RUNTIME.freeMemory()) / MB;
+
+	int parseLine(char* line){
+		// This assumes that a digit will be found and the line ends in " Kb".
+		int i = strlen(line);
+		const char* p = line;
+		while (*p <'0' || *p > '9') p++;
+		line[i-3] = '\0';
+		i = atoi(p);
+		return i;
 	}
 
-	public static double free() {
-		return RUNTIME.freeMemory() / MB;
+
+	int getValue(){ //Note: this value is in MB!
+		FILE* file = fopen("/proc/self/status", "r");
+		int result = -1;
+		char line[128];
+
+		while (fgets(line, 128, file) != NULL){
+			if (strncmp(line, "VmSize:", 7) == 0){
+				result = parseLine(line);
+				break;
+			}
+		}
+		fclose(file);
+		return result/1024;
 	}
 
-	public static double total() {
-		return RUNTIME.totalMemory() / MB;
+	bool checkMemory(){
+		if (used() > limit){
+			//Throw exception?
+			return false;
+		}
+		return true;
 	}
 
-	public static double max() {
-		return RUNTIME.maxMemory() / MB;
+	static double used() {
+		return (getValue) ;
 	}
 
-	public static String stringRep() {
-		return String.format("[Used: %.2f MB, Free: %.2f MB, Alloc: %.2f MB, MaxAlloc: %.2f MB]", used(), free(), total(), max());
+	static double free() {
+		return (limit - getValue());
+	}
+
+	static double max() {
+		return limit;
+	}
+
+	static String stringRep() {
+		return String.format("[Used: %d MB, Free: %d MB, MaxAlloc: %d MB]", used(), free(), max());
 	}
 }

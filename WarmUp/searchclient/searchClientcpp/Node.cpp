@@ -1,66 +1,48 @@
 #include "Node.h"
 #include "centralHeader.h"
+#include <string>
+#include <vector>
+#include <list>
+#define RANDOM_SEED 1
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Random;
+namespace Node{
+	//Initialize static variables:
+	static std::vector<bool> walls = std::vector<bool>();
+	static std::vector<char> goals; = new char[MAX_ROW][MAX_COL];
 
-import searchclient.Command.Type;
+	Node initFirstNode
 
-public class Node {
-	private static final Random RND = new Random(1);
+	Node(int MAX_COL, int MAX_ROW) {
+		this->parent = NULL;
+		this->MAX_ROW = MAX_ROW;
+		this->MAX_COL = MAX_COL;
+		this->walls = std::vector<bool>(false, MAX_ROW*MAX_COL);
+		this->goals = std::vector<char>('-', MAX_ROW*MAX_COL);
+		this->g = 0;
+		boxes = std::vector(0, MAX_COL*MAX_ROW);
+	}
 
-	public static int MAX_ROW = 70;
-	public static int MAX_COL = 70;
-
-	public int agentRow;
-	public int agentCol;
-
-	// Arrays are indexed from the top-left of the level, with first index being row and second being column.
-	// Row 0: (0,0) (0,1) (0,2) (0,3) ...
-	// Row 1: (1,0) (1,1) (1,2) (1,3) ...
-	// Row 2: (2,0) (2,1) (2,2) (2,3) ...
-	// ...
-	// (Start in the top left corner, first go down, then go right)
-	// E.g. this.walls[2] is an array of booleans having size MAX_COL.
-	// this.walls[row][col] is true if there's a wall at (row, col)
-	//
-
-	public static boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
-	public char[][] boxes = new char[MAX_ROW][MAX_COL];
-	public static char[][] goals = new char[MAX_ROW][MAX_COL];
-
-	public Node parent;
-	public Command action;
-
-	private int g;
-
-	private int _hash = 0;
-
-	public Node(Node parent) {
-		this.parent = parent;
-		if (parent == null) {
-			this.g = 0;
-		} else {
-			this.g = parent.g() + 1;
+	Node(Node * parent) {
+		this->parent = parent;
+		this->g = parent->g() + 1;
 		}
+		boxes = std::vector(0, MAX_COL*MAX_ROW);
 	}
 
-	public int g() {
-		return this.g;
+	int g() {
+		return this->g;
 	}
 
-	public boolean isInitialState() {
-		return this.parent == null;
+	bool isInitialState() {
+		return this->parent == NULL;
 	}
 
-	public boolean isGoalState() {
-		for (int row = 1; row < MAX_ROW - 1; row++) {
-			for (int col = 1; col < MAX_COL - 1; col++) {
-				char g = goals[row][col];
-				char b = Character.toLowerCase(boxes[row][col]);
+	bool isGoalState() {
+		for (int row = 0; row < MAX_ROW - 1; row++) {
+			for (int col = 0; col < MAX_COL - 1; col++) {
+				int idx = row + col*MAX_ROW;
+				char g = goals[idx]];
+				char b = Character.toLowerCase(boxes[idx]);
 				if (g > 0 && b != g) {
 					return false;
 				}
@@ -69,7 +51,7 @@ public class Node {
 		return true;
 	}
 
-	public ArrayList<Node> getExpandedNodes() {
+	std::vector getExpandedNodes() {
 		ArrayList<Node> expandedNodes = new ArrayList<Node>(Command.EVERY.length);
 		for (Command c : Command.EVERY) {
 			// Determine applicability of action
@@ -123,22 +105,22 @@ public class Node {
 		return expandedNodes;
 	}
 
-	private boolean cellIsFree(int row, int col) {
+	bool cellIsFree(int row, int col) {
 		return !walls[row][col] && boxes[row][col] == 0;
 	}
 
-	private boolean boxAt(int row, int col) {
+	bool boxAt(int row, int col) {
 		return boxes[row][col] > 0;
 	}
 
-	private Node ChildNode() {
+	Node ChildNode() {
 		Node copy = new Node(this);
 		for(int row = 0; row < MAX_ROW; row++)
 		    System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, MAX_COL);
 		return copy;
 	}
 
-	public LinkedList<Node> extractPlan() {
+	std::list<Node> extractPlan() {
 		LinkedList<Node> plan = new LinkedList<Node>();
 		Node n = this;
 		while (!n.isInitialState()) {
@@ -148,8 +130,7 @@ public class Node {
 		return plan;
 	}
 
-	@Override
-	public int hashCode() {
+	int hashCode() {
 		if (this._hash == 0) {
 			final int prime = 31;
 			int result = 1;
@@ -163,8 +144,7 @@ public class Node {
 		return this._hash;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
+	bool equals(Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -183,8 +163,7 @@ public class Node {
 		return true;
 	}
 
-	@Override
-	public String toString() {
+	std::string toString() {
 		StringBuilder s = new StringBuilder();
 		for (int row = 0; row < MAX_ROW; row++) {
 			if (!this.walls[row][0]) {
