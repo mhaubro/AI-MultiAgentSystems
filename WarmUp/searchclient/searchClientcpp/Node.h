@@ -2,13 +2,14 @@
 #define NODE_H
 
 #include "centralHeader.h"
-
+#include <list>
+#include <vector>
 
 class Node {
 
 public:
-	static int MAX_ROW = 70;
-	static int MAX_COL = 70;
+	static int MAX_ROW;
+	static int MAX_COL;
 
 	int agentRow;
 	int agentCol;
@@ -16,10 +17,10 @@ public:
 	int g();
 	bool isInitialState();
 	bool isGoalState();
-	std::vector getExpandedNodes();
+	std::vector<Node> getExpandedNodes();
 	std::list<Node> extractPlan();
 	int hashCode();
-	bool equals(Object * obj);
+	bool equals(Node * obj);
 	std::string toString();
 
 	// Arrays are indexed from the top-left of the level, with first index being row and second being column.
@@ -36,8 +37,8 @@ public:
 	std::vector<char> boxes;
 	static std::vector<char> goals;
 
-	Node parent;
-	Command action;
+	Node * parent;
+	Command * action;
 
 private:
 	int g;
@@ -46,6 +47,6 @@ private:
 	bool boxAt(int row, int col)
 	Node ChildNode()
 
-}
+};
 
 #endif

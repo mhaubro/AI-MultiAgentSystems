@@ -2,7 +2,7 @@
 #define PAIR_H
 
 
-//USE std::Pair
+//USE std::Pair, found in <utility>
 
 //#include "centralHeader.h"
 template <typename L, typename R> class Pair

@@ -3,6 +3,8 @@
 //#include "centralHeader.h"
 #include <cstring>
 
+	int Memory::limit;
+
 	int Memory::parseLine(char* line){
 		// This assumes that a digit will be found and the line ends in " Kb".
 		int i = strlen(line);

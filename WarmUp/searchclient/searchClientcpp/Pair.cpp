@@ -1,8 +1,7 @@
 //#include "Pair.h"
 //#include "centralHeader.h"
 
-/*
- *Apparently there's a std::pair, so just use pair::first, pair::second.
+/* *Apparently there's a std::pair, so just use pair::first, pair::second , found in <utility>
  */
 
 /**
