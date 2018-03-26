@@ -2,16 +2,16 @@
 #define SEARCHCLIENT_H
 #include "centralHeader.h"
 
-#include <sstream>
+#include <iostream>
 
 class SearchClient
 {
 public:
-	SearchClient(std::stringstream serverMessages);
-	~SearchClient(Strategy strategy);
+	SearchClient(std::istream serverMessages);
+	~SearchClient();
 
 	Node initialState;
-	
+
 };
 
 #endif

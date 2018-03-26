@@ -127,33 +127,5 @@ public class SearchClient {
             System.err.println("Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.");
         }
 
-		LinkedList<Node> solution;
-		try {
-			solution = client.Search(strategy);
-		} catch (OutOfMemoryError ex) {
-			System.err.println("Maximum memory usage exceeded.");
-			solution = null;
-		}
-
-		if (solution == null) {
-			System.err.println(strategy.searchStatus());
-			System.err.println("Unable to solve level.");
-			System.exit(0);
-		} else {
-			System.err.println("\nSummary for " + strategy.toString());
-			System.err.println("Found solution of length " + solution.size());
-			System.err.println(strategy.searchStatus());
-
-			for (Node n : solution) {
-				String act = n.action.toString();
-				System.out.println(act);
-				String response = serverMessages.readLine();
-				if (response.contains("false")) {
-					System.err.format("Server responsed with %s to the inapplicable action: %s\n", response, act);
-					System.err.format("%s was attempted in \n%s\n", act, n.toString());
-					break;
-				}
-			}
-		}
 	}
 }
