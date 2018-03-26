@@ -3,32 +3,20 @@
 #include <string>
 #include <queue>
 #include <unordered_set>
-
-namespace std
-{
-  template<>
-    struct hash<Node>
-    {
-      size_t
-      operator()(const Student & obj) const
-      {
-        return obj.hashCode();
-      }
-    };
-}
-
+#include <chrono>
+#include <utility>
 
 	Strategy::Strategy() {
-		this->explored = new std::unordered_set<Node>();
-		this->startTime = System.currentTimeMillis();
+		this->explored = std::unordered_map<Node *, int>();
+		//this->startTime = std::chrono::high_resolution_clock::now();
 	}
 
-	void Strategy::addToExplored(Node n) {
-		this->explored.add(n);
+	void Strategy::addToExplored(Node * n) {
+		this->explored.insert(std::make_pair(n, n->hashCode()));
 	}
 
-	bool Strategy::isExplored(Node n) {
-		return this->explored.contains(n);
+	bool Strategy::isExplored(Node * n) {
+		return this->explored.count(n) == 1;
 	}
 
 	int Strategy::countExplored() {
@@ -37,34 +25,50 @@ namespace std
 
 	std::string Strategy::searchStatus() {
 		char stemp[100];
-		sprintf(stemp, "#Explored: %,6d, #Frontier: %,6d, #Generated: %,6d, Time: %3.2f s \t%s", this->countExplored(), this->countFrontier(), this->countExplored()+this->countFrontier(), this->timeSpent(), Memory->stringRep());
+		sprintf(stemp, "#Explored: %,6d, #Frontier: %,6d, #Generated: %,6d, Time: %3.2f s \t%s", this->countExplored(), this->countFrontier(), this->countExplored()+this->countFrontier(), 0.0, Memory::stringRep());
 		std::string s;
 		s.resize(sizeof(stemp)-1);
 		memcpy(&s[0], stemp, strlen(stemp)-1);
 		return s;
 	}
 
-	float Strategy::timeSpent() {
-		return (System.currentTimeMillis() - this->startTime) / 1000f;
+	Node Strategy::getAndRemoveLeaf(){
+		return (Node) NULL;
+	}
+	void Strategy::addToFrontier(Node * n){	}
+
+	bool Strategy::inFrontier(Node * n){
+		return false;
 	}
 
-	std::queue<Node> StrategyBFS::frontier = ;
-	std::unordered_set<Node, NodeHashser, NodeComparator> StrategyBFS::frontierSet = ;
+	int Strategy::countFrontier(){
+		return 1;
+	}
+	bool Strategy::frontierIsEmpty(){
+		return false;
+	}
+	std::string Strategy::toString(){
+		return std::string("");
+	}
+	/*double Strategy::timeSpent() {
+		return (duration_cast<std::chrono::seconds>(std::chrono::high_resolution_clock::now() - this->startTime)).count();
+	}*/
+
 
 	StrategyBFS::StrategyBFS() {
-		frontier = new std::queue<Node>();
-		frontierSet = new std::unordered_set<Node, NodeHashser, NodeComparator>();
+		std::queue<Node *> frontier = std::queue<Node *>();
+		std::unordered_map<Node *, int> frontierSet = std::unordered_map<Node *, int>();
 	}
 
 		Node StrategyBFS::getAndRemoveLeaf() {
-			Node n = frontier.pollFirst();
-			frontierSet.remove(n);
+			Node * n = frontier.front();
+			frontierSet.erase(n);
 			return n;
 		}
 
-		void StrategyBFS::addToFrontier(Node n) {
-			frontier.addLast(n);
-			frontierSet.add(n);
+		void StrategyBFS::addToFrontier(Node * n) {
+			frontier.push(n);
+			frontierSet.insert(std::make_pair(n, n->hashCode()));
 		}
 
 		int StrategyBFS::countFrontier() {
@@ -72,11 +76,11 @@ namespace std
 		}
 
 		bool StrategyBFS::frontierIsEmpty() {
-			return frontier.isEmpty();
+			return frontier.empty();
 		}
 
-		bool StrategyBFS::inFrontier(Node n) {
-			return frontierSet.contains(n);
+		bool StrategyBFS::inFrontier(Node * n) {
+			return frontierSet.count(n);
 		}
 
     std::string StrategyBFS::toString() {

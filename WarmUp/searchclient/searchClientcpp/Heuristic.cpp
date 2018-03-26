@@ -1,4 +1,4 @@
-
+/*
 #include "Command.h"
 #include "centralHeader.h"
 
@@ -120,3 +120,4 @@ public abstract class Heuristic implements Comparator<Node> {
 		}
 	}
 }
+*/
