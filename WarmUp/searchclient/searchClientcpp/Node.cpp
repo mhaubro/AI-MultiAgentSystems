@@ -11,8 +11,8 @@
 #define RANDOM_SEED 1
 
 	//Initialize static variables:
-	int Node::MAX_ROW = 70;
-	int Node::MAX_COL = 70;
+	int Node::MAX_ROW = 1;
+	int Node::MAX_COL = 1;
 	std::vector<bool> Node::walls = std::vector<bool>(false, MAX_ROW*MAX_COL);
 	std::vector<char> Node::goals = std::vector<char>('-', MAX_ROW*MAX_COL);
 

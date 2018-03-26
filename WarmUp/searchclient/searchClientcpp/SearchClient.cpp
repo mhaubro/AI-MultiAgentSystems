@@ -13,15 +13,15 @@ using std::pair;
 using std::list;
 
 bool isAgent(char c) {
-	string s(&c);
-	std::smatch match;
-	return std::regex_match(s, match, std::regex("[0-9]"));
+	return ('0' <= chr && chr <= '9');
 }
 
 bool isBox(char c) {
-	string s(&c);
-	std::smatch match;
-	return std::regex_match(s, match, std::regex("[A-Z]"));
+	return ('A' <= chr && chr <= 'Z');
+}
+
+bool isGoal(char c) {
+	return ('a' <= chr && chr <= 'z');
 }
 
 SearchClient::SearchClient(std::stringstream serverMessages)
@@ -82,15 +82,34 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 		"\nBoxes: " << boxes <<
 		"\nDim: [" << cols << "," << rows.size() << "]\n";
 
-	for (string row : rows) {
-		std::cout << row << "\n";
+	Node::MAX_ROWS = rows.size()
+	Node::MAX_COLS = cols;
+
+	std::vector<bool> Node::walls = std::vector<bool>(false, rows.size()*cols);
+	std::vector<char> Node::goals = std::vector<char>('-', rows.size()*cols);
+
+
+	initialState = new Node(NULL);
+	initialState->boxes = vector<char>('-', rows.size()*cols);
+	for (int y = 0; y < rows.size(); y++){
+		string row = rows.pull_front();
+		for (int x = 0; x < rows.length(); x++){
+			char chr = string[x];
+
+			if (chr == '+'){
+				Node::walls[x + y*cols] = true;
+			} else if (isAgent(chr)){
+				initialState->agentRow = y;
+				initialState->agentCol = x;
+			} else if (isBox(chr)){
+				initialState->boxes[x+y*cols] = chr;
+			} else if (isGoal(chr)){
+				Node::goals[x+y*cols] = chr;
+			} else {
+				std::err("Error, read invalid level character: [" + chr + "]");
+			}
+		}
 	}
-
-
-
-
-		
-
 }
 
 
