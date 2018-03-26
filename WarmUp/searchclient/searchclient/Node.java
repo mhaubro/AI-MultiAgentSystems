@@ -14,9 +14,6 @@ public class Node {
 	public static int MAX_ROW = 70;
 	public static int MAX_COL = 70;
 
-	public int agentRow;
-	public int agentCol;
-
 	// Arrays are indexed from the top-left of the level, with first index being row and second being column.
 	// Row 0: (0,0) (0,1) (0,2) (0,3) ...
 	// Row 1: (1,0) (1,1) (1,2) (1,3) ...
@@ -28,8 +25,10 @@ public class Node {
 	//
 
 	public static boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
-	public char[][] boxes = new char[MAX_ROW][MAX_COL];
-	public static char[][] goals = new char[MAX_ROW][MAX_COL];
+	public static ArrayList<Goal> goals = new ArrayList<>();
+	public ArrayList<Agent> agents = new ArrayList<>();
+	// public Box[][] boxes = new Box[MAX_ROW][MAX_COL];
+	public ArrayList<Box> boxes = new ArrayList<>();
 
 	public Node parent;
 	public Command action;
@@ -55,65 +54,78 @@ public class Node {
 		return this.parent == null;
 	}
 
-	public boolean isGoalState() {
-		for (int row = 1; row < MAX_ROW - 1; row++) {
-			for (int col = 1; col < MAX_COL - 1; col++) {
-				char g = goals[row][col];
-				char b = Character.toLowerCase(boxes[row][col]);
-				if (g > 0 && b != g) {
-					return false;
-				}
-			}
+	public boolean isGoalState()
+	{
+		for(Goal goal : goals)
+		{
+			if(!goal.goalState)
+				return false;
 		}
 		return true;
 	}
 
-	public ArrayList<Node> getExpandedNodes() {
+	public ArrayList<Node> getExpandedNodes()
+	{
 		ArrayList<Node> expandedNodes = new ArrayList<Node>(Command.EVERY.length);
-		for (Command c : Command.EVERY) {
-			// Determine applicability of action
-			int newAgentRow = this.agentRow + Command.dirToRowChange(c.dir1);
-			int newAgentCol = this.agentCol + Command.dirToColChange(c.dir1);
+		for(Agent a : agents)
+		{
+			int agentRow = a.location.getLeft();
+			int agentCol = a.location.getRight();
+			for (Command c : Command.EVERY)
+			{
+				// Determine applicability of action
+				int newAgentRow = agentRow + Command.dirToRowChange(c.dir1);
+				int newAgentCol = agentCol + Command.dirToColChange(c.dir1);
 
-			if (c.actionType == Type.Move) {
-				// Check if there's a wall or box on the cell to which the agent is moving
-				if (this.cellIsFree(newAgentRow, newAgentCol)) {
-					Node n = this.ChildNode();
-					n.action = c;
-					n.agentRow = newAgentRow;
-					n.agentCol = newAgentCol;
-					expandedNodes.add(n);
-				}
-			} else if (c.actionType == Type.Push) {
-				// Make sure that there's actually a box to move
-				if (this.boxAt(newAgentRow, newAgentCol)) {
-					int newBoxRow = newAgentRow + Command.dirToRowChange(c.dir2);
-					int newBoxCol = newAgentCol + Command.dirToColChange(c.dir2);
-					// .. and that new cell of box is free
-					if (this.cellIsFree(newBoxRow, newBoxCol)) {
+				if (c.actionType == Type.Move)
+				{
+					// Check if there's a wall or box on the cell to which the agent is moving
+					if (this.cellIsFree(newAgentRow, newAgentCol))
+					{
 						Node n = this.ChildNode();
 						n.action = c;
-						n.agentRow = newAgentRow;
-						n.agentCol = newAgentCol;
-						n.boxes[newBoxRow][newBoxCol] = this.boxes[newAgentRow][newAgentCol];
-						n.boxes[newAgentRow][newAgentCol] = 0;
+						n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
 						expandedNodes.add(n);
 					}
 				}
-			} else if (c.actionType == Type.Pull) {
-				// Cell is free where agent is going
-				if (this.cellIsFree(newAgentRow, newAgentCol)) {
-					int boxRow = this.agentRow + Command.dirToRowChange(c.dir2);
-					int boxCol = this.agentCol + Command.dirToColChange(c.dir2);
-					// .. and there's a box in "dir2" of the agent
-					if (this.boxAt(boxRow, boxCol)) {
-						Node n = this.ChildNode();
-						n.action = c;
-						n.agentRow = newAgentRow;
-						n.agentCol = newAgentCol;
-						n.boxes[this.agentRow][this.agentCol] = this.boxes[boxRow][boxCol];
-						n.boxes[boxRow][boxCol] = 0;
-						expandedNodes.add(n);
+				else if (c.actionType == Type.Push)
+				{
+					// Make sure that there's actually a box to move
+					if (this.boxAt(newAgentRow, newAgentCol))
+					{
+						int newBoxRow = newAgentRow + Command.dirToRowChange(c.dir2);
+						int newBoxCol = newAgentCol + Command.dirToColChange(c.dir2);
+						// .. and that new cell of box is free
+						if (this.cellIsFree(newBoxRow, newBoxCol))
+						{
+							Node n = this.ChildNode();
+							n.action = c;
+							n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
+							n.getBox(newAgentRow, newAgentCol).setLocation(new Pair<>(newBoxRow, newBoxCol));
+							// n.boxes[newBoxRow][newBoxCol] = this.boxes[newAgentRow][newAgentCol];
+							// n.boxes[newAgentRow][newAgentCol] = 0;
+							expandedNodes.add(n);
+						}
+					}
+				}
+				else if (c.actionType == Type.Pull)
+				{
+					// Cell is free where agent is going
+					if (this.cellIsFree(newAgentRow, newAgentCol))
+					{
+						int boxRow = agentRow + Command.dirToRowChange(c.dir2);
+						int boxCol = agentCol + Command.dirToColChange(c.dir2);
+						// .. and there's a box in "dir2" of the agent
+						if (this.boxAt(boxRow, boxCol))
+						{
+							Node n = this.ChildNode();
+							n.action = c;
+							n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
+							n.getBox(boxRow, boxCol).setLocation(new Pair<>(agentRow, agentCol));
+							// n.boxes[this.agentRow][this.agentCol] = this.boxes[boxRow][boxCol];
+							// n.boxes[boxRow][boxCol] = 0;
+							expandedNodes.add(n);
+						}
 					}
 				}
 			}
@@ -122,18 +134,75 @@ public class Node {
 		return expandedNodes;
 	}
 
-	private boolean cellIsFree(int row, int col) {
-		return !walls[row][col] && boxes[row][col] == 0;
+	private Box getBox(int row, int col)
+	{
+		for(Box box : this.boxes)
+		{
+			if(box.location.getLeft() == row && box.location.getRight() == col)
+				return box;
+		}
+		throw new NullPointerException("No box at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 	}
 
-	private boolean boxAt(int row, int col) {
-		return boxes[row][col] > 0;
+	private Goal getGoal(int row, int col)
+	{
+		for(Goal goal : goals)
+		{
+			if(goal.location.getLeft() == row && goal.location.getRight() == col)
+				return goal;
+		}
+		throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
+	}
+
+	private Agent getAgent(int row, int col)
+	{
+		for(Agent a : this.agents)
+		{
+			if(a.location.getLeft() == row && a.location.getRight() == col)
+				return a;
+		}
+		throw new NullPointerException("No agent at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
+	}
+
+	private boolean cellIsFree(int row, int col)
+	{
+		return !walls[row][col] && !boxAt(row, col) && !agentAt(row, col);
+	}
+
+	private boolean boxAt(int row, int col)
+	{
+		for(Box box : this.boxes)
+		{
+			if(box.location.getLeft() == row && box.location.getRight() == col)
+				return true;
+		}
+		return false;
+	}
+
+	private boolean goalAt(int row, int col)
+	{
+		for(Goal goal : goals)
+		{
+			if(goal.location.getLeft() == row && goal.location.getRight() == col)
+				return true;
+		}
+		return false;
+	}
+
+	private boolean agentAt(int row, int col)
+	{
+		for(Agent a : this.agents)
+		{
+			if(a.location.getLeft() == row && a.location.getRight() == col)
+				return true;
+		}
+		return false;
 	}
 
 	private Node ChildNode() {
 		Node copy = new Node(this);
-		for(int row = 0; row < MAX_ROW; row++)
-		    System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, MAX_COL);
+		copy.boxes = new ArrayList<Box>(this.boxes);
+		copy.agents = new ArrayList<Agent>(this.agents);
 		return copy;
 	}
 
@@ -152,10 +221,9 @@ public class Node {
 		if (this._hash == 0) {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + this.agentCol;
-			result = prime * result + this.agentRow;
-			result = prime * result + Arrays.deepHashCode(this.boxes);
-			result = prime * result + Arrays.deepHashCode(this.goals);
+			result = prime * result + this.agents.hashCode();
+			result = prime * result + this.boxes.hashCode();
+			result = prime * result + goals.hashCode();
 			result = prime * result + Arrays.deepHashCode(this.walls);
 			this._hash = result;
 		}
@@ -171,12 +239,13 @@ public class Node {
 		if (this.getClass() != obj.getClass())
 			return false;
 		Node other = (Node) obj;
-		if (this.agentRow != other.agentRow || this.agentCol != other.agentCol)
+		if(this.agents.equals(other.agents))
 			return false;
-		if (!Arrays.deepEquals(this.boxes, other.boxes))
+		//if (!Arrays.deepEquals(this.boxes, other.boxes))
+		if(!this.boxes.equals(other.boxes))
 			return false;
-		if (!Arrays.deepEquals(this.goals, other.goals))
-			return false;
+		// if (!Arrays.deepEquals(this.goals, other.goals))
+			// return false;
 		if (!Arrays.deepEquals(this.walls, other.walls))
 			return false;
 		return true;
@@ -189,15 +258,16 @@ public class Node {
 			if (!this.walls[row][0]) {
 				break;
 			}
-			for (int col = 0; col < MAX_COL; col++) {
-				if (this.boxes[row][col] > 0) {
-					s.append(this.boxes[row][col]);
-				} else if (this.goals[row][col] > 0) {
-					s.append(this.goals[row][col]);
+			for (int col = 0; col < MAX_COL; col++)
+			{
+				if (boxAt(row, col)) {
+					s.append(getBox(row, col).chr);
+				} else if (goalAt(row, col)) {
+					s.append(getGoal(row, col).chr);
 				} else if (this.walls[row][col]) {
 					s.append("+");
-				} else if (row == this.agentRow && col == this.agentCol) {
-					s.append("0");
+				} else if (agentAt(row, col)) {
+					s.append(getAgent(row, col).num);
 				} else {
 					s.append(" ");
 				}

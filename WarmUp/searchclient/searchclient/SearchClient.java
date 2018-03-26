@@ -16,7 +16,8 @@ public class SearchClient {
     public SearchClient(BufferedReader serverMessages) throws Exception {
 		// Read lines specifying colors
 		String line = serverMessages.readLine();
-		if (line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$")) {
+		if (line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$"))
+		{
 			System.err.println("Error, client does not support colors.");
 			System.exit(1);
 		}
@@ -25,30 +26,39 @@ public class SearchClient {
 		boolean agentFound = false;
 		this.initialState = new Node(null);
 
-		while (!line.equals("")) {
-			for (int col = 0; col < line.length(); col++) {
+		while (!line.equals(""))
+		{
+			for (int col = 0; col < line.length(); col++)
+			{
 				char chr = line.charAt(col);
 
 				if(line.length() > Node.MAX_COL)
 				    Node.MAX_COL = line.length();
 
-				if (chr == '+') { // Wall.
+				if (chr == '+')
+				{ // Wall.
 					Node.walls[row][col] = true;
-				} else if ('0' <= chr && chr <= '9') { // Agent.
-					if (agentFound) {
-						System.err.println("Error, not a single agent level");
-						System.exit(1);
-					}
-					agentFound = true;
-					this.initialState.agentRow = row;
-					this.initialState.agentCol = col;
-				} else if ('A' <= chr && chr <= 'Z') { // Box.
-					this.initialState.boxes[row][col] = chr;
-				} else if ('a' <= chr && chr <= 'z') { // Goal.
-					Node.goals[row][col] = chr;
-				} else if (chr == ' ') {
+				}
+				else if ('0' <= chr && chr <= '9')
+				{ // Agent.
+                    this.initialState.agents.add(new Agent((int) chr, new Pair<>(row, col)));
+				}
+				else if ('A' <= chr && chr <= 'Z')
+				{
+				    // Box.
+					this.initialState.boxes.add(new Box(chr, new Pair<>(row, col)));
+				}
+				else if ('a' <= chr && chr <= 'z')
+				{
+				    // Goal.
+					Node.goals.add(new Goal(chr, new Pair<>(row, col)));
+				}
+				else if (chr == ' ')
+				{
 					// Free space.
-				} else {
+				}
+				else
+				{
 					System.err.println("Error, read invalid level character: " + (int) chr);
 					System.exit(1);
 				}
