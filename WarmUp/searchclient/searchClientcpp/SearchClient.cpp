@@ -24,7 +24,7 @@ public class SearchClient {
 
 		int row = 0;
 		boolean agentFound = false;
-		this.initialState = new Node(null);
+		this->initialState = new Node(null);
 
 		while (!line.equals("")) {
 			for (int col = 0; col < line.length(); col++) {
@@ -41,10 +41,10 @@ public class SearchClient {
 						System.exit(1);
 					}
 					agentFound = true;
-					this.initialState.agentRow = row;
-					this.initialState.agentCol = col;
+					this->initialState.agentRow = row;
+					this->initialState.agentCol = col;
 				} else if ('A' <= chr && chr <= 'Z') { // Box.
-					this.initialState.boxes[row][col] = chr;
+					this->initialState.boxes[row][col] = chr;
 				} else if ('a' <= chr && chr <= 'z') { // Goal.
 					Node.goals[row][col] = chr;
 				} else if (chr == ' ') {
@@ -62,7 +62,7 @@ public class SearchClient {
 
 	public LinkedList<Node> Search(Strategy strategy) throws IOException {
 		System.err.format("Search starting with strategy %s.\n", strategy.toString());
-		strategy.addToFrontier(this.initialState);
+		strategy.addToFrontier(this->initialState);
 
 		int iterations = 0;
 		while (true) {

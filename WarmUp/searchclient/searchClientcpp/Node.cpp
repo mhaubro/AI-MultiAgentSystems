@@ -1,8 +1,14 @@
 #include "Node.h"
-#include "centralHeader.h"
 #include <string>
 #include <vector>
 #include <list>
+#include <ctype.h>
+#include <algorithm>
+#include <random>
+#include <functional>
+#include <iostream>
+#include <iomanip>
+#include <unordered_set>
 #define RANDOM_SEED 1
 
 	//Initialize static variables:
@@ -43,8 +49,8 @@
 		for (int row = 0; row < MAX_ROW - 1; row++) {
 			for (int col = 0; col < MAX_COL - 1; col++) {
 				int idx = row + col*MAX_ROW;
-				char g = goals[idx]];
-				char b = Character.toLowerCase(boxes[idx]);
+				char g = goals[idx];
+				char b = tolower(boxes[idx]);
 				if (g > 0 && b != g) {
 					return false;
 				}
@@ -53,57 +59,58 @@
 		return true;
 	}
 
-	std::vector Node::getExpandedNodes() {
-		std::vector<Node> expandedNodes = std::vector<Node>(Command.EVERY.size());
-		for (Command &c : Command.EVERY) {
+	std::vector<Node> Node::getExpandedNodes() {
+		std::vector<Node> expandedNodes = std::vector<Node>(Command::EVERY.size());
+		for (Command c : Command::EVERY) {
 			// Determine applicability of action
-			int newAgentRow = this->agentRow + Command.dirToRowChange(c->dir1);
-			int newAgentCol = this->agentCol + Command.dirToColChange(c->dir1);
+			int newAgentRow = this->agentRow + Command::dirToRowChange(c.dir1);
+			int newAgentCol = this->agentCol + Command::dirToColChange(c.dir1);
 
-			if (c->actionType == Command.Type.Move) {
+			if (c.actionType == Command::Move) {
 				// Check if there's a wall or box on the cell to which the agent is moving
 				if (this->cellIsFree(newAgentRow, newAgentCol)) {
-					Node n = this.ChildNode();
-					n->action = c;
-					n->agentRow = newAgentRow;
-					n->agentCol = newAgentCol;
-					expandedNodes.add(n);
+					Node n = this->ChildNode();
+					n.action = &c;
+					n.agentRow = newAgentRow;
+					n.agentCol = newAgentCol;
+					expandedNodes.push_back(n);
 				}
-			} else if (c->actionType == Command.Type.Push) {
+			} else if (c.actionType == Command::Push) {
 				// Make sure that there's actually a box to move
-				if (this.boxAt(newAgentRow, newAgentCol)) {
-					int newBoxRow = newAgentRow + Command.dirToRowChange(c->dir2);
-					int newBoxCol = newAgentCol + Command.dirToColChange(c->dir2);
+				if (this->boxAt(newAgentRow, newAgentCol)) {
+					int newBoxRow = newAgentRow + Command::dirToRowChange(c.dir2);
+					int newBoxCol = newAgentCol + Command::dirToColChange(c.dir2);
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxRow, newBoxCol)) {
 						Node n = this->ChildNode();
-						n.action = c;
+						n.action = &c;
 						n.agentRow = newAgentRow;
 						n.agentCol = newAgentCol;
-						n.boxes[newBoxRow+newBoxCol*MAX_ROW] = this.boxes[newAgentRow+newAgentCol*MAX_ROW];
+						n.boxes[newBoxRow+newBoxCol*MAX_ROW] = this->boxes[newAgentRow+newAgentCol*MAX_ROW];
 						n.boxes[newAgentRow+newAgentCol*MAX_ROW] = 0;
-						expandedNodes.add(n);
+						expandedNodes.push_back(n);
 					}
 				}
-			} else if (c.actionType == Type.Pull) {
+			} else if (c.actionType == Command::Pull) {
 				// Cell is free where agent is going
-				if (this.cellIsFree(newAgentRow, newAgentCol)) {
-					int boxRow = this->agentRow + Command.dirToRowChange(c->dir2);
-					int boxCol = this->agentCol + Command.dirToColChange(c->dir2);
+				if (this->cellIsFree(newAgentRow, newAgentCol)) {
+					int boxRow = this->agentRow + Command::dirToRowChange(c.dir2);
+					int boxCol = this->agentCol + Command::dirToColChange(c.dir2);
 					// .. and there's a box in "dir2" of the agent
-					if (this.boxAt(boxRow, boxCol)) {
+					if (this->boxAt(boxRow, boxCol)) {
 						Node n = this->ChildNode();
-						n.action = c;
+						n.action = &c;
 						n.agentRow = newAgentRow;
 						n.agentCol = newAgentCol;
-						n.boxes[this->agentRow+this->agentCol*MAX_ROW] = this.boxes[boxRow+boxCol*MAX_ROW];
+						n.boxes[this->agentRow+this->agentCol*MAX_ROW] = this->boxes[boxRow+boxCol*MAX_ROW];
 						n.boxes[boxRow+boxCol*MAX_ROW] = 0;
-						expandedNodes.add(n);
+						expandedNodes.push_back(n);
 					}
 				}
 			}
 		}
-		Collections.shuffle(expandedNodes, RND);
+		auto rng = std::default_random_engine {};
+		std::shuffle(std::begin(expandedNodes), std::end(expandedNodes), rng);
 		return expandedNodes;
 	}
 
@@ -124,9 +131,9 @@
 
 	std::list<Node> Node::extractPlan() {
 		std::list<Node> plan = std::list<Node>();
-		Node n = this;
-		while (!n.isInitialState()) {
-			plan.addFirst(n);
+		Node * n = this;
+		while (!n->isInitialState()) {
+			plan.push_front(n);
 			n = n->parent;
 		}
 		return plan;
@@ -134,13 +141,17 @@
 
 	int Node::hashCode() {
 		if (this->_hash == 0) {
-			final int prime = 31;
+			int prime = 31;
 			int result = 1;
 			result = prime * result + this->agentCol;
 			result = prime * result + this->agentRow;
-			result = prime * result + Arrays.deepHashCode(this->boxes);
-			result = prime * result + Arrays.deepHashCode(this->goals);
-			result = prime * result + Arrays.deepHashCode(this->walls);
+			//Constructs a string and hashes it
+			std::string str(this->boxes.begin(),this->boxes.end());
+			//Constructs a string and hashes it
+			result = prime * result + std::hash<std::string>{}(str);;
+			str = std::string(this->goals.begin(),this->goals.end());
+			result = prime * result + std::hash<std::string>{}(str);
+			result = prime * result + std::hash<std::vector<bool>>{}(this->walls);
 			this->_hash = result;
 		}
 		return this->_hash;
@@ -151,7 +162,7 @@
 			return true;
 		if (obj == NULL)
 			return false;
-//		if (this.getClass() != obj.getClass())//This is assumed
+//		if (this->getClass() != obj.getClass())//This is assumed
 //			return false;
 		if (this->agentRow != obj->agentRow || this->agentCol != obj->agentCol)
 			return false;
@@ -183,4 +194,8 @@
 			s.append("\n");
 		}
 		return s;
+	}
+
+	Node::Node(){
+		//Dummy constructor, required somewhere
 	}

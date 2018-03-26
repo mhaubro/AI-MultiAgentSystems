@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include "centralHeader.h"
 
 class Command{
 private:
@@ -28,11 +27,10 @@ public:
   Command(int t, int d1, int d2);
   ~Command();
 
-protected:
-
   int actionType;
 	int dir1;
 	int dir2;
+
 };
 
 

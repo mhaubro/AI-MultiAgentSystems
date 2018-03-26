@@ -1,9 +1,10 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "centralHeader.h"
 #include <list>
 #include <vector>
+#include <string>
+#include "Command.h"
 
 class Node {
 
@@ -13,6 +14,7 @@ public:
 
 	int agentRow;
 	int agentCol;
+	Node();
 	Node(Node * parent);
 	Node(int MAX_COL, int MAX_ROW);
 	int g();

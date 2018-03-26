@@ -29,7 +29,7 @@
 	}
 
 	float Strategy::timeSpent() {
-		return (System.currentTimeMillis() - this.startTime) / 1000f;
+		return (System.currentTimeMillis() - this->startTime) / 1000f;
 	}
 
 	ArrayDeque<Node> StrategyBFS::frontier = ;
