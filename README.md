@@ -10,7 +10,8 @@ PreAnalysis:
   Perceive the world
   Calculate (Manhattan) distances from initial state
   Define goals
-  Divide goals to agents (?)
+  Define subgoals
+  Divide subgoals to agents (?)
 ```
 
 ### MultiAgent
