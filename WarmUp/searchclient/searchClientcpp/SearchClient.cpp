@@ -1,3 +1,4 @@
+#include "SearchClient.h"
 #include <string>
 #include <list>
 #include <unordered_map>
@@ -6,11 +7,14 @@
 #include <iterator>
 
 using std::stringstream;
+using std::istream;
 using std::vector;
 using std::string;
 using std::getline;
 using std::pair;
 using std::list;
+
+
 
 bool isAgent(char c) {
 	return ('0' <= chr && chr <= '9');
@@ -32,7 +36,7 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 	std::regex color_regex("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$");
 	std::smatch match;
 
-	getline(serverMessages, line);
+	getline(line);
 	while (!serverMessages.eof() && std::regex_match(line, match, color_regex)) {
 		printf("%s\n", line.c_str());
 
@@ -116,3 +120,77 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 SearchClient::~SearchClient()
 {
 }
+
+
+int main(int argc, char * argv[]){
+	//stringstream
+	int x;
+	for (int i = 0; i < argc; i++){
+		std::cout << argv[i] << "\n";
+	}
+
+	std::cerr << "SearchClient started";
+	streambuffer s = new streambuffer();
+	std::istream sstream = std::istream();
+	SearchClient client = new SearchClient(sstream);
+
+	std::string strategy = std::string(argv[1])
+	std::cout << strategy;
+
+	Strategy strategy;
+	if (argc > 0) {
+			switch (strategy) {
+					case std::string("-bfs"):
+							strategy = new StrategyBFS();
+							break;
+/*					case "-dfs":
+							strategy = new StrategyDFS();
+							break;
+					case "-astar":
+							strategy = new StrategyBestFirst(new AStar(client.initialState));
+							break;
+					case "-wastar":
+							// You're welcome to test WA* out with different values, but for the report you must at least indicate benchmarks for W = 5.
+							strategy = new StrategyBestFirst(new WeightedAStar(client.initialState, 5));
+							break;
+					case "-greedy":
+							strategy = new StrategyBestFirst(new Greedy(client.initialState));
+							break;
+*/					default:
+							strategy = new StrategyBFS();
+							std::cout << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.";
+			}
+	} else {
+			strategy = new StrategyBFS();
+			std::cout << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.";
+	}
+
+		std::list<Node *> solution;
+//	try {
+		solution = client.Search(strategy);
+/*	} catch () {
+		System.err.println("Maximum memory usage exceeded.");
+		solution = null;
+	}*/
+
+/*	if (solution == null) {
+		System.err.println(strategy.searchStatus());
+		System.err.println("Unable to solve level.");
+		System.exit(0);
+	} else {*/
+		std::cerr << "\nSummary for " << strategy.toString();
+		std::cerr << "Found solution of length " << solution.size();
+		std::cerr << strategy.searchStatus();
+
+		for (Node &n : solution) {
+			std::string act = n->action.toString();
+			std::cerr << act;
+			std::string response = serverMessages.readLine();
+			if (response.find(std::string("false")) != std::string::npos) {
+				std::cerr << sprintf("Server responsed with %s to the inapplicable action: %s\n", response, act);
+				std::cerr << sprintf("%s was attempted in \n%s\n", act, n.toString());
+				break;
+			}
+		}
+		return 0;
+	}
