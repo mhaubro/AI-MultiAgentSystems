@@ -8,12 +8,11 @@
 #include <functional>
 #include <iostream>
 #include <iomanip>
-#include <unordered_set>
 #define RANDOM_SEED 1
 
 	//Initialize static variables:
-	int Node::MAX_ROW = 70;
-	int Node::MAX_COL = 70;
+	int Node::MAX_ROW = 1;
+	int Node::MAX_COL = 1;
 	std::vector<bool> Node::walls = std::vector<bool>(false, MAX_ROW*MAX_COL);
 	std::vector<char> Node::goals = std::vector<char>('-', MAX_ROW*MAX_COL);
 
@@ -61,8 +60,8 @@
 		return true;
 	}
 
-	std::vector<Node> Node::getExpandedNodes() {
-		std::vector<Node> expandedNodes = std::vector<Node>(Command::EVERY.size());
+	std::vector<Node *> Node::getExpandedNodes() {
+		std::vector<Node *> expandedNodes = std::vector<Node *>(Command::EVERY.size());
 		for (Command c : Command::EVERY) {
 			// Determine applicability of action
 			int newAgentRow = this->agentRow + Command::dirToRowChange(c.dir1);
@@ -75,7 +74,7 @@
 					n.action = &c;
 					n.agentRow = newAgentRow;
 					n.agentCol = newAgentCol;
-					expandedNodes.push_back(n);
+					expandedNodes.push_back(&n);
 				}
 			} else if (c.actionType == Command::Push) {
 				// Make sure that there's actually a box to move
@@ -90,7 +89,7 @@
 						n.agentCol = newAgentCol;
 						n.boxes[newBoxRow+newBoxCol*MAX_ROW] = this->boxes[newAgentRow+newAgentCol*MAX_ROW];
 						n.boxes[newAgentRow+newAgentCol*MAX_ROW] = 0;
-						expandedNodes.push_back(n);
+						expandedNodes.push_back(&n);
 					}
 				}
 			} else if (c.actionType == Command::Pull) {
@@ -106,7 +105,7 @@
 						n.agentCol = newAgentCol;
 						n.boxes[this->agentRow+this->agentCol*MAX_ROW] = this->boxes[boxRow+boxCol*MAX_ROW];
 						n.boxes[boxRow+boxCol*MAX_ROW] = 0;
-						expandedNodes.push_back(n);
+						expandedNodes.push_back(&n);
 					}
 				}
 			}
@@ -124,15 +123,15 @@
 		return boxes[row+col*MAX_ROW] > 0;
 	}
 
-	Node Node::ChildNode() {
-		Node copy = new Node(this);
+	Node * Node::ChildNode() {
+		Node * copy = new Node(this);
 		//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
-		copy.boxes = this->boxes;
+		copy->boxes = this->boxes;
 		return copy;
 	}
 
-	std::list<Node> Node::extractPlan() {
-		std::list<Node> plan = std::list<Node>();
+	std::list<Node *> Node::extractPlan() {
+		std::list<Node*> plan = std::list<Node*>();
 		Node * n = this;
 		while (!n->isInitialState()) {
 			plan.push_front(n);

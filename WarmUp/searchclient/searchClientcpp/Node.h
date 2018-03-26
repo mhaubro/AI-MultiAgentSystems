@@ -14,14 +14,18 @@ public:
 
 	int agentRow;
 	int agentCol;
+
+	Node * parent;
+	Command * action;
+
 	Node();
 	Node(Node * parent);
 	Node(int MAX_COL, int MAX_ROW);
 	int g();
 	bool isInitialState();
 	bool isGoalState();
-	std::vector<Node> getExpandedNodes();
-	std::list<Node> extractPlan();
+	std::vector<Node*> getExpandedNodes();
+	std::list<Node*> extractPlan();
 	std::string toString();
 
 	int hashCode () const;
@@ -43,15 +47,13 @@ public:
 	std::vector<char> boxes;
 	static std::vector<char> goals;
 
-	Node * parent;
-	Command * action;
 
 private:
 	int gval;
 	int _hash = 0;
 	bool cellIsFree(int row, int col);
 	bool boxAt(int row, int col);
-	Node ChildNode();
+	Node * ChildNode();
 
 };
 

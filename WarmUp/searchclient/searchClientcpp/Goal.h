@@ -12,7 +12,7 @@ public:
     char Gchr;
     std::string Gcolor;
     std::tuple<int, int> Glocation;
-    Goal::Goal(char chr, std::tuple<int, int> location);
+    Goal(char chr, std::tuple<int, int> location);
     Goal(char chr, std::string color, std::tuple<int, int> location);
 };
 

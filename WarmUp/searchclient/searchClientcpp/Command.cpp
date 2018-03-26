@@ -7,7 +7,7 @@
 #include <cstring>
 
 	//Initializing EVERY through a lambda expression. Requires C++-11
-	std::vector<Command> EVERY = []() -> std::vector<Command> {
+	std::vector<Command> Command::EVERY = []() -> std::vector<Command> {
 		std::list<Command> cmds = std::list<Command>();
 		for (int d1 = 0; d1 < Command::LASTT; d1++) {
 			for (int d2 = 0; d2 < Command::LASTT; d2++) {
