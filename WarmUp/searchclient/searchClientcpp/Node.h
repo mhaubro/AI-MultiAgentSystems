@@ -14,6 +14,7 @@ public:
 	int agentRow;
 	int agentCol;
 	Node(Node * parent);
+	Node(int MAX_COL, int MAX_ROW);
 	int g();
 	bool isInitialState();
 	bool isGoalState();
@@ -22,6 +23,7 @@ public:
 	int hashCode();
 	bool equals(Node * obj);
 	std::string toString();
+
 
 	// Arrays are indexed from the top-left of the level, with first index being row and second being column.
 	// Row 0: (0,0) (0,1) (0,2) (0,3) ...
@@ -41,11 +43,11 @@ public:
 	Command * action;
 
 private:
-	int g;
+	int gval;
 	int _hash = 0;
-	bool cellIsFree(int row, int col)
-	bool boxAt(int row, int col)
-	Node ChildNode()
+	bool cellIsFree(int row, int col);
+	bool boxAt(int row, int col);
+	Node ChildNode();
 
 };
 
