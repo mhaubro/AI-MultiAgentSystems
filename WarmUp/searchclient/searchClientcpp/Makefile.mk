@@ -13,5 +13,7 @@ searchclient: $(CPP_FILES)
 #Grabs all .cpp in the search client folder
 CPP_FILES = $(wildcard $(searchClientDirectory)/*.cpp)
 
+EXECUTABLES += $(searchClientDirectory)/searchClient
+
 #-I marks that headers can be found in a directory
 INCLUDE_TEMP += $(searchClientDirectory)
