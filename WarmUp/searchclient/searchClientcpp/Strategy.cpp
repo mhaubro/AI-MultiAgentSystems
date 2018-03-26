@@ -1,9 +1,25 @@
 #include "Strategy.h"
 #include "centralHeader.h"
 #include <string>
+#include <queue>
+#include <unordered_set>
+
+namespace std
+{
+  template<>
+    struct hash<Node>
+    {
+      size_t
+      operator()(const Student & obj) const
+      {
+        return obj.hashCode();
+      }
+    };
+}
+
 
 	Strategy::Strategy() {
-		this->explored = new HashSet<Node>();
+		this->explored = new std::unordered_set<Node>();
 		this->startTime = System.currentTimeMillis();
 	}
 
@@ -11,7 +27,7 @@
 		this->explored.add(n);
 	}
 
-	boolean Strategy::isExplored(Node n) {
+	bool Strategy::isExplored(Node n) {
 		return this->explored.contains(n);
 	}
 
@@ -32,12 +48,12 @@
 		return (System.currentTimeMillis() - this->startTime) / 1000f;
 	}
 
-	ArrayDeque<Node> StrategyBFS::frontier = ;
-	HashSet<Node> StrategyBFS::frontierSet = ;
+	std::queue<Node> StrategyBFS::frontier = ;
+	std::unordered_set<Node, NodeHashser, NodeComparator> StrategyBFS::frontierSet = ;
 
 	StrategyBFS::StrategyBFS() {
-		frontier = new ArrayDeque<Node>();
-		frontierSet = new HashSet<Node>();
+		frontier = new std::queue<Node>();
+		frontierSet = new std::unordered_set<Node, NodeHashser, NodeComparator>();
 	}
 
 		Node StrategyBFS::getAndRemoveLeaf() {

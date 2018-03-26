@@ -29,6 +29,8 @@
 		this->boxes = std::vector<char>(0, MAX_COL*MAX_ROW);
 	}
 
+
+
 	Node::Node(Node * parent) {
 		this->parent = parent;
 		this->gval = parent->g() + 1;
@@ -139,8 +141,7 @@
 		return plan;
 	}
 
-	int Node::hashCode() {
-		if (this->_hash == 0) {
+	int Node::hashCode() const{
 			int prime = 31;
 			int result = 1;
 			result = prime * result + this->agentCol;
@@ -152,22 +153,16 @@
 			str = std::string(this->goals.begin(),this->goals.end());
 			result = prime * result + std::hash<std::string>{}(str);
 			result = prime * result + std::hash<std::vector<bool>>{}(this->walls);
-			this->_hash = result;
-		}
-		return this->_hash;
+			return result;
 	}
 
-	bool Node::equals(Node * obj) {
-		if (this == obj)
-			return true;
+	bool Node::equals(Node obj) const {
 		if (obj == NULL)
 			return false;
-//		if (this->getClass() != obj.getClass())//This is assumed
-//			return false;
-		if (this->agentRow != obj->agentRow || this->agentCol != obj->agentCol)
+			//Using == works with std::vector
+		if (this->agentRow != obj.agentRow || this->agentCol != obj.agentCol)
 			return false;
-			//This again works in std::vector
-		if (!(this->boxes == obj->boxes))
+		if (!(this->boxes == obj.boxes))
 			return false;
 		return true;
 	}
