@@ -49,12 +49,12 @@ public:
 
 		StrategyBFS();
 
-		Node * getAndRemoveLeaf();
-		void addToFrontier(Node * n);
-    bool inFrontier(Node * n);
-		int countFrontier();
-		bool frontierIsEmpty();
-    std::string toString();
+		Node * getAndRemoveLeaf() override;
+		void addToFrontier(Node * n) override;
+    bool inFrontier(Node * n) override;
+		int countFrontier() override;
+		bool frontierIsEmpty() override;
+    std::string toString() override;
 
 	};
 

@@ -40,7 +40,6 @@ SearchClient::SearchClient()
 
 	while (getline (std::cin, line) && !line.compare("") && std::regex_match(line, match, color_regex)) {
 		printf("%s\n", line.c_str());
-
 		stringstream ss(line);
 		string color;
 		getline(ss, color, ':');
@@ -68,7 +67,6 @@ SearchClient::SearchClient()
 	list<string> rows;
 
 	int cols = 0;
-	bool eof = false;
 	do
 	{
 		//moreLines = !serverMessages.eof();
@@ -78,10 +76,8 @@ SearchClient::SearchClient()
 
 		rows.push_back(line);
 
-		eof = std::cin.eof();
 		getline(std::cin, line);
-	} while (!eof);
-
+	} while (!std::cin.eof() && !line.compare(""));
 
 	std::cerr << "Agents: " << agents <<
 		"\nBoxes: " << boxes <<
@@ -93,14 +89,14 @@ SearchClient::SearchClient()
 	Node::walls = std::vector<bool>(false, rows.size()*cols);
 	Node::goals = std::vector<char>('-', rows.size()*cols);
 
-
-	initialState = new Node(NULL);
+	initialState = new Node(cols, rows.size());
 	initialState->boxes = vector<char>('-', rows.size()*cols);
 	for (int y = 0; y < rows.size(); y++){
 		string row = rows.front();
 		rows.pop_front();
 		for (int x = 0; x < row.length(); x++){
 			char chr = row[x];
+
 
 			if (chr == '+'){
 				Node::walls[x + y*cols] = true;
@@ -132,22 +128,22 @@ int main(int argc, char * argv[]){
 		std::cerr << argv[i] << "\n";
 	}
 
-	std::cerr << "SearchClient started";
 	SearchClient client = SearchClient();
 
-	std::string strat = std::string(argv[1]);
+	std::string strat = std::string(argv[0]);
 	std::cerr << strat;
+	std::cerr << "SearchClient started\n";
 
-	Strategy strategy = StrategyBFS();
-	std::cerr << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.";
+	StrategyBFS strategy = StrategyBFS();
+	std::cerr << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.\n";
 
 	std::list<Node *> solution;
-		solution = client.search(&strategy);
-		std::cerr << "\nSummary for " << strategy.toString();
-		std::cerr << "Found solution of length " << solution.size();
-		std::cerr << strategy.searchStatus();
+	solution = client.search(&strategy);
+	std::cerr << "\nSummary for " << strategy.toString();
+	std::cerr << "Found solution of length " << solution.size();
+	std::cerr << strategy.searchStatus();
 
-		for (Node * n : solution) {
+	for (Node * n : solution) {
 			std::string act = n->action->to_string();
 			std::cerr << act;
 			std::string response;
@@ -166,14 +162,16 @@ int main(int argc, char * argv[]){
 
 	std::list<Node *> SearchClient::search(Strategy * strategy) {
 		char buffer[100];
-		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString());
+		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
 		std::string s = std::string(buffer);
 		std::cerr << s;
 		strategy->addToFrontier(this->initialState);
 
 		int iterations = 0;
+
 		while (true) {
-						if (iterations == 1000) {
+
+			if (iterations == 1000) {
 				std::cerr << strategy->searchStatus();
 				iterations = 0;
 			}
@@ -186,6 +184,7 @@ int main(int argc, char * argv[]){
 			Node * leafNode = strategy->getAndRemoveLeaf();
 
 			if (leafNode->isGoalState()) {
+
 				return leafNode->extractPlan();
 			}
 

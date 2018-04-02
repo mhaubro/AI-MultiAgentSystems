@@ -133,7 +133,8 @@
 	std::list<Node *> Node::extractPlan() {
 		std::list<Node*> plan = std::list<Node*>();
 		Node * n = this;
-		while (!n->isInitialState()) {
+
+		while (!(n->isInitialState())) {
 			plan.push_front(n);
 			n = n->parent;
 		}
