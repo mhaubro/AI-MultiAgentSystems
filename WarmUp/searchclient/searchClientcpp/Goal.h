@@ -2,7 +2,6 @@
 #define GOAL_H
 
 #include "Goal.h"
-#include "centralHeader.h"
 #include <tuple>
 #include <string>
 
