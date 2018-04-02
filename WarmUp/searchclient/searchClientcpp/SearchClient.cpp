@@ -184,7 +184,7 @@ int main(int argc, char * argv[]){
 			Node * leafNode = strategy->getAndRemoveLeaf();
 
 			if (leafNode->isGoalState()) {
-
+				std::cerr << leafNode->toString();
 				return leafNode->extractPlan();
 			}
 
