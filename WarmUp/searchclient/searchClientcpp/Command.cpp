@@ -1,6 +1,5 @@
 
 #include "Command.h"
-#include "centralHeader.h"
 #include <string>
 #include <vector>
 #include <list>

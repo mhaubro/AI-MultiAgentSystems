@@ -1,6 +1,5 @@
 #ifndef STRATEGY_H
 #define STRATEGY_H
-#include "centralHeader.h"
 #include <string>
 #include <unordered_map>
 #include <queue>
@@ -34,7 +33,7 @@ public:
 	int countExplored();
 	std::string searchStatus();
 	//double timeSpent();
-	virtual Node getAndRemoveLeaf();
+	virtual Node * getAndRemoveLeaf();
 	virtual void addToFrontier(Node * n);
 	virtual bool inFrontier(Node * n);
 	virtual int countFrontier();
@@ -44,17 +43,18 @@ public:
 };
 
 	class StrategyBFS : public Strategy {
+  public:
 		std::queue<Node *> frontier;
 		std::unordered_map<Node *, int> frontierSet;
 
 		StrategyBFS();
 
-		Node getAndRemoveLeaf();
-		void addToFrontier(Node * n);
-    bool inFrontier(Node * n);
-		int countFrontier();
-		bool frontierIsEmpty();
-    std::string toString();
+		Node * getAndRemoveLeaf() override;
+		void addToFrontier(Node * n) override;
+    bool inFrontier(Node * n) override;
+		int countFrontier() override;
+		bool frontierIsEmpty() override;
+    std::string toString() override;
 
 	};
 

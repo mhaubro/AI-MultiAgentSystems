@@ -5,6 +5,7 @@
 #include <regex>
 #include <iostream>
 #include <iterator>
+#include "Strategy.h"
 
 using std::stringstream;
 using std::istream;
@@ -17,18 +18,18 @@ using std::list;
 
 
 bool isAgent(char c) {
-	return ('0' <= chr && chr <= '9');
+	return ('0' <= c && c <= '9');
 }
 
 bool isBox(char c) {
-	return ('A' <= chr && chr <= 'Z');
+	return ('A' <= c && c <= 'Z');
 }
 
 bool isGoal(char c) {
-	return ('a' <= chr && chr <= 'z');
+	return ('a' <= c && c <= 'z');
 }
 
-SearchClient::SearchClient(std::stringstream serverMessages)
+SearchClient::SearchClient()
 {
 	std::unordered_map<char, std::string> colors;
 	std::string line;
@@ -36,10 +37,9 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 	std::regex color_regex("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$");
 	std::smatch match;
 
-	getline(line);
-	while (!serverMessages.eof() && std::regex_match(line, match, color_regex)) {
-		printf("%s\n", line.c_str());
 
+	while (getline (std::cin, line) && !line.compare("") && std::regex_match(line, match, color_regex)) {
+		printf("%s\n", line.c_str());
 		stringstream ss(line);
 		string color;
 		getline(ss, color, ':');
@@ -49,7 +49,7 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 			c.erase(remove(c.begin(), c.end(), ' '), c.end());
 			colors.insert(pair<char,string>(c.c_str()[0], color));
 		}
-		getline(serverMessages, line);
+
 	}
 
 	int agents = 0;
@@ -67,7 +67,6 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 	list<string> rows;
 
 	int cols = 0;
-	bool eof = false;
 	do
 	{
 		//moreLines = !serverMessages.eof();
@@ -77,28 +76,27 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 
 		rows.push_back(line);
 
-		eof = serverMessages.eof();
-		getline(serverMessages, line);
-	} while (!eof);
+		getline(std::cin, line);
+	} while (!std::cin.eof() && !line.compare(""));
 
-
-	std::cout << "Agents: " << agents <<
+	std::cerr << "Agents: " << agents <<
 		"\nBoxes: " << boxes <<
 		"\nDim: [" << cols << "," << rows.size() << "]\n";
 
-	Node::MAX_ROWS = rows.size()
-	Node::MAX_COLS = cols;
+	Node::MAX_ROW = rows.size();
+	Node::MAX_COL = cols;
 
-	std::vector<bool> Node::walls = std::vector<bool>(false, rows.size()*cols);
-	std::vector<char> Node::goals = std::vector<char>('-', rows.size()*cols);
+	Node::walls = std::vector<bool>(false, rows.size()*cols);
+	Node::goals = std::vector<char>('-', rows.size()*cols);
 
-
-	initialState = new Node(NULL);
+	initialState = new Node(cols, rows.size());
 	initialState->boxes = vector<char>('-', rows.size()*cols);
 	for (int y = 0; y < rows.size(); y++){
-		string row = rows.pull_front();
-		for (int x = 0; x < rows.length(); x++){
-			char chr = string[x];
+		string row = rows.front();
+		rows.pop_front();
+		for (int x = 0; x < row.length(); x++){
+			char chr = row[x];
+
 
 			if (chr == '+'){
 				Node::walls[x + y*cols] = true;
@@ -110,7 +108,7 @@ SearchClient::SearchClient(std::stringstream serverMessages)
 			} else if (isGoal(chr)){
 				Node::goals[x+y*cols] = chr;
 			} else {
-				std::err("Error, read invalid level character: [" + chr + "]");
+				std::cerr << "Error, read invalid level character: [" << chr << "]" ;
 			}
 		}
 	}
@@ -124,73 +122,78 @@ SearchClient::~SearchClient()
 
 int main(int argc, char * argv[]){
 	//stringstream
+	char buffer[200];
 	int x;
 	for (int i = 0; i < argc; i++){
-		std::cout << argv[i] << "\n";
+		std::cerr << argv[i] << "\n";
 	}
 
-	std::cerr << "SearchClient started";
-	streambuffer s = new streambuffer();
-	std::istream sstream = std::istream();
-	SearchClient client = new SearchClient(sstream);
+	SearchClient client = SearchClient();
 
-	std::string strategy = std::string(argv[1])
-	std::cout << strategy;
+	std::string strat = std::string(argv[0]);
+	std::cerr << strat;
+	std::cerr << "SearchClient started\n";
 
-	Strategy strategy;
-	if (argc > 0) {
-			switch (strategy) {
-					case std::string("-bfs"):
-							strategy = new StrategyBFS();
-							break;
-/*					case "-dfs":
-							strategy = new StrategyDFS();
-							break;
-					case "-astar":
-							strategy = new StrategyBestFirst(new AStar(client.initialState));
-							break;
-					case "-wastar":
-							// You're welcome to test WA* out with different values, but for the report you must at least indicate benchmarks for W = 5.
-							strategy = new StrategyBestFirst(new WeightedAStar(client.initialState, 5));
-							break;
-					case "-greedy":
-							strategy = new StrategyBestFirst(new Greedy(client.initialState));
-							break;
-*/					default:
-							strategy = new StrategyBFS();
-							std::cout << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.";
-			}
-	} else {
-			strategy = new StrategyBFS();
-			std::cout << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.";
-	}
+	StrategyBFS strategy = StrategyBFS();
+	std::cerr << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.\n";
 
-		std::list<Node *> solution;
-//	try {
-		solution = client.Search(strategy);
-/*	} catch () {
-		System.err.println("Maximum memory usage exceeded.");
-		solution = null;
-	}*/
+	std::list<Node *> solution;
+	solution = client.search(&strategy);
+	std::cerr << "\nSummary for " << strategy.toString();
+	std::cerr << "Found solution of length " << solution.size();
+	std::cerr << strategy.searchStatus();
 
-/*	if (solution == null) {
-		System.err.println(strategy.searchStatus());
-		System.err.println("Unable to solve level.");
-		System.exit(0);
-	} else {*/
-		std::cerr << "\nSummary for " << strategy.toString();
-		std::cerr << "Found solution of length " << solution.size();
-		std::cerr << strategy.searchStatus();
-
-		for (Node &n : solution) {
-			std::string act = n->action.toString();
+	for (Node * n : solution) {
+			std::string act = n->action->to_string();
 			std::cerr << act;
-			std::string response = serverMessages.readLine();
+			std::string response;
+			std::getline(std::cin, response);
 			if (response.find(std::string("false")) != std::string::npos) {
-				std::cerr << sprintf("Server responsed with %s to the inapplicable action: %s\n", response, act);
-				std::cerr << sprintf("%s was attempted in \n%s\n", act, n.toString());
+				sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, act);
+				std::cerr << std::string(buffer);
+				sprintf(buffer, "%s was attempted in \n%s\n", act, n->toString());
+
+				std::cerr << std::string(buffer);
 				break;
 			}
 		}
 		return 0;
+	}
+
+	std::list<Node *> SearchClient::search(Strategy * strategy) {
+		char buffer[100];
+		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
+		std::string s = std::string(buffer);
+		std::cerr << s;
+		strategy->addToFrontier(this->initialState);
+
+		int iterations = 0;
+
+		while (true) {
+
+			if (iterations == 1000) {
+				std::cerr << strategy->searchStatus();
+				iterations = 0;
+			}
+
+			if (strategy->frontierIsEmpty()) {
+				//Empty list
+				return std::list<Node *>();
+			}
+
+			Node * leafNode = strategy->getAndRemoveLeaf();
+
+			if (leafNode->isGoalState()) {
+				std::cerr << leafNode->toString();
+				return leafNode->extractPlan();
+			}
+
+			strategy->addToExplored(leafNode);
+			for (Node * n : leafNode->getExpandedNodes()) {
+				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
+					strategy->addToFrontier(n);
+				}
+			}
+			iterations++;
+		}
 	}

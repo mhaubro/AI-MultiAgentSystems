@@ -3,34 +3,62 @@
 #prober etc., as well as make clean for all of them, tidying up things
 #
 #
-all: prober maketable searchclient
-testCompile: searchclient
+.PHONY: all clean
+#-include $(searchClientDirectory)/Makefile.mk
+Root_Directory =  ${strip $(CURDIR)}
+searchClientDirectory = $(Root_Directory)/searchClientcpp
 
-default: all
+%.o: %.cpp
+	$(CPP) $(CPP_FLAGS) -c $< -o $@
 
-prober: prober.cpp
+OBJECT_DIR = $(Root_Directory)/objects
+
+#Grabs all .cpp in the search client folder
+CPP_FILES = $(wildcard $(searchClientDirectory)/*.cpp)
+OBJS = $(patsubst %.cpp,%.o,$(CPP_FILES))
+#%.cpp.o:	%.cpp
+#	$(CPP) $(CPP_FLAGS) $(INCLUDE_DIRS) $< -o $@
+
+#OBJ_SC = $(foreach d, $(basename $(CPP_FILES)), $(d).cpp.o)
+
+searchclientbin: $(OBJS)
+	$(CPP) -o $@ $^
+
+EXECUTABLES += $(searchClientDirectory)/searchclientbin
+
+#-I marks that headers can be found in a directory
+INCLUDE_TEMP += $(searchClientDirectory)
+
+
+all: prober maketable searchclientbin
+
+testCompile:	searchclientbin
+	#@echo $(CPP_FILES)
+	#@echo $(CPP)
+	#@echo $(CPP_FLAGS)
+	#@echo $(INCLUDE_DIRS)
+
+default: searchclientbin
+
+prober: $(Root_Directory)prober.cpp
 	$(CPP) $(CPP_FLAGS) $< -o prober
 
-maketable: maketable.cpp
+maketable: $(Root_Directory)maketable.cpp
 	$(CPP) $(CPP_FLAGS) $< -o maketable
 
+
 CPP = g++
-CPP_FLAGS = -std=c++14 -O3#Using -O3 to aggressively optimize
+CPP_FLAGS = -std=c++14#Using -O3 to aggressively optimize
 
-Root_Directory =  ${strip $(CURDIR)}
-searchClientDirectory = Root_Directory/searchClientcpp
-
-INCLUDE_TEMP =
 #Takes all of include_temp, and puts on -I flag.
 INCLUDE_DIRS = $(foreach dir, $(basename $(INCLUDE_TEMP)), -I$(dir))
 
-EXECUTABLES += $(Root_Directory)/prober $(Root_Directory)/maketable
-OBJECTS = #We can add stuff here to delete on a clean later
+EXECUTABLES += $(Root_Directory)/prober $(Root_Directory)/maketable $(Root_Directory)/searchclientbin
 
 clean:
-	rm -rf $(EXECUTABLES)
+	rm $(EXECUTABLES) $(OBJS)
 
 
--include $(searchClientDirectory)/Makefile.mk
+
 
 export INCLUDE_DIRS

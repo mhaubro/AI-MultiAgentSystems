@@ -1,5 +1,5 @@
 #include "Strategy.h"
-#include "centralHeader.h"
+#include "Memory.h"
 #include <string>
 #include <queue>
 #include <chrono>
@@ -31,8 +31,8 @@
 		return s;
 	}
 
-	Node Strategy::getAndRemoveLeaf(){
-		return (Node) NULL;
+	Node * Strategy::getAndRemoveLeaf(){
+		return (Node *) NULL;
 	}
 	void Strategy::addToFrontier(Node * n){	}
 
@@ -59,7 +59,7 @@
 		std::unordered_map<Node *, int> frontierSet = std::unordered_map<Node *, int>();
 	}
 
-		Node StrategyBFS::getAndRemoveLeaf() {
+		Node * StrategyBFS::getAndRemoveLeaf() {
 			Node * n = frontier.front();
 			frontierSet.erase(n);
 			return n;

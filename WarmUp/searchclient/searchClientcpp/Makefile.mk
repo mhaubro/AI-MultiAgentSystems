@@ -6,14 +6,3 @@
 
 #Also sets an include directory, which can be expanded.
 #searchClientDirectory is inherited from makefile above
-
-searchclient: $(CPP_FILES)
-	$(CPP) $(CPP_FLAGS) $< $(INCLUDE_DIRS) -o searchclient
-
-#Grabs all .cpp in the search client folder
-CPP_FILES = $(wildcard $(searchClientDirectory)/*.cpp)
-
-EXECUTABLES += $(searchClientDirectory)/searchClient
-
-#-I marks that headers can be found in a directory
-INCLUDE_TEMP += $(searchClientDirectory)
