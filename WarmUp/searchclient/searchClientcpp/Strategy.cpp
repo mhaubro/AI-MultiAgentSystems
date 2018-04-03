@@ -4,9 +4,12 @@
 #include <queue>
 #include <chrono>
 #include <utility>
+#include <iostream>
+
+
 
 	Strategy::Strategy() {
-		this->explored = std::unordered_map<Node *, int>();
+		this->explored = std::unordered_map<Node *, int, Hash, Equals >();
 		//this->startTime = std::chrono::high_resolution_clock::now();
 	}
 
@@ -15,7 +18,9 @@
 	}
 
 	bool Strategy::isExplored(Node * n) {
-		return this->explored.count(n) == 1;
+		std::cerr << "H12!";
+		bool result =  this->explored.count(n) == 1;
+		return result;
 	}
 
 	int Strategy::countExplored() {
@@ -79,6 +84,7 @@
 		}
 
 		bool StrategyBFS::inFrontier(Node * n) {
+			std::cerr << "H6!";
 			return frontierSet.count(n);
 		}
 

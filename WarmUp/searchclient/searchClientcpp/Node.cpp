@@ -11,21 +11,17 @@
 #define RANDOM_SEED 1
 
 	//Initialize static variables:
-	int Node::MAX_ROW = 1;
-	int Node::MAX_COL = 1;
-	std::vector<bool> Node::walls = std::vector<bool>(false, MAX_ROW*MAX_COL);
-	std::vector<char> Node::goals = std::vector<char>('-', MAX_ROW*MAX_COL);
+	int Node::MAX_ROW;
+	int Node::MAX_COL;
+	std::vector<bool> Node::walls;
+	std::vector<char> Node::goals;
 
 	//This should only be used for the first node. Inits walls & goals.
 
-	Node::Node(int MAX_COL, int MAX_ROW) {
+	Node::Node() {
 		this->parent = NULL;
-		this->MAX_ROW = MAX_ROW;
-		this->MAX_COL = MAX_COL;
-		this->walls = std::vector<bool>(false, MAX_ROW*MAX_COL);
-		this->goals = std::vector<char>('-', MAX_ROW*MAX_COL);
 		this->gval = 0;
-		this->boxes = std::vector<char>(0, MAX_COL*MAX_ROW);
+		this->boxes = std::vector<char>(MAX_COL*MAX_ROW, '\0');
 	}
 
 
@@ -35,7 +31,7 @@
 		this->gval = parent->g() + 1;
 
 		//Inits boxes
-		this->boxes = std::vector<char>(0, MAX_COL*MAX_ROW);
+		this->boxes = std::vector<char>(MAX_COL*MAX_ROW, '\0');
 	}
 
 	int Node::g() {
@@ -168,17 +164,28 @@
 	}
 
 	std::string Node::toString() {
-		std::string s;
+		std::string s("");
+
+
+
 		for (int row = 0; row < MAX_ROW; row++) {
-			if (!this->walls[row]) {
-				break;
-			}
+			//std::cerr << "dummy";
+			//if (!this->walls[row]) {
+			//	break;
+			//}
+
+			/*char buffer[50];
+			sprintf(buffer, "size: %d", boxes.size());
+			std::string s(buffer);
+			std::cerr << s;*/
+
+
 			for (int col = 0; col < MAX_COL; col++) {
-				if (this->boxes[row+col*MAX_ROW] > 0) {
-					s += (this->boxes[row+col*MAX_ROW]);
-				} else if (this->goals[row+col*MAX_ROW] > 0) {
-					s += (this->goals[row+col*MAX_ROW]);
-				} else if (this->walls[row+col*MAX_ROW]) {
+				if (Node::boxes[row+col*MAX_ROW] != '\0') {
+					s += (boxes[row+col*MAX_ROW]);
+				} else if (Node::goals[row+col*MAX_ROW] != '\0') {
+					s += (goals[row+col*MAX_ROW]);
+				} else if (Node::walls[row+col*MAX_ROW]) {
 					s += ("+");
 				} else if (row == this->agentRow && col == this->agentCol) {
 					s += ("0");
@@ -186,11 +193,8 @@
 					s += (" ");
 				}
 			}
+
 			s.append("\n");
 		}
 		return s;
-	}
-
-	Node::Node(){
-		//Dummy constructor, required somewhere
 	}

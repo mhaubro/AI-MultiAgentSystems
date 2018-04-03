@@ -7,5 +7,5 @@ make
 (Alternatively do a make clean first)
 
 Running, using linux:
-java -Dsun.java2d.opengl=true -jar serv.jar -l levels/SAsoko1_12.lvl -c "./searchclientbin" -g
+java -Dsun.java2d.opengl=true -jar server.jar -l levels/SAsoko1_12.lvl -c "./searchclientbin" -g
 

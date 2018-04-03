@@ -15,8 +15,6 @@ using std::getline;
 using std::pair;
 using std::list;
 
-
-
 bool isAgent(char c) {
 	return ('0' <= c && c <= '9');
 }
@@ -39,6 +37,7 @@ SearchClient::SearchClient()
 
 
 	while (getline (std::cin, line) && !line.compare("") && std::regex_match(line, match, color_regex)) {
+		std::cerr << "Hi!";
 		printf("%s\n", line.c_str());
 		stringstream ss(line);
 		string color;
@@ -74,24 +73,28 @@ SearchClient::SearchClient()
 			cols = line.length();
 		}
 
+//		std::cerr << line;
 		rows.push_back(line);
-
 		getline(std::cin, line);
-	} while (!std::cin.eof() && !line.compare(""));
+	} while (!std::cin.eof() && (line.length() != 0));
 
 	std::cerr << "Agents: " << agents <<
 		"\nBoxes: " << boxes <<
 		"\nDim: [" << cols << "," << rows.size() << "]\n";
 
+//The max number of a row index is the amount of columns.
 	Node::MAX_ROW = rows.size();
 	Node::MAX_COL = cols;
 
-	Node::walls = std::vector<bool>(false, rows.size()*cols);
-	Node::goals = std::vector<char>('-', rows.size()*cols);
+	int size = rows.size();
 
-	initialState = new Node(cols, rows.size());
-	initialState->boxes = vector<char>('-', rows.size()*cols);
-	for (int y = 0; y < rows.size(); y++){
+	Node::walls.resize(rows.size()*cols, false);
+	Node::goals.resize(rows.size()*cols, '\0');
+
+
+	initialState = new Node();
+	initialState->boxes = vector<char>(rows.size()*cols, '\0');
+	for (int y = 0; y < size; y++){
 		string row = rows.front();
 		rows.pop_front();
 		for (int x = 0; x < row.length(); x++){
@@ -100,6 +103,7 @@ SearchClient::SearchClient()
 
 			if (chr == '+'){
 				Node::walls[x + y*cols] = true;
+
 			} else if (isAgent(chr)){
 				initialState->agentRow = y;
 				initialState->agentCol = x;
@@ -107,6 +111,8 @@ SearchClient::SearchClient()
 				initialState->boxes[x+y*cols] = chr;
 			} else if (isGoal(chr)){
 				Node::goals[x+y*cols] = chr;
+			} else if (chr == ' '){
+				//Do nothing
 			} else {
 				std::cerr << "Error, read invalid level character: [" << chr << "]" ;
 			}
@@ -139,22 +145,21 @@ int main(int argc, char * argv[]){
 
 	std::list<Node *> solution;
 	solution = client.search(&strategy);
-	std::cerr << "\nSummary for " << strategy.toString();
-	std::cerr << "Found solution of length " << solution.size();
+	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
+	std::cerr << "Found solution of length " << solution.size() << ".\n";
 	std::cerr << strategy.searchStatus();
 
 	for (Node * n : solution) {
-			std::string act = n->action->to_string();
-			std::cerr << act;
-			std::string response;
-			std::getline(std::cin, response);
-			if (response.find(std::string("false")) != std::string::npos) {
-				sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, act);
-				std::cerr << std::string(buffer);
-				sprintf(buffer, "%s was attempted in \n%s\n", act, n->toString());
-
-				std::cerr << std::string(buffer);
-				break;
+		std::string act = n->action->to_string();
+		std::cerr << act;
+		std::string response;
+		std::getline(std::cin, response);
+		if (response.find(std::string("false")) != std::string::npos) {
+			sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, act);
+			std::cerr << std::string(buffer);
+			sprintf(buffer, "%s was attempted in \n%s\n", act, n->toString());
+			std::cerr << std::string(buffer);
+			break;
 			}
 		}
 		return 0;
@@ -177,21 +182,29 @@ int main(int argc, char * argv[]){
 			}
 
 			if (strategy->frontierIsEmpty()) {
+				std::cerr << "Hi!";
 				//Empty list
 				return std::list<Node *>();
 			}
 
 			Node * leafNode = strategy->getAndRemoveLeaf();
+			std::cerr << "H2!";
 
 			if (leafNode->isGoalState()) {
+				std::cerr << "H3!";
 				std::cerr << leafNode->toString();
 				return leafNode->extractPlan();
 			}
 
+			std::cerr << "H4!";
 			strategy->addToExplored(leafNode);
+			std::cerr << "H5!";
 			for (Node * n : leafNode->getExpandedNodes()) {
+				std::cerr << "H6!";
 				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
+					std::cerr << "H7!";
 					strategy->addToFrontier(n);
+					std::cerr << "H8!";
 				}
 			}
 			iterations++;

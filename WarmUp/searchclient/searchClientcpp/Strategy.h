@@ -4,25 +4,31 @@
 #include <unordered_map>
 #include <queue>
 #include <chrono>
+#include <functional>
 #include "memory.h"
 #include "Node.h"
 
-namespace std {
-
-  template <>
-  struct hash<Node *>
+class Hash
+{
+public:
+  size_t operator() (const Node * key) const
   {
-    std::size_t operator()(const Node& k) const
-    {
-      	return (k.hashCode());
-		}
-  };
+    return key->hashCode();
+  }
+};
+class Equals
+{
+public:
+  bool operator() (Node const * t1, Node const * t2) const
+  {
+    return t1->hashCode() == t2->hashCode();
+  }
+};
 
-}
 
 class Strategy {
 private:
-	std::unordered_map<Node *, int> explored;
+  std::unordered_map<Node *, int, Hash, Equals> explored;
 	//double startTime;
 
 public:

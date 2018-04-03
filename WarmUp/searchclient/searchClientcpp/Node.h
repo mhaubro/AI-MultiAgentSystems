@@ -11,6 +11,9 @@ class Node {
 public:
 	static int MAX_ROW;
 	static int MAX_COL;
+	static std::vector<bool> walls;
+	std::vector<char> boxes;
+	static std::vector<char> goals;
 
 	int agentRow;
 	int agentCol;
@@ -20,7 +23,6 @@ public:
 
 	Node();
 	Node(Node * parent);
-	Node(int MAX_COL, int MAX_ROW);
 	int g();
 	bool isInitialState();
 	bool isGoalState();
@@ -43,9 +45,6 @@ public:
 	// this.walls[row][col] is true if there's a wall at (row, col)
 	//
 
-	static std::vector<bool> walls;
-	std::vector<char> boxes;
-	static std::vector<char> goals;
 
 
 private:
