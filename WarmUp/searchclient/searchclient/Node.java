@@ -71,18 +71,23 @@ public class Node {
 		{
 			int agentRow = a.location.getLeft();
 			int agentCol = a.location.getRight();
+            System.err.println("AgentRow: " + String.valueOf(agentRow));
+			System.err.println("AgentCol: " + String.valueOf(agentCol));
 			for (Command c : Command.EVERY)
 			{
+			    System.err.println("Action: " + c.toString());
 				// Determine applicability of action
 				int newAgentRow = agentRow + Command.dirToRowChange(c.dir1);
 				int newAgentCol = agentCol + Command.dirToColChange(c.dir1);
 
 				if (c.actionType == Type.Move)
 				{
+				    System.err.println("newAgentRow: " + String.valueOf(newAgentRow));
+				    System.err.println("newAgentCol: " + String.valueOf(newAgentCol));
 					// Check if there's a wall or box on the cell to which the agent is moving
-					if (this.cellIsFree(newAgentRow, newAgentCol))
+					if(this.cellIsFree(newAgentRow, newAgentCol))
 					{
-						Node n = this.ChildNode();
+						Node n = this.ChildNode(this.boxes, this.agents);
 						n.action = c;
 						n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
 						expandedNodes.add(n);
@@ -98,8 +103,8 @@ public class Node {
 						// .. and that new cell of box is free
 						if (this.cellIsFree(newBoxRow, newBoxCol))
 						{
-							Node n = this.ChildNode();
-							n.action = c;
+                            Node n = this.ChildNode(this.boxes, this.agents);
+                            n.action = c;
 							n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
 							n.getBox(newAgentRow, newAgentCol).setLocation(new Pair<>(newBoxRow, newBoxCol));
 							// n.boxes[newBoxRow][newBoxCol] = this.boxes[newAgentRow][newAgentCol];
@@ -118,8 +123,8 @@ public class Node {
 						// .. and there's a box in "dir2" of the agent
 						if (this.boxAt(boxRow, boxCol))
 						{
-							Node n = this.ChildNode();
-							n.action = c;
+                            Node n = this.ChildNode(this.boxes, this.agents);
+                            n.action = c;
 							n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
 							n.getBox(boxRow, boxCol).setLocation(new Pair<>(agentRow, agentCol));
 							// n.boxes[this.agentRow][this.agentCol] = this.boxes[boxRow][boxCol];
@@ -160,6 +165,11 @@ public class Node {
 		{
 			if(a.location.getLeft() == row && a.location.getRight() == col)
 				return a;
+			else
+            {
+                System.err.println("Row: " + a.location.getLeft());
+                System.err.println("Col: " + a.location.getRight());
+            }
 		}
 		throw new NullPointerException("No agent at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 	}
@@ -199,10 +209,10 @@ public class Node {
 		return false;
 	}
 
-	private Node ChildNode() {
+	private Node ChildNode(ArrayList<Box> boxes, ArrayList<Agent> agents) {
 		Node copy = new Node(this);
-		copy.boxes = new ArrayList<Box>(this.boxes);
-		copy.agents = new ArrayList<Agent>(this.agents);
+		copy.boxes = boxes;
+		copy.agents = agents;
 		return copy;
 	}
 
