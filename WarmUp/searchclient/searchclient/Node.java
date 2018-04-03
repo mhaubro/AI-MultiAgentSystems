@@ -25,10 +25,10 @@ public class Node {
 	//
 
 	public static boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
-	public static ArrayList<Goal> goals = new ArrayList<>();
-	public ArrayList<Agent> agents = new ArrayList<>();
+	public static Goal[] goals;
+	public Agent[] agents;
 	// public Box[][] boxes = new Box[MAX_ROW][MAX_COL];
-	public ArrayList<Box> boxes = new ArrayList<>();
+	public Box[] boxes;
 
 	public Node parent;
 	public Command action;
@@ -56,10 +56,17 @@ public class Node {
 
 	public boolean isGoalState()
 	{
-		for(Goal goal : goals)
+		for(Goal goal : Node.goals)
 		{
-			if(!goal.goalState)
-				return false;
+			boolean goalState = false; 
+			for(Box box: this.boxes){
+				if(goal.location.equals(box.location)){
+					goalState = true;
+					break;
+				}
+			}
+		if(!goalState)
+			return false;	
 		}
 		return true;
 	}
@@ -80,7 +87,7 @@ public class Node {
 				if (c.actionType == Type.Move)
 				{
 					// Check if there's a wall or box on the cell to which the agent is moving
-					if (this.cellIsFree(newAgentRow, newAgentCol))
+					if(this.cellIsFree(newAgentRow, newAgentCol))
 					{
 						Node n = this.ChildNode();
 						n.action = c;
@@ -98,8 +105,8 @@ public class Node {
 						// .. and that new cell of box is free
 						if (this.cellIsFree(newBoxRow, newBoxCol))
 						{
-							Node n = this.ChildNode();
-							n.action = c;
+                            Node n = this.ChildNode();
+                            n.action = c;
 							n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
 							n.getBox(newAgentRow, newAgentCol).setLocation(new Pair<>(newBoxRow, newBoxCol));
 							// n.boxes[newBoxRow][newBoxCol] = this.boxes[newAgentRow][newAgentCol];
@@ -118,8 +125,8 @@ public class Node {
 						// .. and there's a box in "dir2" of the agent
 						if (this.boxAt(boxRow, boxCol))
 						{
-							Node n = this.ChildNode();
-							n.action = c;
+                            Node n = this.ChildNode();
+                            n.action = c;
 							n.getAgent(agentRow, agentCol).setLocation(new Pair<>(newAgentRow, newAgentCol));
 							n.getBox(boxRow, boxCol).setLocation(new Pair<>(agentRow, agentCol));
 							// n.boxes[this.agentRow][this.agentCol] = this.boxes[boxRow][boxCol];
@@ -201,9 +208,25 @@ public class Node {
 
 	private Node ChildNode() {
 		Node copy = new Node(this);
-		copy.boxes = new ArrayList<Box>(this.boxes);
-		copy.agents = new ArrayList<Agent>(this.agents);
+		copy.boxes = DeepCloneBoxes(this.boxes);
+		copy.agents = DeepCloneAgents(this.agents);
 		return copy;
+	}
+
+	private Agent[] DeepCloneAgents(Agent[] agents){
+		Agent[] clone = new Agent[agents.length];
+		for(int i = 0; i < agents.length; i++){
+			clone[i] = new Agent(agents[i]);
+		}
+		return clone;
+	}
+
+	private Box[] DeepCloneBoxes(Box[] boxes){
+		Box[] clone = new Box[boxes.length];
+		for(int i = 0; i < boxes.length; i++){
+			clone[i] = new Box(boxes[i]);
+		}
+		return clone;
 	}
 
 	public LinkedList<Node> extractPlan() {
@@ -221,10 +244,10 @@ public class Node {
 		if (this._hash == 0) {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + this.agents.hashCode();
-			result = prime * result + this.boxes.hashCode();
-			result = prime * result + goals.hashCode();
-			result = prime * result + Arrays.deepHashCode(this.walls);
+			result = prime * result + Arrays.deepHashCode(this.agents);
+			result = prime * result + Arrays.deepHashCode(this.boxes);
+			//result = prime * result + Arrays.deepHashCode(Node.goals);
+			//result = prime * result + Arrays.deepHashCode(Node.walls);
 			this._hash = result;
 		}
 		return this._hash;
@@ -239,15 +262,16 @@ public class Node {
 		if (this.getClass() != obj.getClass())
 			return false;
 		Node other = (Node) obj;
-		if(this.agents.equals(other.agents))
+		//return other.hashCode() == this.hashCode();
+		if(!Arrays.deepEquals(this.agents,other.agents))
 			return false;
 		//if (!Arrays.deepEquals(this.boxes, other.boxes))
-		if(!this.boxes.equals(other.boxes))
+		if(!Arrays.deepEquals(this.boxes, other.boxes))
 			return false;
 		// if (!Arrays.deepEquals(this.goals, other.goals))
 			// return false;
-		if (!Arrays.deepEquals(this.walls, other.walls))
-			return false;
+		//if (!Arrays.deepEquals(this.walls, other.walls))
+		//	return false;
 		return true;
 	}
 

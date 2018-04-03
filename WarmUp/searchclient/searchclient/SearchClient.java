@@ -3,6 +3,7 @@ package searchclient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import searchclient.Memory;
@@ -25,6 +26,10 @@ public class SearchClient {
 		int row = 0;
 		boolean agentFound = false;
 		this.initialState = new Node(null);
+		// For loading use arraylist as size is not yet known.
+		ArrayList<Box> boxes = new ArrayList<>();
+		ArrayList<Agent> agents = new ArrayList<>();
+		ArrayList<Goal> goals = new ArrayList<>();
 
 		while (!line.equals(""))
 		{
@@ -41,17 +46,17 @@ public class SearchClient {
 				}
 				else if ('0' <= chr && chr <= '9')
 				{ // Agent.
-                    this.initialState.agents.add(new Agent((int) chr, new Pair<>(row, col)));
+					agents.add(new Agent((int) chr, new Pair<>(row, col)));
 				}
 				else if ('A' <= chr && chr <= 'Z')
 				{
-				    // Box.
-					this.initialState.boxes.add(new Box(chr, new Pair<>(row, col)));
+					// Box.
+					boxes.add(new Box(chr, new Pair<>(row, col)));
 				}
 				else if ('a' <= chr && chr <= 'z')
 				{
-				    // Goal.
-					Node.goals.add(new Goal(chr, new Pair<>(row, col)));
+					// Goal.
+					goals.add(new Goal(chr, new Pair<>(row, col)));
 				}
 				else if (chr == ' ')
 				{
@@ -67,6 +72,13 @@ public class SearchClient {
 			row++;
 		}
 		Node.MAX_ROW = row;
+		// Arraylists to arrays
+		Node.goals = new Goal[goals.size()];
+		Node.goals = goals.toArray(Node.goals);
+		this.initialState.boxes = new Box[boxes.size()];
+		this.initialState.boxes = boxes.toArray(this.initialState.boxes);
+		this.initialState.agents = new Agent[agents.size()];
+		this.initialState.agents = agents.toArray(this.initialState.agents);
 	}
 
 	public LinkedList<Node> Search(Strategy strategy) throws IOException {
@@ -86,11 +98,15 @@ public class SearchClient {
 
 			Node leafNode = strategy.getAndRemoveLeaf();
 
+			
+
 			if (leafNode.isGoalState()) {
 				return leafNode.extractPlan();
 			}
 
 			strategy.addToExplored(leafNode);
+			System.err.println("Hashcode of agent: " + String.valueOf(leafNode.hashCode()));
+			System.err.println("Hej: " + leafNode.isGoalState());
 			for (Node n : leafNode.getExpandedNodes()) { // The list of expanded nodes is shuffled randomly; see Node.java.
 				if (!strategy.isExplored(n) && !strategy.inFrontier(n)) {
 					strategy.addToFrontier(n);
@@ -137,5 +153,33 @@ public class SearchClient {
             System.err.println("Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.");
         }
 
+		LinkedList<Node> solution;
+		try {
+			solution = client.Search(strategy);
+		} catch (OutOfMemoryError ex) {
+			System.err.println("Maximum memory usage exceeded.");
+			solution = null;
+		}
+
+		if (solution == null) {
+			System.err.println(strategy.searchStatus());
+			System.err.println("Unable to solve level.");
+			System.exit(0);
+		} else {
+			System.err.println("\nSummary for " + strategy.toString());
+			System.err.println("Found solution of length " + solution.size());
+			System.err.println(strategy.searchStatus());
+
+			for (Node n : solution) {
+				String act = n.action.toString();
+				System.out.println(act);
+				String response = serverMessages.readLine();
+				if (response.contains("false")) {
+					System.err.format("Server responsed with %s to the inapplicable action: %s\n", response, act);
+					System.err.format("%s was attempted in \n%s\n", act, n.toString());
+					break;
+				}
+			}
+		}
 	}
 }
