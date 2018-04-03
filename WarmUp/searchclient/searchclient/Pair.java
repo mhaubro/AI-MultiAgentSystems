@@ -18,4 +18,8 @@ public class Pair<L,R>
 
     public L getLeft() { return left; }
     public R getRight() { return right; }
+
+   public boolean equals(Pair<L,R> loc2){
+       return this.left == loc2.getLeft() && this.right == loc2.getRight(); 
+   }
 }

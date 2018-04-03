@@ -15,6 +15,14 @@ public class Agent
         this.color = null;
     }
 
+    public Agent(Agent agt)
+    {
+        this.num = agt.num;
+        this.rank = 0;
+        this.location = agt.location;
+        this.color = null;
+    }
+
     public void setLocation(Pair<Integer, Integer> location)
     {
         if(location.getLeft() == null && location.getRight() == null)
