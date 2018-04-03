@@ -25,7 +25,11 @@ public class Agent
 
     @Override
     public int hashCode(){
-        return (this.location.getLeft()+this.location.getRight())*31;
+        return (this.location.getLeft()+this.location.getRight() + this.num)*31;
+    }
+
+    public boolean equals(Agent agt){
+        return this.location.equals(agt.location) && this.num == agt.num;
     }
 
     public void setLocation(Pair<Integer, Integer> location)

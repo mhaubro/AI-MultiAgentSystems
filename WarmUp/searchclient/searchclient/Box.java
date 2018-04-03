@@ -18,27 +18,15 @@ public class Box {
 
     public void setLocation(Pair<Integer, Integer> location)
     {
-        // Check if we are moving box away from goal
-        for(Goal g : Node.goals){
-            if(this.location.equals(g.location)){
-                g.goalState = false;
-            } 
-        }
         this.location = location;
-        // Check if we are mocing box onto goal
-        for(Goal g : Node.goals){
-            if(this.location.equals(g.location)){
-                g.goalState = true;
-            } 
-        }
     }
 
     @Override
     public int hashCode(){
-        return (this.location.getLeft()+this.location.getRight())*31;
+        return (this.location.getLeft()+this.location.getRight() + (int)this.chr)*31;
     }
 
     public boolean equals(Box box){
-        return this.chr == box.chr && this.location.equals(box.location);
+        return this.location.equals(box.location) && this.chr == box.chr;
     } 
 }

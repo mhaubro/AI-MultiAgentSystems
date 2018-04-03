@@ -20,7 +20,6 @@ public class Goal {
         this.chr = chr;
         this.location = location;
         this.box = box;
-        this.goalState = false;
     }
 
     public void updateBox(Box box)
@@ -33,8 +32,4 @@ public class Goal {
         this.agent = a;
     }
 
-    public void updateGoalState(boolean goalState)
-    {
-        this.goalState = goalState;
-    }
 }

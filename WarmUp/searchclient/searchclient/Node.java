@@ -56,10 +56,17 @@ public class Node {
 
 	public boolean isGoalState()
 	{
-		for(Goal goal : goals)
+		for(Goal goal : Node.goals)
 		{
-			if(!goal.goalState)
-				return false;
+			boolean goalState = false; 
+			for(Box box: this.boxes){
+				if(goal.location.equals(box.location)){
+					goalState = true;
+					break;
+				}
+			}
+		if(!goalState)
+			return false;	
 		}
 		return true;
 	}
@@ -255,6 +262,7 @@ public class Node {
 		if (this.getClass() != obj.getClass())
 			return false;
 		Node other = (Node) obj;
+		//return other.hashCode() == this.hashCode();
 		if(!Arrays.deepEquals(this.agents,other.agents))
 			return false;
 		//if (!Arrays.deepEquals(this.boxes, other.boxes))
