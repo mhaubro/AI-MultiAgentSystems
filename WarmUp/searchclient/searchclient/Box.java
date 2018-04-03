@@ -33,6 +33,11 @@ public class Box {
         }
     }
 
+    @Override
+    public int hashCode(){
+        return (this.location.getLeft()+this.location.getRight())*31;
+    }
+
     public boolean equals(Box box){
         return this.chr == box.chr && this.location.equals(box.location);
     } 

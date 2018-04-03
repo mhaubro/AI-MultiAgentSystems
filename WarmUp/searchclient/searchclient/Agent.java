@@ -23,6 +23,11 @@ public class Agent
         this.color = null;
     }
 
+    @Override
+    public int hashCode(){
+        return (this.location.getLeft()+this.location.getRight())*31;
+    }
+
     public void setLocation(Pair<Integer, Integer> location)
     {
         if(location.getLeft() == null && location.getRight() == null)

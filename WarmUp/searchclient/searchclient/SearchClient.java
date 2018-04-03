@@ -3,6 +3,7 @@ package searchclient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import searchclient.Memory;
@@ -25,6 +26,10 @@ public class SearchClient {
 		int row = 0;
 		boolean agentFound = false;
 		this.initialState = new Node(null);
+		// For loading use arraylist as size is not yet known.
+		ArrayList<Box> boxes = new ArrayList<>();
+		ArrayList<Agent> agents = new ArrayList<>();
+		ArrayList<Goal> goals = new ArrayList<>();
 
 		while (!line.equals(""))
 		{
@@ -41,17 +46,17 @@ public class SearchClient {
 				}
 				else if ('0' <= chr && chr <= '9')
 				{ // Agent.
-                    this.initialState.agents.add(new Agent((int) chr, new Pair<>(row, col)));
+					agents.add(new Agent((int) chr, new Pair<>(row, col)));
 				}
 				else if ('A' <= chr && chr <= 'Z')
 				{
-				    // Box.
-					this.initialState.boxes.add(new Box(chr, new Pair<>(row, col)));
+					// Box.
+					boxes.add(new Box(chr, new Pair<>(row, col)));
 				}
 				else if ('a' <= chr && chr <= 'z')
 				{
-				    // Goal.
-					Node.goals.add(new Goal(chr, new Pair<>(row, col)));
+					// Goal.
+					goals.add(new Goal(chr, new Pair<>(row, col)));
 				}
 				else if (chr == ' ')
 				{
@@ -67,6 +72,13 @@ public class SearchClient {
 			row++;
 		}
 		Node.MAX_ROW = row;
+		// Arraylists to arrays
+		Node.goals = new Goal[goals.size()];
+		Node.goals = goals.toArray(Node.goals);
+		this.initialState.boxes = new Box[boxes.size()];
+		this.initialState.boxes = boxes.toArray(this.initialState.boxes);
+		this.initialState.agents = new Agent[agents.size()];
+		this.initialState.agents = agents.toArray(this.initialState.agents);
 	}
 
 	public LinkedList<Node> Search(Strategy strategy) throws IOException {

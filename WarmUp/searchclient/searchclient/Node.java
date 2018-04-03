@@ -25,10 +25,10 @@ public class Node {
 	//
 
 	public static boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
-	public static ArrayList<Goal> goals = new ArrayList<Goal>();
-	public ArrayList<Agent> agents;
+	public static Goal[] goals;
+	public Agent[] agents;
 	// public Box[][] boxes = new Box[MAX_ROW][MAX_COL];
-	public ArrayList<Box> boxes;
+	public Box[] boxes;
 
 	public Node parent;
 	public Command action;
@@ -39,8 +39,6 @@ public class Node {
 
 	public Node(Node parent) {
 		this.parent = parent;
-		this.agents = new ArrayList<Agent>();
-		this.boxes = new ArrayList<Box>();
 		if (parent == null) {
 			this.g = 0;
 		} else {
@@ -208,18 +206,18 @@ public class Node {
 		return copy;
 	}
 
-	private ArrayList<Agent> DeepCloneAgents(ArrayList<Agent> agents){
-		ArrayList<Agent> clone = new ArrayList<>();
-		for(Agent agt : agents){
-			clone.add(new Agent(agt));
+	private Agent[] DeepCloneAgents(Agent[] agents){
+		Agent[] clone = new Agent[agents.length];
+		for(int i = 0; i < agents.length; i++){
+			clone[i] = new Agent(agents[i]);
 		}
 		return clone;
 	}
 
-	private ArrayList<Box> DeepCloneBoxes(ArrayList<Box> boxes){
-		ArrayList<Box> clone = new ArrayList<>();
-		for(Box box : boxes){
-			clone.add(new Box(box));
+	private Box[] DeepCloneBoxes(Box[] boxes){
+		Box[] clone = new Box[boxes.length];
+		for(int i = 0; i < boxes.length; i++){
+			clone[i] = new Box(boxes[i]);
 		}
 		return clone;
 	}
@@ -239,10 +237,10 @@ public class Node {
 		if (this._hash == 0) {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + this.agents.hashCode();
-			result = prime * result + this.boxes.hashCode();
-			result = prime * result + goals.hashCode();
-			result = prime * result + Arrays.deepHashCode(this.walls);
+			result = prime * result + Arrays.deepHashCode(this.agents);
+			result = prime * result + Arrays.deepHashCode(this.boxes);
+			//result = prime * result + Arrays.deepHashCode(Node.goals);
+			//result = prime * result + Arrays.deepHashCode(Node.walls);
 			this._hash = result;
 		}
 		return this._hash;
@@ -257,15 +255,15 @@ public class Node {
 		if (this.getClass() != obj.getClass())
 			return false;
 		Node other = (Node) obj;
-		if(this.agents.equals(other.agents))
+		if(!Arrays.deepEquals(this.agents,other.agents))
 			return false;
 		//if (!Arrays.deepEquals(this.boxes, other.boxes))
-		if(!this.boxes.equals(other.boxes))
+		if(!Arrays.deepEquals(this.boxes, other.boxes))
 			return false;
 		// if (!Arrays.deepEquals(this.goals, other.goals))
 			// return false;
-		if (!Arrays.deepEquals(this.walls, other.walls))
-			return false;
+		//if (!Arrays.deepEquals(this.walls, other.walls))
+		//	return false;
 		return true;
 	}
 
