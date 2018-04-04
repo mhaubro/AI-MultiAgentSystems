@@ -246,8 +246,6 @@ public class Node {
 			int result = 1;
 			result = prime * result + Arrays.deepHashCode(this.agents);
 			result = prime * result + Arrays.deepHashCode(this.boxes);
-			//result = prime * result + Arrays.deepHashCode(Node.goals);
-			//result = prime * result + Arrays.deepHashCode(Node.walls);
 			this._hash = result;
 		}
 		return this._hash;
@@ -259,19 +257,17 @@ public class Node {
 			return true;
 		if (obj == null)
 			return false;
+
 		if (this.getClass() != obj.getClass())
 			return false;
+
 		Node other = (Node) obj;
-		//return other.hashCode() == this.hashCode();
 		if(!Arrays.deepEquals(this.agents,other.agents))
 			return false;
-		//if (!Arrays.deepEquals(this.boxes, other.boxes))
+
 		if(!Arrays.deepEquals(this.boxes, other.boxes))
 			return false;
-		// if (!Arrays.deepEquals(this.goals, other.goals))
-			// return false;
-		//if (!Arrays.deepEquals(this.walls, other.walls))
-		//	return false;
+
 		return true;
 	}
 
