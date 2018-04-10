@@ -164,6 +164,8 @@ int main(int argc, char * argv[]){
 		//std::cerr << n->action->to_string();
 		//std::cerr << "Printing solution2";
 		std::cerr << act;
+		std::cout << act;
+		std::cout << "\n";
 		std::string response;
 		//std::cerr << "Printing solution3";
 		std::getline(std::cin, response);
@@ -175,9 +177,6 @@ int main(int argc, char * argv[]){
 			std::cerr << std::string(buffer);
 			break;
 		}
-		//std::cerr << "LastD: " << Command::LASTD << "\n";
-		std::cerr << n->toString();
-		std::cerr << n->action->to_string();
 		}
 		return 0;
 	}
