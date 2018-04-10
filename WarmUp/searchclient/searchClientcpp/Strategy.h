@@ -8,27 +8,11 @@
 #include "memory.h"
 #include "Node.h"
 
-class Hash
-{
-public:
-  size_t operator() (const Node * key) const
-  {
-    return key->hashCode();
-  }
-};
-class Equals
-{
-public:
-  bool operator() (Node const * t1, Node const * t2) const
-  {
-    return t1->hashCode() == t2->hashCode();
-  }
-};
 
 
 class Strategy {
 private:
-  std::unordered_map<Node *, int, Hash, Equals> explored;
+  std::unordered_map<Node *, int> explored;
 	//double startTime;
 
 public:

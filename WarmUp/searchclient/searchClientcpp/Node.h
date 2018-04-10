@@ -32,9 +32,7 @@ public:
 
 	int hashCode () const;
 	bool equals (Node obj) const;
-	bool operator==(const Node & obj) const{
-		return (equals(obj));
-	};
+	bool operator==(const Node & obj) const;
 	// Arrays are indexed from the top-left of the level, with first index being row and second being column.
 	// Row 0: (0,0) (0,1) (0,2) (0,3) ...
 	// Row 1: (1,0) (1,1) (1,2) (1,3) ...

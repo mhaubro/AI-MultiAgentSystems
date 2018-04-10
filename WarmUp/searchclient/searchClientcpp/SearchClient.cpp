@@ -175,36 +175,30 @@ int main(int argc, char * argv[]){
 		int iterations = 0;
 
 		while (true) {
-
+			std::cerr << "Iteration!\njmghmb";
 			if (iterations == 1000) {
 				std::cerr << strategy->searchStatus();
 				iterations = 0;
 			}
 
 			if (strategy->frontierIsEmpty()) {
-				std::cerr << "Hi!";
 				//Empty list
 				return std::list<Node *>();
 			}
 
 			Node * leafNode = strategy->getAndRemoveLeaf();
-			std::cerr << "H2!";
 
 			if (leafNode->isGoalState()) {
-				std::cerr << "H3!";
+				std::cerr << "Goal!";
 				std::cerr << leafNode->toString();
 				return leafNode->extractPlan();
 			}
 
-			std::cerr << "H4!";
 			strategy->addToExplored(leafNode);
-			std::cerr << "H5!";
-			for (Node * n : leafNode->getExpandedNodes()) {
-				std::cerr << "H6!";
+			std::vector<Node *> nodes = leafNode->getExpandedNodes();
+			for (Node * n : nodes) {
 				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
-					std::cerr << "H7!";
 					strategy->addToFrontier(n);
-					std::cerr << "H8!";
 				}
 			}
 			iterations++;

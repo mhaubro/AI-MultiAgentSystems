@@ -9,7 +9,7 @@
 
 
 	Strategy::Strategy() {
-		this->explored = std::unordered_map<Node *, int, Hash, Equals >();
+		this->explored = std::unordered_map<Node *, int >();
 		//this->startTime = std::chrono::high_resolution_clock::now();
 	}
 
@@ -18,7 +18,6 @@
 	}
 
 	bool Strategy::isExplored(Node * n) {
-		std::cerr << "H12!";
 		bool result =  this->explored.count(n) == 1;
 		return result;
 	}
@@ -60,8 +59,8 @@
 
 
 	StrategyBFS::StrategyBFS() {
-		std::queue<Node *> frontier = std::queue<Node *>();
-		std::unordered_map<Node *, int> frontierSet = std::unordered_map<Node *, int>();
+		this->frontier = std::queue<Node *>();
+		this->frontierSet = std::unordered_map<Node *, int>();
 	}
 
 		Node * StrategyBFS::getAndRemoveLeaf() {
@@ -84,7 +83,6 @@
 		}
 
 		bool StrategyBFS::inFrontier(Node * n) {
-			std::cerr << "H6!";
 			return frontierSet.count(n);
 		}
 
