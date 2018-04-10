@@ -1,4 +1,4 @@
-
+/*
 #include "Command.h"
 #include "centralHeader.h"
 
@@ -66,7 +66,7 @@ public abstract class Heuristic implements Comparator<Node> {
 
 	@Override
 	public int compare(Node n1, Node n2) {
-		return this.f(n1) - this.f(n2);
+		return this->f(n1) - this->f(n2);
 	}
 
 	public static class AStar extends Heuristic {
@@ -76,7 +76,7 @@ public abstract class Heuristic implements Comparator<Node> {
 
 		@Override
 		public int f(Node n) {
-			return n.g() + this.h(n);
+			return n.g() + this->h(n);
 		}
 
 		@Override
@@ -90,17 +90,17 @@ public abstract class Heuristic implements Comparator<Node> {
 
 		public WeightedAStar(Node initialState, int W) {
 			super(initialState);
-			this.W = W;
+			this->W = W;
 		}
 
 		@Override
 		public int f(Node n) {
-			return n.g() + this.W * this.h(n);
+			return n.g() + this->W * this->h(n);
 		}
 
 		@Override
 		public String toString() {
-			return String.format("WA*(%d) evaluation", this.W);
+			return String.format("WA*(%d) evaluation", this->W);
 		}
 	}
 
@@ -111,7 +111,7 @@ public abstract class Heuristic implements Comparator<Node> {
 
 		@Override
 		public int f(Node n) {
-			return this.h(n);
+			return this->h(n);
 		}
 
 		@Override
@@ -120,3 +120,4 @@ public abstract class Heuristic implements Comparator<Node> {
 		}
 	}
 }
+*/

@@ -1,66 +1,79 @@
 #include "Node.h"
-#include "centralHeader.h"
+#include <string>
+#include <vector>
+#include <list>
+#include <ctype.h>
+#include <algorithm>
+#include <random>
+#include <functional>
+#include <iostream>
+#include <iomanip>
+#define RANDOM_SEED 1
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Random;
+/*
+* Necessary for hashing
+*/
 
-import searchclient.Command.Type;
+bool Node::operator==(const Node & obj) const{
+	return (equals(obj));
+}
 
-public class Node {
-	private static final Random RND = new Random(1);
+/*
+* Necessary for hashing
+*/
 
-	public static int MAX_ROW = 70;
-	public static int MAX_COL = 70;
+namespace std {
+  template <> struct hash<Node *> {
+    size_t operator()(const Node * n) const {
+        // Some custom logic for calculating hash of CustomClass using
+        // the hash Values of its individual fields
 
-	public int agentRow;
-	public int agentCol;
+        return (n->hashCode());
+    }
+  };
+}
 
-	// Arrays are indexed from the top-left of the level, with first index being row and second being column.
-	// Row 0: (0,0) (0,1) (0,2) (0,3) ...
-	// Row 1: (1,0) (1,1) (1,2) (1,3) ...
-	// Row 2: (2,0) (2,1) (2,2) (2,3) ...
-	// ...
-	// (Start in the top left corner, first go down, then go right)
-	// E.g. this.walls[2] is an array of booleans having size MAX_COL.
-	// this.walls[row][col] is true if there's a wall at (row, col)
-	//
+	//Initialize static variables:
+	int Node::MAX_ROW;
+	int Node::MAX_COL;
+	std::vector<bool> Node::walls;
+	std::vector<char> Node::goals;
 
-	public static boolean[][] walls = new boolean[MAX_ROW][MAX_COL];
-	public char[][] boxes = new char[MAX_ROW][MAX_COL];
-	public static char[][] goals = new char[MAX_ROW][MAX_COL];
+	//This should only be used for the first node. Inits walls & goals.
 
-	public Node parent;
-	public Command action;
-
-	private int g;
-
-	private int _hash = 0;
-
-	public Node(Node parent) {
-		this.parent = parent;
-		if (parent == null) {
-			this.g = 0;
-		} else {
-			this.g = parent.g() + 1;
-		}
+	Node::Node() {
+		this->parent = NULL;
+		this->gval = 0;
+		this->boxes = std::vector<char>(MAX_COL*MAX_ROW, '\0');
+		this->agentCol = 0;
+		this->agentRow = 0;
 	}
 
-	public int g() {
-		return this.g;
+
+
+	Node::Node(Node * parent) {
+		this->parent = parent;
+		this->gval = parent->g() + 1;
+		this->agentCol = parent->agentCol;
+		this->agentRow = parent->agentRow;
+		//Inits boxes
+		this->boxes = std::vector<char>(MAX_COL*MAX_ROW, '\0');
 	}
 
-	public boolean isInitialState() {
-		return this.parent == null;
+	int Node::g() {
+		return this->gval;
 	}
 
-	public boolean isGoalState() {
-		for (int row = 1; row < MAX_ROW - 1; row++) {
-			for (int col = 1; col < MAX_COL - 1; col++) {
-				char g = goals[row][col];
-				char b = Character.toLowerCase(boxes[row][col]);
+	bool Node::isInitialState() {
+		return this->parent == NULL;
+	}
+
+	bool Node::isGoalState() {
+		for (int row = 0; row < MAX_ROW - 1; row++) {
+			for (int col = 0; col < MAX_COL - 1; col++) {
+				int idx = row + col*MAX_ROW;
+				char g = goals[idx];
+				char b = tolower(boxes[idx]);
 				if (g > 0 && b != g) {
 					return false;
 				}
@@ -69,143 +82,152 @@ public class Node {
 		return true;
 	}
 
-	public ArrayList<Node> getExpandedNodes() {
-		ArrayList<Node> expandedNodes = new ArrayList<Node>(Command.EVERY.length);
-		for (Command c : Command.EVERY) {
+	std::vector<Node *> Node::getExpandedNodes(){
+		std::vector<Node *> expandedNodes = std::vector<Node *>();
+		for (Command c : Command::EVERY) {
 			// Determine applicability of action
-			int newAgentRow = this.agentRow + Command.dirToRowChange(c.dir1);
-			int newAgentCol = this.agentCol + Command.dirToColChange(c.dir1);
+			int newAgentRow = this->agentRow + Command::dirToRowChange(c.dir1);
+			int newAgentCol = this->agentCol + Command::dirToColChange(c.dir1);
 
-			if (c.actionType == Type.Move) {
+			if (c.actionType == Command::Move) {
 				// Check if there's a wall or box on the cell to which the agent is moving
-				if (this.cellIsFree(newAgentRow, newAgentCol)) {
-					Node n = this.ChildNode();
-					n.action = c;
-					n.agentRow = newAgentRow;
-					n.agentCol = newAgentCol;
-					expandedNodes.add(n);
+				if (this->cellIsFree(newAgentRow, newAgentCol)) {
+					Node * n = this->ChildNode();
+					n->action = &c;
+					n->agentRow = newAgentRow;
+					n->agentCol = newAgentCol;
+					expandedNodes.push_back(n);
 				}
-			} else if (c.actionType == Type.Push) {
+			} else if (c.actionType == Command::Push) {
 				// Make sure that there's actually a box to move
-				if (this.boxAt(newAgentRow, newAgentCol)) {
-					int newBoxRow = newAgentRow + Command.dirToRowChange(c.dir2);
-					int newBoxCol = newAgentCol + Command.dirToColChange(c.dir2);
+				if (this->boxAt(newAgentRow, newAgentCol)) {
+					int newBoxRow = newAgentRow + Command::dirToRowChange(c.dir2);
+					int newBoxCol = newAgentCol + Command::dirToColChange(c.dir2);
 					// .. and that new cell of box is free
-					if (this.cellIsFree(newBoxRow, newBoxCol)) {
-						Node n = this.ChildNode();
-						n.action = c;
-						n.agentRow = newAgentRow;
-						n.agentCol = newAgentCol;
-						n.boxes[newBoxRow][newBoxCol] = this.boxes[newAgentRow][newAgentCol];
-						n.boxes[newAgentRow][newAgentCol] = 0;
-						expandedNodes.add(n);
+					if (this->cellIsFree(newBoxRow, newBoxCol)) {
+						Node * n = this->ChildNode();
+
+						n->action = &c;
+						n->agentRow = newAgentRow;
+						n->agentCol = newAgentCol;
+						n->boxes[newBoxRow+newBoxCol*MAX_ROW] = this->boxes[newAgentRow+newAgentCol*MAX_ROW];
+						n->boxes[newAgentRow+newAgentCol*MAX_ROW] = 0;
+						expandedNodes.push_back(n);
 					}
 				}
-			} else if (c.actionType == Type.Pull) {
+			} else if (c.actionType == Command::Pull) {
 				// Cell is free where agent is going
-				if (this.cellIsFree(newAgentRow, newAgentCol)) {
-					int boxRow = this.agentRow + Command.dirToRowChange(c.dir2);
-					int boxCol = this.agentCol + Command.dirToColChange(c.dir2);
+				if (this->cellIsFree(newAgentRow, newAgentCol)) {
+					int boxRow = this->agentRow + Command::dirToRowChange(c.dir2);
+					int boxCol = this->agentCol + Command::dirToColChange(c.dir2);
 					// .. and there's a box in "dir2" of the agent
-					if (this.boxAt(boxRow, boxCol)) {
-						Node n = this.ChildNode();
-						n.action = c;
-						n.agentRow = newAgentRow;
-						n.agentCol = newAgentCol;
-						n.boxes[this.agentRow][this.agentCol] = this.boxes[boxRow][boxCol];
-						n.boxes[boxRow][boxCol] = 0;
-						expandedNodes.add(n);
+					if (this->boxAt(boxRow, boxCol)) {
+						Node * n = this->ChildNode();
+						n->action = &c;
+						n->agentRow = newAgentRow;
+						n->agentCol = newAgentCol;
+						n->boxes[this->agentRow+this->agentCol*MAX_ROW] = this->boxes[boxRow+boxCol*MAX_ROW];
+						n->boxes[boxRow+boxCol*MAX_ROW] = 0;
+						expandedNodes.push_back(n);
 					}
 				}
 			}
 		}
-		Collections.shuffle(expandedNodes, RND);
+		auto rng = std::default_random_engine {};
+		std::shuffle(std::begin(expandedNodes), std::end(expandedNodes), rng);
 		return expandedNodes;
 	}
 
-	private boolean cellIsFree(int row, int col) {
-		return !walls[row][col] && boxes[row][col] == 0;
+	bool Node::cellIsFree(int row, int col) {
+		if (row < 0 || row >= MAX_ROW || col < 0 || col >= MAX_COL){
+			return false;
+		}
+		return !walls[row+col*MAX_ROW] && boxes[row+col*MAX_ROW] == 0;
 	}
 
-	private boolean boxAt(int row, int col) {
-		return boxes[row][col] > 0;
+	bool Node::boxAt(int row, int col) {
+		return boxes[row+col*MAX_ROW] > 0;
 	}
 
-	private Node ChildNode() {
-		Node copy = new Node(this);
-		for(int row = 0; row < MAX_ROW; row++)
-		    System.arraycopy(this.boxes[row], 0, copy.boxes[row], 0, MAX_COL);
+	Node * Node::ChildNode() {
+		Node * copy = new Node(this);
+		//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
+		copy->boxes = this->boxes;
 		return copy;
 	}
 
-	public LinkedList<Node> extractPlan() {
-		LinkedList<Node> plan = new LinkedList<Node>();
-		Node n = this;
-		while (!n.isInitialState()) {
-			plan.addFirst(n);
-			n = n.parent;
+	std::list<Node *> Node::extractPlan() {
+		std::list<Node*> plan = std::list<Node*>();
+		Node * n = this;
+
+		while (!(n->isInitialState())) {
+			plan.push_front(n);
+			n = n->parent;
 		}
 		return plan;
 	}
 
-	@Override
-	public int hashCode() {
-		if (this._hash == 0) {
-			final int prime = 31;
+	int Node::hashCode() const{
+
+			int prime = 31;
 			int result = 1;
-			result = prime * result + this.agentCol;
-			result = prime * result + this.agentRow;
-			result = prime * result + Arrays.deepHashCode(this.boxes);
-			result = prime * result + Arrays.deepHashCode(this.goals);
-			result = prime * result + Arrays.deepHashCode(this.walls);
-			this._hash = result;
-		}
-		return this._hash;
+			result = prime * result + this->agentCol;
+			result = prime * result + this->agentRow;
+			//Constructs a string and hashes it
+			std::string str(this->boxes.begin(),this->boxes.end());
+			//Constructs a string and hashes it
+			result = prime * result + std::hash<std::string>{}(str);;
+			str = std::string(this->goals.begin(),this->goals.end());
+			result = prime * result + std::hash<std::string>{}(str);
+			result = prime * result + std::hash<std::vector<bool>>{}(this->walls);
+			std::cerr << result;
+			return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+	bool Node::equals(Node obj) const {
+		obj = (Node) obj;
+		if (obj == NULL)
 			return false;
-		if (this.getClass() != obj.getClass())
+			//Using == works with std::vector
+		if (this->agentRow != obj.agentRow || this->agentCol != obj.agentCol)
 			return false;
-		Node other = (Node) obj;
-		if (this.agentRow != other.agentRow || this.agentCol != other.agentCol)
-			return false;
-		if (!Arrays.deepEquals(this.boxes, other.boxes))
-			return false;
-		if (!Arrays.deepEquals(this.goals, other.goals))
-			return false;
-		if (!Arrays.deepEquals(this.walls, other.walls))
+		if ((this->boxes != obj.boxes))
 			return false;
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		StringBuilder s = new StringBuilder();
+	std::string Node::toString() {
+		std::string s("");
+
+
+
 		for (int row = 0; row < MAX_ROW; row++) {
-			if (!this.walls[row][0]) {
-				break;
-			}
+			//std::cerr << "dummy";
+			//if (!this->walls[row]) {
+			//	break;
+			//}
+
+			/*char buffer[50];
+			sprintf(buffer, "size: %d", boxes.size());
+			std::string s(buffer);
+			std::cerr << s;*/
+
+
 			for (int col = 0; col < MAX_COL; col++) {
-				if (this.boxes[row][col] > 0) {
-					s.append(this.boxes[row][col]);
-				} else if (this.goals[row][col] > 0) {
-					s.append(this.goals[row][col]);
-				} else if (this.walls[row][col]) {
-					s.append("+");
-				} else if (row == this.agentRow && col == this.agentCol) {
-					s.append("0");
+				if (Node::boxes[row+col*MAX_ROW] != '\0') {
+					s += (boxes[row+col*MAX_ROW]);
+				} else if (Node::goals[row+col*MAX_ROW] != '\0') {
+					s += (goals[row+col*MAX_ROW]);
+				} else if (Node::walls[row+col*MAX_ROW]) {
+					s += ("+");
+				} else if (row == this->agentRow && col == this->agentCol) {
+					s += ("0");
 				} else {
-					s.append(" ");
+					s += (" ");
 				}
 			}
+
 			s.append("\n");
 		}
-		return s.toString();
+		return s;
 	}
-
-}

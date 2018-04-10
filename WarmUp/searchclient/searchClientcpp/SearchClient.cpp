@@ -1,160 +1,206 @@
 #include "SearchClient.h"
-#include "centralHeader.h"
+#include <string>
+#include <list>
+#include <unordered_map>
+#include <regex>
+#include <iostream>
+#include <iterator>
+#include "Strategy.h"
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
+using std::stringstream;
+using std::istream;
+using std::vector;
+using std::string;
+using std::getline;
+using std::pair;
+using std::list;
 
-import searchclient.Memory;
-import searchclient.Strategy.*;
-import searchclient.Heuristic.*;
+bool isAgent(char c) {
+	return ('0' <= c && c <= '9');
+}
 
-public class SearchClient {
-	public Node initialState;
+bool isBox(char c) {
+	return ('A' <= c && c <= 'Z');
+}
+
+bool isGoal(char c) {
+	return ('a' <= c && c <= 'z');
+}
+
+SearchClient::SearchClient()
+{
+	std::unordered_map<char, std::string> colors;
+	std::string line;
+
+	std::regex color_regex("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$");
+	std::smatch match;
 
 
-    public SearchClient(BufferedReader serverMessages) throws Exception {
-		// Read lines specifying colors
-		String line = serverMessages.readLine();
-		if (line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$")) {
-			System.err.println("Error, client does not support colors.");
-			System.exit(1);
+	while (getline (std::cin, line) && !line.compare("") && std::regex_match(line, match, color_regex)) {
+		std::cerr << "Hi!";
+		printf("%s\n", line.c_str());
+		stringstream ss(line);
+		string color;
+		getline(ss, color, ':');
+
+		string c;
+		while (getline(ss, c, ',')) {
+			c.erase(remove(c.begin(), c.end(), ' '), c.end());
+			colors.insert(pair<char,string>(c.c_str()[0], color));
 		}
 
-		int row = 0;
-		boolean agentFound = false;
-		this.initialState = new Node(null);
-
-		while (!line.equals("")) {
-			for (int col = 0; col < line.length(); col++) {
-				char chr = line.charAt(col);
-
-				if(line.length() > Node.MAX_COL)
-				    Node.MAX_COL = line.length();
-
-				if (chr == '+') { // Wall.
-					Node.walls[row][col] = true;
-				} else if ('0' <= chr && chr <= '9') { // Agent.
-					if (agentFound) {
-						System.err.println("Error, not a single agent level");
-						System.exit(1);
-					}
-					agentFound = true;
-					this.initialState.agentRow = row;
-					this.initialState.agentCol = col;
-				} else if ('A' <= chr && chr <= 'Z') { // Box.
-					this.initialState.boxes[row][col] = chr;
-				} else if ('a' <= chr && chr <= 'z') { // Goal.
-					Node.goals[row][col] = chr;
-				} else if (chr == ' ') {
-					// Free space.
-				} else {
-					System.err.println("Error, read invalid level character: " + (int) chr);
-					System.exit(1);
-				}
-			}
-			line = serverMessages.readLine();
-			row++;
-		}
-		Node.MAX_ROW = row;
 	}
 
-	public LinkedList<Node> Search(Strategy strategy) throws IOException {
-		System.err.format("Search starting with strategy %s.\n", strategy.toString());
-		strategy.addToFrontier(this.initialState);
+	int agents = 0;
+	int boxes = 0;
+	for (auto it = colors.begin(); it != colors.end(); ++it) {
+		if (isAgent(it->first)) {
+			agents++;
+		}
+
+		if (isBox(it->first)) {
+			boxes++;
+		}
+	}
+
+	list<string> rows;
+
+	int cols = 0;
+	do
+	{
+		//moreLines = !serverMessages.eof();
+		if (line.length() > cols) {
+			cols = line.length();
+		}
+
+//		std::cerr << line;
+		rows.push_back(line);
+		getline(std::cin, line);
+	} while (!std::cin.eof() && (line.length() != 0));
+
+	std::cerr << "Agents: " << agents <<
+		"\nBoxes: " << boxes <<
+		"\nDim: [" << cols << "," << rows.size() << "]\n";
+
+//The max number of a row index is the amount of columns.
+	Node::MAX_ROW = rows.size();
+	Node::MAX_COL = cols;
+
+	int size = rows.size();
+
+	Node::walls.resize(rows.size()*cols, false);
+	Node::goals.resize(rows.size()*cols, '\0');
+
+
+	initialState = new Node();
+	initialState->boxes = vector<char>(rows.size()*cols, '\0');
+	for (int y = 0; y < size; y++){
+		string row = rows.front();
+		rows.pop_front();
+		for (int x = 0; x < row.length(); x++){
+			char chr = row[x];
+
+
+			if (chr == '+'){
+				Node::walls[x + y*cols] = true;
+
+			} else if (isAgent(chr)){
+				initialState->agentRow = y;
+				initialState->agentCol = x;
+			} else if (isBox(chr)){
+				initialState->boxes[x+y*cols] = chr;
+			} else if (isGoal(chr)){
+				Node::goals[x+y*cols] = chr;
+			} else if (chr == ' '){
+				//Do nothing
+			} else {
+				std::cerr << "Error, read invalid level character: [" << chr << "]" ;
+			}
+		}
+	}
+}
+
+
+SearchClient::~SearchClient()
+{
+}
+
+
+int main(int argc, char * argv[]){
+	//stringstream
+	char buffer[200];
+	int x;
+	for (int i = 0; i < argc; i++){
+		std::cerr << argv[i] << "\n";
+	}
+
+	SearchClient client = SearchClient();
+
+	std::string strat = std::string(argv[0]);
+	std::cerr << strat;
+	std::cerr << "SearchClient started\n";
+
+	StrategyBFS strategy = StrategyBFS();
+	std::cerr << "Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.\n";
+
+	std::list<Node *> solution;
+	solution = client.search(&strategy);
+	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
+	std::cerr << "Found solution of length " << solution.size() << ".\n";
+	std::cerr << strategy.searchStatus();
+
+	for (Node * n : solution) {
+		std::string act = n->action->to_string();
+		std::cerr << act;
+		std::string response;
+		std::getline(std::cin, response);
+		if (response.find(std::string("false")) != std::string::npos) {
+			sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, act);
+			std::cerr << std::string(buffer);
+			sprintf(buffer, "%s was attempted in \n%s\n", act, n->toString());
+			std::cerr << std::string(buffer);
+			break;
+			}
+		}
+		return 0;
+	}
+
+	std::list<Node *> SearchClient::search(Strategy * strategy) {
+		char buffer[100];
+		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
+		std::string s = std::string(buffer);
+		std::cerr << s;
+		strategy->addToFrontier(this->initialState);
 
 		int iterations = 0;
+
 		while (true) {
-            if (iterations == 1000) {
-				System.err.println(strategy.searchStatus());
+			std::cerr << "Iteration!\njmghmb";
+			if (iterations == 1000) {
+				std::cerr << strategy->searchStatus();
 				iterations = 0;
 			}
 
-			if (strategy.frontierIsEmpty()) {
-				return null;
+			if (strategy->frontierIsEmpty()) {
+				//Empty list
+				return std::list<Node *>();
 			}
 
-			Node leafNode = strategy.getAndRemoveLeaf();
+			Node * leafNode = strategy->getAndRemoveLeaf();
 
-			if (leafNode.isGoalState()) {
-				return leafNode.extractPlan();
+			if (leafNode->isGoalState()) {
+				std::cerr << "Goal!";
+				std::cerr << leafNode->toString();
+				return leafNode->extractPlan();
 			}
 
-			strategy.addToExplored(leafNode);
-			for (Node n : leafNode.getExpandedNodes()) { // The list of expanded nodes is shuffled randomly; see Node.java.
-				if (!strategy.isExplored(n) && !strategy.inFrontier(n)) {
-					strategy.addToFrontier(n);
+			strategy->addToExplored(leafNode);
+			std::vector<Node *> nodes = leafNode->getExpandedNodes();
+			for (Node * n : nodes) {
+				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
+					strategy->addToFrontier(n);
 				}
 			}
 			iterations++;
 		}
 	}
-
-	public static void main(String[] args) throws Exception {
-		BufferedReader serverMessages = new BufferedReader(new InputStreamReader(System.in));
-
-		// Use stderr to print to console
-		System.err.println("SearchClient initializing. I am sending this using the error output stream.");
-
-		// Read level and create the initial state of the problem
-		SearchClient client = new SearchClient(serverMessages);
-
-        Strategy strategy;
-        if (args.length > 0) {
-            switch (args[0].toLowerCase()) {
-                case "-bfs":
-                    strategy = new StrategyBFS();
-                    break;
-                case "-dfs":
-                    strategy = new StrategyDFS();
-                    break;
-                case "-astar":
-                    strategy = new StrategyBestFirst(new AStar(client.initialState));
-                    break;
-                case "-wastar":
-                    // You're welcome to test WA* out with different values, but for the report you must at least indicate benchmarks for W = 5.
-                    strategy = new StrategyBestFirst(new WeightedAStar(client.initialState, 5));
-                    break;
-                case "-greedy":
-                    strategy = new StrategyBestFirst(new Greedy(client.initialState));
-                    break;
-                default:
-                    strategy = new StrategyBFS();
-                    System.err.println("Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.");
-            }
-        } else {
-            strategy = new StrategyBFS();
-            System.err.println("Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.");
-        }
-
-		LinkedList<Node> solution;
-		try {
-			solution = client.Search(strategy);
-		} catch (OutOfMemoryError ex) {
-			System.err.println("Maximum memory usage exceeded.");
-			solution = null;
-		}
-
-		if (solution == null) {
-			System.err.println(strategy.searchStatus());
-			System.err.println("Unable to solve level.");
-			System.exit(0);
-		} else {
-			System.err.println("\nSummary for " + strategy.toString());
-			System.err.println("Found solution of length " + solution.size());
-			System.err.println(strategy.searchStatus());
-
-			for (Node n : solution) {
-				String act = n.action.toString();
-				System.out.println(act);
-				String response = serverMessages.readLine();
-				if (response.contains("false")) {
-					System.err.format("Server responsed with %s to the inapplicable action: %s\n", response, act);
-					System.err.format("%s was attempted in \n%s\n", act, n.toString());
-					break;
-				}
-			}
-		}
-	}
-}

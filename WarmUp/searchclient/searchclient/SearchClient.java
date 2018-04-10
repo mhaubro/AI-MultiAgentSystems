@@ -3,6 +3,7 @@ package searchclient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import searchclient.Memory;
@@ -16,7 +17,8 @@ public class SearchClient {
     public SearchClient(BufferedReader serverMessages) throws Exception {
 		// Read lines specifying colors
 		String line = serverMessages.readLine();
-		if (line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$")) {
+		if (line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$"))
+		{
 			System.err.println("Error, client does not support colors.");
 			System.exit(1);
 		}
@@ -24,31 +26,44 @@ public class SearchClient {
 		int row = 0;
 		boolean agentFound = false;
 		this.initialState = new Node(null);
+		// For loading use arraylist as size is not yet known.
+		ArrayList<Box> boxes = new ArrayList<>();
+		ArrayList<Agent> agents = new ArrayList<>();
+		ArrayList<Goal> goals = new ArrayList<>();
 
-		while (!line.equals("")) {
-			for (int col = 0; col < line.length(); col++) {
+		while (!line.equals(""))
+		{
+			for (int col = 0; col < line.length(); col++)
+			{
 				char chr = line.charAt(col);
 
 				if(line.length() > Node.MAX_COL)
 				    Node.MAX_COL = line.length();
 
-				if (chr == '+') { // Wall.
+				if (chr == '+')
+				{ // Wall.
 					Node.walls[row][col] = true;
-				} else if ('0' <= chr && chr <= '9') { // Agent.
-					if (agentFound) {
-						System.err.println("Error, not a single agent level");
-						System.exit(1);
-					}
-					agentFound = true;
-					this.initialState.agentRow = row;
-					this.initialState.agentCol = col;
-				} else if ('A' <= chr && chr <= 'Z') { // Box.
-					this.initialState.boxes[row][col] = chr;
-				} else if ('a' <= chr && chr <= 'z') { // Goal.
-					Node.goals[row][col] = chr;
-				} else if (chr == ' ') {
+				}
+				else if ('0' <= chr && chr <= '9')
+				{ // Agent.
+					agents.add(new Agent((int) chr, new Pair<>(row, col)));
+				}
+				else if ('A' <= chr && chr <= 'Z')
+				{
+					// Box.
+					boxes.add(new Box(chr, new Pair<>(row, col)));
+				}
+				else if ('a' <= chr && chr <= 'z')
+				{
+					// Goal.
+					goals.add(new Goal(chr, new Pair<>(row, col)));
+				}
+				else if (chr == ' ')
+				{
 					// Free space.
-				} else {
+				}
+				else
+				{
 					System.err.println("Error, read invalid level character: " + (int) chr);
 					System.exit(1);
 				}
@@ -57,6 +72,13 @@ public class SearchClient {
 			row++;
 		}
 		Node.MAX_ROW = row;
+		// Arraylists to arrays
+		Node.goals = new Goal[goals.size()];
+		Node.goals = goals.toArray(Node.goals);
+		this.initialState.boxes = new Box[boxes.size()];
+		this.initialState.boxes = boxes.toArray(this.initialState.boxes);
+		this.initialState.agents = new Agent[agents.size()];
+		this.initialState.agents = agents.toArray(this.initialState.agents);
 	}
 
 	public LinkedList<Node> Search(Strategy strategy) throws IOException {
@@ -76,11 +98,15 @@ public class SearchClient {
 
 			Node leafNode = strategy.getAndRemoveLeaf();
 
+			
+
 			if (leafNode.isGoalState()) {
 				return leafNode.extractPlan();
 			}
 
 			strategy.addToExplored(leafNode);
+			//System.err.println("Hashcode of agent: " + String.valueOf(leafNode.hashCode()));
+			//System.err.println("Hej: " + leafNode.isGoalState());
 			for (Node n : leafNode.getExpandedNodes()) { // The list of expanded nodes is shuffled randomly; see Node.java.
 				if (!strategy.isExplored(n) && !strategy.inFrontier(n)) {
 					strategy.addToFrontier(n);

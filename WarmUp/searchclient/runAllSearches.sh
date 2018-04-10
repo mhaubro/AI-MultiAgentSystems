@@ -4,6 +4,7 @@
 #Will give a file output.txt, which can be compiled using latex.
 javac searchclient/*.java
 LEVEL=(SAD1 SAD2 friendsofDFS friendsofBFS SAFirefly SACrunch)
+NUMBER=6
 g++ prober.cpp -o prober
 for VAL in {0..10..2}
 do

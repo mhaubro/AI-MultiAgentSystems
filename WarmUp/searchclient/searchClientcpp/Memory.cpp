@@ -1,27 +1,62 @@
 #include "Memory.h"
-#include "centralHeader.h"
+#include <string>
+//#include "centralHeader.h"
+#include <cstring>
 
-public class Memory {
-	private static final Runtime RUNTIME = Runtime.getRuntime();
-	private static final double MB = 1024 * 1024;
+	int Memory::limit;
 
-	public static double used() {
-		return (RUNTIME.totalMemory() - RUNTIME.freeMemory()) / MB;
+	int Memory::parseLine(char* line){
+		// This assumes that a digit will be found and the line ends in " Kb".
+		int i = strlen(line);
+		const char* p = line;
+		while (*p <'0' || *p > '9') p++;
+		line[i-3] = '\0';
+		i = atoi(p);
+		return i;
 	}
 
-	public static double free() {
-		return RUNTIME.freeMemory() / MB;
+
+	int Memory::getValue(){ //Note: this value is in MB!
+		FILE* file = fopen("/proc/self/status", "r");
+		int result = -1;
+		char line[128];
+
+		while (fgets(line, 128, file) != NULL){
+			if (strncmp(line, "VmSize:", 7) == 0){
+				result = parseLine(line);
+				break;
+			}
+		}
+		fclose(file);
+		return result/1024;
 	}
 
-	public static double total() {
-		return RUNTIME.totalMemory() / MB;
+	bool Memory::checkMemory(){
+		if (used() > limit){
+			//Throw exception?
+			return false;
+		}
+		return true;
 	}
 
-	public static double max() {
-		return RUNTIME.maxMemory() / MB;
+	int Memory::used() {
+		return getValue();
 	}
 
-	public static String stringRep() {
-		return String.format("[Used: %.2f MB, Free: %.2f MB, Alloc: %.2f MB, MaxAlloc: %.2f MB]", used(), free(), total(), max());
+	int Memory::free() {
+		return (limit - getValue());
 	}
-}
+
+	int Memory::max() {
+		return limit;
+	}
+
+	std::string Memory::stringRep() {
+		//Inspired by https://stackoverflow.com/questions/25169915/is-writing-to-str0-buffer-of-a-stdstring-well-defined-behaviour-in-c11
+		char stemp[100];
+		sprintf(stemp, "[Used: %d MB, Free: %d MB, MaxAlloc: %d MB]", used(), free(), max());
+		std::string s;
+		s.resize(sizeof(stemp)-1);
+		memcpy(&s[0], stemp, strlen(stemp)-1);
+		return s;
+	}
