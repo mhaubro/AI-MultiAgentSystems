@@ -84,36 +84,36 @@ namespace std {
 
 	std::vector<Node *> Node::getExpandedNodes(){
 		std::vector<Node *> expandedNodes = std::vector<Node *>(0);
-		for (Command c : Command::EVERY) {
+		for (Command * c : Command::EVERY) {
 			// Determine applicability of action
-			int newAgentRow = this->agentRow + Command::dirToRowChange(c.dir1);
-			int newAgentCol = this->agentCol + Command::dirToColChange(c.dir1);
+			int newAgentRow = this->agentRow + Command::dirToRowChange(c->dir1);
+			int newAgentCol = this->agentCol + Command::dirToColChange(c->dir1);
 
-			if (c.actionType == Command::Move) {
+			if (c->actionType == Command::Move) {
 				//std::cerr << "Size of map: " << this->walls.size();
 				//std::cerr << "New col: " << newAgentCol << " New row: " << newAgentRow << "\n";
 				// Check if there's a wall or box on the cell to which the agent is moving
 				if (this->cellIsFree(newAgentRow, newAgentCol)) {
-					std::cerr << "A cell is free\n";
+					//std::cerr << "A cell is free\n";
 					//std::cerr << "Element addedMove\n";
 					Node * n = this->ChildNode();
-					n->action = &c;
+					n->action = c;
 					n->agentRow = newAgentRow;
 					n->agentCol = newAgentCol;
 					expandedNodes.push_back(n);
 				}
-			} else if (c.actionType == Command::Push) {
+			} else if (c->actionType == Command::Push) {
 				// Make sure that there's actually a box to move
 				if (this->boxAt(newAgentRow, newAgentCol)) {
-					int newBoxRow = newAgentRow + Command::dirToRowChange(c.dir2);
-					int newBoxCol = newAgentCol + Command::dirToColChange(c.dir2);
+					int newBoxRow = newAgentRow + Command::dirToRowChange(c->dir2);
+					int newBoxCol = newAgentCol + Command::dirToColChange(c->dir2);
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxRow, newBoxCol)) {
-						std::cerr << "A box can be pushed\n";
+						//std::cerr << "A box can be pushed\n";
 						//std::cerr << "Element addedBox\n";
 						Node * n = this->ChildNode();
 
-						n->action = &c;
+						n->action = c;
 						n->agentRow = newAgentRow;
 						n->agentCol = newAgentCol;
 						n->boxes[newBoxRow+newBoxCol*MAX_ROW] = this->boxes[newAgentRow+newAgentCol*MAX_ROW];
@@ -121,17 +121,17 @@ namespace std {
 						expandedNodes.push_back(n);
 					}
 				}
-			} else if (c.actionType == Command::Pull) {
+			} else if (c->actionType == Command::Pull) {
 				// Cell is free where agent is going
 				if (this->cellIsFree(newAgentRow, newAgentCol)) {
-					int boxRow = this->agentRow + Command::dirToRowChange(c.dir2);
-					int boxCol = this->agentCol + Command::dirToColChange(c.dir2);
+					int boxRow = this->agentRow + Command::dirToRowChange(c->dir2);
+					int boxCol = this->agentCol + Command::dirToColChange(c->dir2);
 					// .. and there's a box in "dir2" of the agent
 					if (this->boxAt(boxRow, boxCol)) {
-						std::cerr << "A box can be pulled\n";
+						//std::cerr << "A box can be pulled\n";
 						//std::cerr << "Element addedPull\n";
 						Node * n = this->ChildNode();
-						n->action = &c;
+						n->action = c;
 						n->agentRow = newAgentRow;
 						n->agentCol = newAgentCol;
 						n->boxes[this->agentRow+this->agentCol*MAX_ROW] = this->boxes[boxRow+boxCol*MAX_ROW];
@@ -222,8 +222,8 @@ namespace std {
 			std::cerr << s;*/
 
 
-			for (int col = 0; col < MAX_COL; col++) {
-				for (int row = 0; row < MAX_ROW; row++) {
+			for (int row = 0; row < MAX_ROW; row++) {
+				for (int col = 0; col < MAX_COL; col++) {
 
 				if (Node::boxes[row+col*MAX_ROW] != '\0') {
 					s += (boxes[row+col*MAX_ROW]);
@@ -237,7 +237,6 @@ namespace std {
 					s += (" ");
 				}
 			}
-
 			s.append("\n");
 		}
 		return s;

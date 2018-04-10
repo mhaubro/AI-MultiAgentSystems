@@ -84,8 +84,8 @@ SearchClient::SearchClient()
 		"\nDim: [" << cols << "," << rows.size() << "]\n";
 
 //The max number of a row index is the amount of columns.
-	Node::MAX_ROW = cols;
-	Node::MAX_COL = rows.size();
+	Node::MAX_ROW = rows.size();
+	Node::MAX_COL = cols;
 
 	int size = rows.size();
 
@@ -95,27 +95,30 @@ SearchClient::SearchClient()
 
 	initialState = new Node();
 	initialState->boxes = vector<char>(rows.size()*cols, '\0');
+	//std::cerr << "cols is equal to " << cols << "\n";
 	for (int y = 0; y < size; y++){
+	//	std::cerr << "Y is equal to " << y << "\n";
 		string row = rows.front();
 		rows.pop_front();
 		for (int x = 0; x < row.length(); x++){
+	//		std::cerr << "X is equal to " << x << "\n";
 			char chr = row[x];
 
 
 			if (chr == '+'){
-				Node::walls[x + y*cols] = true;
+				Node::walls[y + x*size] = true;
 
 			} else if (isAgent(chr)){
-				initialState->agentRow = y;
-				initialState->agentCol = x;
+				initialState->agentRow = x;
+				initialState->agentCol = y;
 			} else if (isBox(chr)){
-				initialState->boxes[x+y*cols] = chr;
+				initialState->boxes[y+x*size] = chr;
 			} else if (isGoal(chr)){
-				Node::goals[x+y*cols] = chr;
+				Node::goals[y+x*size] = chr;
 			} else if (chr == ' '){
 				//Do nothing
 			} else {
-				std::cerr << "Error, read invalid level character: [" << chr << "]" ;
+	//			std::cerr << "Error, read invalid level character: [" << chr << "]" ;
 			}
 		}
 	}
@@ -153,26 +156,26 @@ int main(int argc, char * argv[]){
 	//std::cerr << strategy.searchStatus();
 
 	for (Node * n : solution) {
-		/*std::cerr << "Printing solution1";
+		//std::cerr << "Printing solution1";
 		if (n == NULL){
 			std::cerr << "Something is null";
 		}
 		std::string act = n->action->to_string();
-		std::cerr << n->action->to_string();
-		std::cerr << "Printing solution2";
+		//std::cerr << n->action->to_string();
+		//std::cerr << "Printing solution2";
 		std::cerr << act;
 		std::string response;
-		std::cerr << "Printing solution3";
+		//std::cerr << "Printing solution3";
 		std::getline(std::cin, response);
-		std::cerr << "Printing solution4";
+		//std::cerr << "Printing solution4";
 		if (response.find(std::string("false")) != std::string::npos) {
 			sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, act);
 			std::cerr << std::string(buffer);
 			sprintf(buffer, "%s was attempted in \n%s\n", act, n->toString());
 			std::cerr << std::string(buffer);
 			break;
-		}*/
-		std::cerr << "LastD: " << Command::LASTD << "\n";
+		}
+		//std::cerr << "LastD: " << Command::LASTD << "\n";
 		std::cerr << n->toString();
 		std::cerr << n->action->to_string();
 		}
@@ -209,7 +212,7 @@ int main(int argc, char * argv[]){
 
 			strategy->addToExplored(leafNode);
 			std::vector<Node *> nodes = leafNode->getExpandedNodes();
-			std::cerr << "Number of new elements: " << nodes.size() << "\n";
+			//std::cerr << "Number of new elements: " << nodes.size() << "\n";
 			for (Node * n : nodes) {
 				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
 					strategy->addToFrontier(n);

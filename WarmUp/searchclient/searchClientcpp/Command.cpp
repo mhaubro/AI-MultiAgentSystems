@@ -7,27 +7,27 @@
 #include <iostream>
 
 	//Initializing EVERY through a lambda expression. Requires C++-11
-	std::vector<Command> Command::EVERY = []() -> std::vector<Command> {
-		std::list<Command> cmds = std::list<Command>();
+	std::vector<Command *> Command::EVERY = []() -> std::vector<Command *> {
+		std::list<Command *> cmds = std::list<Command *>();
 		for (int d1 = 0; d1 < Command::LASTD; d1++) {
 			for (int d2 = 0; d2 < Command::LASTD; d2++) {
 				if (!Command::isOpposite(d1, d2)) {
-					cmds.push_back(Command(1, d1, d2));
+					cmds.push_back(new Command(1, d1, d2));
 				}
 			}
 		}
 		for (int d1 = 0; d1 < Command::LASTD; d1++) {
 			for (int d2 = 0; d2 < Command::LASTD; d2++) {
 				if (d1 != d2) {
-					cmds.push_back(Command(2, d1, d2));
+					cmds.push_back(new Command(2, d1, d2));
 				}
 			}
 		}
 		for (int d = 0; d < Command::LASTD; d++) {
-			cmds.push_back(Command(d));
+			cmds.push_back(new Command(d));
 		}
 
-		return 		std::vector<Command> { std::make_move_iterator(std::begin(cmds)),
+		return 		std::vector<Command *> { std::make_move_iterator(std::begin(cmds)),
                   std::make_move_iterator(std::end(cmds)) };;
 	}();//Lambda ends here
 
@@ -67,7 +67,7 @@
 
 	Command::Command(int t, int d1, int d2) {
 		this->actionType = t;
-		std::cerr << "this->actionType: " << this->actionType << "\n"
+		//std::cerr << "this->actionType: " << this->actionType << "\n";
 		this->dir1 = d1;
 		this->dir2 = d2;
 	}
