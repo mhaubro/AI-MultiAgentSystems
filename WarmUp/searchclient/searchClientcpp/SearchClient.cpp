@@ -6,6 +6,7 @@
 #include <iostream>
 #include <iterator>
 #include "Strategy.h"
+#include "Command.h"
 
 using std::stringstream;
 using std::istream;
@@ -83,8 +84,8 @@ SearchClient::SearchClient()
 		"\nDim: [" << cols << "," << rows.size() << "]\n";
 
 //The max number of a row index is the amount of columns.
-	Node::MAX_ROW = rows.size();
-	Node::MAX_COL = cols;
+	Node::MAX_ROW = cols;
+	Node::MAX_COL = rows.size();
 
 	int size = rows.size();
 
@@ -118,6 +119,8 @@ SearchClient::SearchClient()
 			}
 		}
 	}
+	std::cerr << initialState->toString();
+
 }
 
 
@@ -147,20 +150,31 @@ int main(int argc, char * argv[]){
 	solution = client.search(&strategy);
 	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
 	std::cerr << "Found solution of length " << solution.size() << ".\n";
-	std::cerr << strategy.searchStatus();
+	//std::cerr << strategy.searchStatus();
 
 	for (Node * n : solution) {
+		/*std::cerr << "Printing solution1";
+		if (n == NULL){
+			std::cerr << "Something is null";
+		}
 		std::string act = n->action->to_string();
+		std::cerr << n->action->to_string();
+		std::cerr << "Printing solution2";
 		std::cerr << act;
 		std::string response;
+		std::cerr << "Printing solution3";
 		std::getline(std::cin, response);
+		std::cerr << "Printing solution4";
 		if (response.find(std::string("false")) != std::string::npos) {
 			sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, act);
 			std::cerr << std::string(buffer);
 			sprintf(buffer, "%s was attempted in \n%s\n", act, n->toString());
 			std::cerr << std::string(buffer);
 			break;
-			}
+		}*/
+		std::cerr << "LastD: " << Command::LASTD << "\n";
+		std::cerr << n->toString();
+		std::cerr << n->action->to_string();
 		}
 		return 0;
 	}
@@ -171,11 +185,10 @@ int main(int argc, char * argv[]){
 		std::string s = std::string(buffer);
 		std::cerr << s;
 		strategy->addToFrontier(this->initialState);
-
 		int iterations = 0;
 
 		while (true) {
-			std::cerr << "Iteration!\njmghmb";
+			//std::cerr << "Iteration!\n";
 			if (iterations == 1000) {
 				std::cerr << strategy->searchStatus();
 				iterations = 0;
@@ -189,13 +202,14 @@ int main(int argc, char * argv[]){
 			Node * leafNode = strategy->getAndRemoveLeaf();
 
 			if (leafNode->isGoalState()) {
-				std::cerr << "Goal!";
+				std::cerr << "Goal!\n";
 				std::cerr << leafNode->toString();
 				return leafNode->extractPlan();
 			}
 
 			strategy->addToExplored(leafNode);
 			std::vector<Node *> nodes = leafNode->getExpandedNodes();
+			std::cerr << "Number of new elements: " << nodes.size() << "\n";
 			for (Node * n : nodes) {
 				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
 					strategy->addToFrontier(n);

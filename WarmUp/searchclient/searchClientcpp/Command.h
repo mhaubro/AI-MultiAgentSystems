@@ -9,7 +9,7 @@ private:
 
 public:
   enum Dir {
-    N=0, W=1, E=2, S=3, LASTD=4
+    N, W, E, S, LASTD
   };
 
   static bool isOpposite(int d1, int d2);
@@ -18,7 +18,7 @@ public:
   std::string to_string();
 
   enum Type {
-    Move=0, Push=1, Pull=2, LASTT=3
+    Move, Push, Pull, LASTT
   };
 
   static std::vector<Command> EVERY;

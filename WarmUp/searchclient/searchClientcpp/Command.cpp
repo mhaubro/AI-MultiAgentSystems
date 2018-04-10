@@ -4,25 +4,26 @@
 #include <vector>
 #include <list>
 #include <cstring>
+#include <iostream>
 
 	//Initializing EVERY through a lambda expression. Requires C++-11
 	std::vector<Command> Command::EVERY = []() -> std::vector<Command> {
 		std::list<Command> cmds = std::list<Command>();
-		for (int d1 = 0; d1 < Command::LASTT; d1++) {
-			for (int d2 = 0; d2 < Command::LASTT; d2++) {
+		for (int d1 = 0; d1 < Command::LASTD; d1++) {
+			for (int d2 = 0; d2 < Command::LASTD; d2++) {
 				if (!Command::isOpposite(d1, d2)) {
-					cmds.push_back(Command(Command::Push, d1, d2));
+					cmds.push_back(Command(1, d1, d2));
 				}
 			}
 		}
-		for (int d1 = 0; d1 < Command::LASTT; d1++) {
-			for (int d2 = 0; d2 < Command::LASTT; d2++) {
+		for (int d1 = 0; d1 < Command::LASTD; d1++) {
+			for (int d2 = 0; d2 < Command::LASTD; d2++) {
 				if (d1 != d2) {
-					cmds.push_back(Command(Command::Pull, d1, d2));
+					cmds.push_back(Command(2, d1, d2));
 				}
 			}
 		}
-		for (int d = 0; d < Command::LASTT; d++) {
+		for (int d = 0; d < Command::LASTD; d++) {
 			cmds.push_back(Command(d));
 		}
 
@@ -66,6 +67,7 @@
 
 	Command::Command(int t, int d1, int d2) {
 		this->actionType = t;
+		std::cerr << "this->actionType: " << this->actionType << "\n"
 		this->dir1 = d1;
 		this->dir2 = d2;
 	}
@@ -76,20 +78,23 @@
 	}
 
 	std::string Command::to_string() {
-		static const char * DirNames[] = {"N", "W", "E", "S"};
-		static const char * TypeNames[] = {"Move", "Push", "Pull"};
-		std::string s;
-		char newC[8];
+		static const char DirNames[4][1+1] = {"N", "W", "E", "S"};
+		static const char TypeNames[3][4+1] = {"Move", "Push", "Pull"};
+		std::string s = "";
+		char newC[32];
+		std::cerr << "actiontype: " << this->actionType << "\n";
+		std::cerr << "dir1: " << this->dir1 << "\n";
+		std::cerr << "dir2: " << this->dir2 << "\n";
 		if (this->actionType == Command::Move){
 			//Command will be 5 chars long
-			s.resize(5);
+			s.resize(9);
 			sprintf(newC, "[%s(%s)]", TypeNames[this->actionType], DirNames[this->dir1]);
-			std::memcpy(&s[0], newC, 5);
+			std::memcpy(&s[0], newC, 9);
 			return s;
 		} else {
-			s.resize(6);
-			sprintf(newC, "[%s(%s,%s)]", TypeNames[this->actionType], DirNames[this->dir1], DirNames[this->dir1]);
-			std::memcpy(&s[0], newC, 6);
+			s.resize(11);
+			sprintf(newC, "[%s(%s,%s)]", TypeNames[this->actionType], DirNames[this->dir1], DirNames[this->dir2]);
+			std::memcpy(&s[0], newC, 11);
 			return s;
 		}
 	}

@@ -83,15 +83,19 @@ namespace std {
 	}
 
 	std::vector<Node *> Node::getExpandedNodes(){
-		std::vector<Node *> expandedNodes = std::vector<Node *>();
+		std::vector<Node *> expandedNodes = std::vector<Node *>(0);
 		for (Command c : Command::EVERY) {
 			// Determine applicability of action
 			int newAgentRow = this->agentRow + Command::dirToRowChange(c.dir1);
 			int newAgentCol = this->agentCol + Command::dirToColChange(c.dir1);
 
 			if (c.actionType == Command::Move) {
+				//std::cerr << "Size of map: " << this->walls.size();
+				//std::cerr << "New col: " << newAgentCol << " New row: " << newAgentRow << "\n";
 				// Check if there's a wall or box on the cell to which the agent is moving
 				if (this->cellIsFree(newAgentRow, newAgentCol)) {
+					std::cerr << "A cell is free\n";
+					//std::cerr << "Element addedMove\n";
 					Node * n = this->ChildNode();
 					n->action = &c;
 					n->agentRow = newAgentRow;
@@ -105,6 +109,8 @@ namespace std {
 					int newBoxCol = newAgentCol + Command::dirToColChange(c.dir2);
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxRow, newBoxCol)) {
+						std::cerr << "A box can be pushed\n";
+						//std::cerr << "Element addedBox\n";
 						Node * n = this->ChildNode();
 
 						n->action = &c;
@@ -122,6 +128,8 @@ namespace std {
 					int boxCol = this->agentCol + Command::dirToColChange(c.dir2);
 					// .. and there's a box in "dir2" of the agent
 					if (this->boxAt(boxRow, boxCol)) {
+						std::cerr << "A box can be pulled\n";
+						//std::cerr << "Element addedPull\n";
 						Node * n = this->ChildNode();
 						n->action = &c;
 						n->agentRow = newAgentRow;
@@ -133,8 +141,9 @@ namespace std {
 				}
 			}
 		}
-		auto rng = std::default_random_engine {};
-		std::shuffle(std::begin(expandedNodes), std::end(expandedNodes), rng);
+		//auto rng = std::default_random_engine {};
+		//std::shuffle(std::begin(expandedNodes), std::end(expandedNodes), rng);
+		//std::cerr << "Number of nodes: " << expandedNodes.size() << "\n";
 		return expandedNodes;
 	}
 
@@ -142,7 +151,8 @@ namespace std {
 		if (row < 0 || row >= MAX_ROW || col < 0 || col >= MAX_COL){
 			return false;
 		}
-		return !walls[row+col*MAX_ROW] && boxes[row+col*MAX_ROW] == 0;
+		//std::cerr << "walls col row: " << walls[row+col*MAX_ROW] << " boxes " << boxes[row+col*MAX_ROW];
+		return (!walls[row+col*MAX_ROW] && (boxes[row+col*MAX_ROW] == '\0'));
 	}
 
 	bool Node::boxAt(int row, int col) {
@@ -201,7 +211,6 @@ namespace std {
 
 
 
-		for (int row = 0; row < MAX_ROW; row++) {
 			//std::cerr << "dummy";
 			//if (!this->walls[row]) {
 			//	break;
@@ -214,6 +223,8 @@ namespace std {
 
 
 			for (int col = 0; col < MAX_COL; col++) {
+				for (int row = 0; row < MAX_ROW; row++) {
+
 				if (Node::boxes[row+col*MAX_ROW] != '\0') {
 					s += (boxes[row+col*MAX_ROW]);
 				} else if (Node::goals[row+col*MAX_ROW] != '\0') {

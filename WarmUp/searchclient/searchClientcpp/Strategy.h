@@ -5,6 +5,7 @@
 #include <queue>
 #include <chrono>
 #include <functional>
+#include <unordered_set>
 #include "memory.h"
 #include "Node.h"
 
@@ -12,7 +13,7 @@
 
 class Strategy {
 private:
-  std::unordered_map<Node *, int> explored;
+  std::unordered_set<Node *> explored;
 	//double startTime;
 
 public:
@@ -35,7 +36,7 @@ public:
 	class StrategyBFS : public Strategy {
   public:
 		std::queue<Node *> frontier;
-		std::unordered_map<Node *, int> frontierSet;
+		std::unordered_set<Node *> frontierSet;
 
 		StrategyBFS();
 
