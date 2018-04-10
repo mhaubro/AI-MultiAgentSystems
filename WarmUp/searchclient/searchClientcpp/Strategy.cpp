@@ -9,7 +9,7 @@
 
 
 	Strategy::Strategy() {
-		this->explored = std::unordered_set<Node * >();
+		this->explored = std::unordered_set<Node *, NodeHash, NodeEqual >();
 		//this->startTime = std::chrono::high_resolution_clock::now();
 	}
 
@@ -60,7 +60,7 @@
 
 	StrategyBFS::StrategyBFS() {
 		this->frontier = std::queue<Node *>();
-		this->frontierSet = std::unordered_set<Node *>();
+		this->frontierSet = std::unordered_set<Node *, NodeHash, NodeEqual>();
 	}
 
 		Node * StrategyBFS::getAndRemoveLeaf() {

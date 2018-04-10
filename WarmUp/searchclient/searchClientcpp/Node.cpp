@@ -10,17 +10,12 @@
 #include <iomanip>
 #define RANDOM_SEED 1
 
-/*
-* Necessary for hashing
-*/
 
-bool Node::operator==(const Node & obj) const{
+
+bool Node::operator==(const Node * obj) const{
 	return (equals(obj));
 }
 
-/*
-* Necessary for hashing
-*/
 
 namespace std {
   template <> struct hash<Node *> {
@@ -190,37 +185,23 @@ namespace std {
 			str = std::string(this->goals.begin(),this->goals.end());
 			result = prime * result + std::hash<std::string>{}(str);
 			result = prime * result + std::hash<std::vector<bool>>{}(this->walls);
-			std::cerr << result;
+			//std::cerr << result;
 			return result;
 	}
 
-	bool Node::equals(Node obj) const {
-		obj = (Node) obj;
+	bool Node::equals(const Node * obj) const {
 		if (obj == NULL)
 			return false;
 			//Using == works with std::vector
-		if (this->agentRow != obj.agentRow || this->agentCol != obj.agentCol)
+		if (this->agentRow != obj->agentRow || this->agentCol != obj->agentCol)
 			return false;
-		if ((this->boxes != obj.boxes))
+		if ((this->boxes != obj->boxes))
 			return false;
 		return true;
 	}
 
 	std::string Node::toString() {
 		std::string s("");
-
-
-
-			//std::cerr << "dummy";
-			//if (!this->walls[row]) {
-			//	break;
-			//}
-
-			/*char buffer[50];
-			sprintf(buffer, "size: %d", boxes.size());
-			std::string s(buffer);
-			std::cerr << s;*/
-
 
 			for (int row = 0; row < MAX_ROW; row++) {
 				for (int col = 0; col < MAX_COL; col++) {

@@ -31,8 +31,8 @@ public:
 	std::string toString();
 
 	int hashCode () const;
-	bool equals (Node obj) const;
-	bool operator==(const Node & obj) const;
+	bool equals (const Node * obj) const;
+	bool operator==(const Node * obj) const;
 	// Arrays are indexed from the top-left of the level, with first index being row and second being column.
 	// Row 0: (0,0) (0,1) (0,2) (0,3) ...
 	// Row 1: (1,0) (1,1) (1,2) (1,3) ...
@@ -52,6 +52,26 @@ private:
 	bool boxAt(int row, int col);
 	Node * ChildNode();
 
+};
+/*
+* Necessary for hashing using the std::unordered set
+*/
+struct NodeHash {
+public:
+	size_t operator()(const Node * n) const {
+		return n->hashCode();
+	}
+};
+
+/*
+* Necessary for comparing using the std::unordered set
+*/
+struct NodeEqual {
+public:
+	bool operator()(const Node * n1, const Node * n2) const {
+
+		return n1->equals(n2);
+	}
 };
 
 #endif

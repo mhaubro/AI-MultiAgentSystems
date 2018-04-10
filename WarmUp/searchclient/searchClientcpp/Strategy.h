@@ -13,7 +13,7 @@
 
 class Strategy {
 private:
-  std::unordered_set<Node *> explored;
+  std::unordered_set<Node *, NodeHash, NodeEqual> explored;
 	//double startTime;
 
 public:
@@ -36,7 +36,7 @@ public:
 	class StrategyBFS : public Strategy {
   public:
 		std::queue<Node *> frontier;
-		std::unordered_set<Node *> frontierSet;
+		std::unordered_set<Node *, NodeHash, NodeEqual> frontierSet;
 
 		StrategyBFS();
 

@@ -82,9 +82,11 @@
 		static const char TypeNames[3][4+1] = {"Move", "Push", "Pull"};
 		std::string s = "";
 		char newC[32];
+/*
 		std::cerr << "actiontype: " << this->actionType << "\n";
 		std::cerr << "dir1: " << this->dir1 << "\n";
 		std::cerr << "dir2: " << this->dir2 << "\n";
+*/
 		if (this->actionType == Command::Move){
 			//Command will be 5 chars long
 			s.resize(9);

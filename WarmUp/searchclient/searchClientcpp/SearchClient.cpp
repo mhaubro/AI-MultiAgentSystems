@@ -190,10 +190,9 @@ int main(int argc, char * argv[]){
 		int iterations = 0;
 
 		while (true) {
-			//std::cerr << "Iteration!\n";
-			if (iterations == 1000) {
+			std::cerr << "Iteration: "<< iterations << " \n";
+			if (iterations %1000 == 0) {
 				std::cerr << strategy->searchStatus();
-				iterations = 0;
 			}
 
 			if (strategy->frontierIsEmpty()) {
