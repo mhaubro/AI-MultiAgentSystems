@@ -31,5 +31,4 @@ public class Goal {
     {
         this.agent = a;
     }
-
 }

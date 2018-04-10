@@ -15,7 +15,7 @@ public abstract class Heuristic implements Comparator<Node>
 			int minDist = Integer.MAX_VALUE;
 			for(Goal goal : Node.goals)
 			{
-				if(box.chr == goal.chr && goal.box != null)
+				if(box.chr == Character.toUpperCase(goal.chr) && goal.box == null)
 				{
 					int dist = manhattan(goal.location, box.location);
 					if(dist < minDist)
@@ -32,7 +32,7 @@ public abstract class Heuristic implements Comparator<Node>
 			int minDist = Integer.MAX_VALUE;
 			for(Goal goal : Node.goals)
 			{
-				if(goal.agent != null)
+				if(goal.agent == null)
 				{
 					int dist = manhattan(goal.box.location, a.location);
 					if(dist < minDist)

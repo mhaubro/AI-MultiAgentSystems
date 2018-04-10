@@ -105,8 +105,8 @@ public class SearchClient {
 			}
 
 			strategy.addToExplored(leafNode);
-			System.err.println("Hashcode of agent: " + String.valueOf(leafNode.hashCode()));
-			System.err.println("Hej: " + leafNode.isGoalState());
+			//System.err.println("Hashcode of agent: " + String.valueOf(leafNode.hashCode()));
+			//System.err.println("Hej: " + leafNode.isGoalState());
 			for (Node n : leafNode.getExpandedNodes()) { // The list of expanded nodes is shuffled randomly; see Node.java.
 				if (!strategy.isExplored(n) && !strategy.inFrontier(n)) {
 					strategy.addToFrontier(n);
