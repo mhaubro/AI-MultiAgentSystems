@@ -9,14 +9,24 @@ Root_Directory =  ${strip $(CURDIR)}
 SCDIR = $(Root_Directory)/searchClientcpp
 SOURCEDIR = $(SCDIR)/src
 
-%.o: %.cpp
+OBJECT_DIR = $(Root_Directory)/objects
+
+#OBJ_FOLDERS = $(sort $(dir $(wildcard $(SCDIR)/*/)))
+
+#directories: ${OBJ_FOLDERS}
+
+#${OBJ_FOLDERS}:
+#	mkdir -p ${OBJ_FOLDERS}
+
+
+$(OBJECT_DIR)/%.cpp.o: $(SCDIR)/%.cpp
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
-OBJECT_DIR = $(Root_Directory)/objects
 
 #Grabs all .cpp in the search client folder
 CPP_FILES = $(wildcard $(SOURCEDIR)/*.cpp)
-OBJS = $(patsubst %.cpp,%.o,$(CPP_FILES))
+CPPSHORT = $(subst $(SCDIR),,$(CPP_FILES))
+OBJS = $(foreach d, $(CPPSHORT), $(OBJECT_DIR)$(d).o)
 #%.cpp.o:	%.cpp
 #	$(CPP) $(CPP_FLAGS) $(INCLUDE_DIRS) $< -o $@
 
@@ -28,15 +38,14 @@ searchclientbin: $(OBJS)
 EXECUTABLES += $(Root_Directory)/searchclientbin
 
 #-I marks that headers can be found in a directory
-#INCLUDE_TEMP += $(Root_Directory)/searchClientcpp/include
+INCLUDE_TEMP += $(Root_Directory)/searchClientcpp/include
 
 all: prober maketable searchclientbin
 
-testCompile:	searchclientbin
-	#@echo $(CPP_FILES)
-	#@echo $(CPP)
-	#@echo $(CPP_FLAGS)
-	#@echo $(INCLUDE_DIRS)
+testCompile:
+	@echo $(CPP_FILES)
+	@echo $(CPPSHORT)
+	@echo $(OBJ_FOLDERS)
 
 default: searchclientbin
 
