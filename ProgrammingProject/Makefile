@@ -4,9 +4,10 @@
 #
 #
 .PHONY: all clean
-#-include $(searchClientDirectory)/Makefile.mk
+#-include $(SOURCEDIR)/Makefile.mk
 Root_Directory =  ${strip $(CURDIR)}
-searchClientDirectory = $(Root_Directory)/searchClientcpp/src
+SCDIR = $(Root_Directory)/searchClientcpp
+SOURCEDIR = $(SCDIR)/src
 
 %.o: %.cpp
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_DIRS) -c $< -o $@
@@ -14,7 +15,7 @@ searchClientDirectory = $(Root_Directory)/searchClientcpp/src
 OBJECT_DIR = $(Root_Directory)/objects
 
 #Grabs all .cpp in the search client folder
-CPP_FILES = $(wildcard $(searchClientDirectory)/*.cpp)
+CPP_FILES = $(wildcard $(SOURCEDIR)/*.cpp)
 OBJS = $(patsubst %.cpp,%.o,$(CPP_FILES))
 #%.cpp.o:	%.cpp
 #	$(CPP) $(CPP_FLAGS) $(INCLUDE_DIRS) $< -o $@
@@ -24,11 +25,10 @@ OBJS = $(patsubst %.cpp,%.o,$(CPP_FILES))
 searchclientbin: $(OBJS)
 	$(CPP) -o $@ $^
 
-EXECUTABLES += $(searchClientDirectory)/searchclientbin
+EXECUTABLES += $(Root_Directory)/searchclientbin
 
 #-I marks that headers can be found in a directory
-INCLUDE_TEMP += $(Root_Directory)/searchClientcpp/include
-
+#INCLUDE_TEMP += $(Root_Directory)/searchClientcpp/include
 
 all: prober maketable searchclientbin
 
@@ -53,7 +53,7 @@ CPP_FLAGS = -std=c++14#Using -O3 to aggressively optimize
 #Takes all of include_temp, and puts on -I flag.
 INCLUDE_DIRS = $(foreach dir, $(basename $(INCLUDE_TEMP)), -I$(dir))
 
-EXECUTABLES += $(Root_Directory)/prober $(Root_Directory)/maketable $(Root_Directory)/searchclientbin
+#EXECUTABLES += $(Root_Directory)/prober $(Root_Directory)/maketable $(Root_Directory)/searchclientbin
 
 clean:
 	rm $(EXECUTABLES) $(OBJS)
