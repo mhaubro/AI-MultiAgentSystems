@@ -3,23 +3,27 @@
 #prober etc., as well as make clean for all of them, tidying up things
 #
 #
-.PHONY: all clean
+.PHONY: all clean allclean
 #-include $(SOURCEDIR)/Makefile.mk
 Root_Directory =  ${strip $(CURDIR)}
-SCDIR = $(Root_Directory)/searchClientcpp
+SCDIR = $(Root_Directory)/searcher
 SOURCEDIR = $(SCDIR)/src
+BINDIR = $(Root_Directory)/bin
+OBJECT_DIR = $(SCDIR)/objects
+AUX_DIR = $(Root_Directory)/prober_presenter
 
-OBJECT_DIR = $(Root_Directory)/objects
+#Creating directories for .o as in https://stackoverflow.com/questions/1950926/create-directories-using-make-file
+#MKDIR = mkdir -p
+#directories: ${OUT_DIR}
 
-#OBJ_FOLDERS = $(sort $(dir $(wildcard $(SCDIR)/*/)))
+#${OUT_DIR}:
+#	${MKDIR_P} ${OUT_DIR}
 
-#directories: ${OBJ_FOLDERS}
-
-#${OBJ_FOLDERS}:
-#	mkdir -p ${OBJ_FOLDERS}
+#DIRECTORIES = $(sort $(dir $(wildcard $(SOURCEDIR)/*/)))
 
 
 $(OBJECT_DIR)/%.cpp.o: $(SCDIR)/%.cpp
+	mkdir -p $(@D)
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 
@@ -32,28 +36,28 @@ OBJS = $(foreach d, $(CPPSHORT), $(OBJECT_DIR)$(d).o)
 
 #OBJ_SC = $(foreach d, $(basename $(CPP_FILES)), $(d).cpp.o)
 
-searchclientbin: $(OBJS)
-	$(CPP) -o $@ $^
+searcher: $(OBJS)
+	$(CPP) -o $(BINDIR)/searcher $^
 
-EXECUTABLES += $(Root_Directory)/searchclientbin
+EXECUTABLESSEARCHER += $(Root_Directory)/searcher
 
 #-I marks that headers can be found in a directory
-INCLUDE_TEMP += $(Root_Directory)/searchClientcpp/include
+INCLUDE_TEMP += $(SCDIR)/include
 
-all: prober maketable searchclientbin
+all: prober maketable searcher
 
 testCompile:
 	@echo $(CPP_FILES)
 	@echo $(CPPSHORT)
 	@echo $(OBJ_FOLDERS)
 
-default: searchclientbin
+default: searcher
 
-prober: $(Root_Directory)prober.cpp
-	$(CPP) $(CPP_FLAGS) $< -o prober
+prober: $(AUX_DIR)/prober.cpp
+	$(CPP) $(CPP_FLAGS) $< -o $(BINDIR)/prober
 
-maketable: $(Root_Directory)maketable.cpp
-	$(CPP) $(CPP_FLAGS) $< -o maketable
+maketable: $(AUX_DIR)/maketable.cpp
+	$(CPP) $(CPP_FLAGS) $< -o $(BINDIR)/maketable
 
 
 CPP = g++
@@ -62,12 +66,13 @@ CPP_FLAGS = -std=c++14#Using -O3 to aggressively optimize
 #Takes all of include_temp, and puts on -I flag.
 INCLUDE_DIRS = $(foreach dir, $(basename $(INCLUDE_TEMP)), -I$(dir))
 
-#EXECUTABLES += $(Root_Directory)/prober $(Root_Directory)/maketable $(Root_Directory)/searchclientbin
+#EXECUTABLES += $(Root_Directory)/prober $(Root_Directory)/maketable $(Root_Directory)/searcher
 
 clean:
+	rm $(EXECUTABLESEARCHER) $(OBJS)
+
+allclean:
 	rm $(EXECUTABLES) $(OBJS)
-
-
 
 
 export INCLUDE_DIRS
