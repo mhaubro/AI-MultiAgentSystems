@@ -63,20 +63,6 @@ namespace std {
 		return this->parent == NULL;
 	}
 
-	bool Node::isGoalState() {
-		for (int row = 0; row < MAX_ROW - 1; row++) {
-			for (int col = 0; col < MAX_COL - 1; col++) {
-				int idx = row + col*MAX_ROW;
-				char g = goals[idx];
-				char b = tolower(boxes[idx]);
-				if (g > 0 && b != g) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	std::vector<Node *> Node::getExpandedNodes(){
 		std::vector<Node *> expandedNodes = std::vector<Node *>(0);
 		for (Command * c : Command::EVERY) {
@@ -134,14 +120,6 @@ namespace std {
 		}
 
 		return expandedNodes;
-	}
-
-	bool Node::cellIsFree(int row, int col) {
-		if (row < 0 || row >= MAX_ROW || col < 0 || col >= MAX_COL){
-			return false;
-		}
-		//std::cerr << "walls col row: " << walls[row+col*MAX_ROW] << " boxes " << boxes[row+col*MAX_ROW];
-		return (!walls[row+col*MAX_ROW] && (boxes[row+col*MAX_ROW] == '\0'));
 	}
 
 	bool Node::boxAt(int row, int col) {
@@ -214,4 +192,108 @@ namespace std {
 			s.append("\n");
 		}
 		return s;
+	}
+
+	bool Node::isGoalState()
+	{
+		for(Goal * goal : Node->goals)
+		{
+			bool goalState = false;
+			for(Box * box : this->boxes){
+				if(goal->location->equals(box->location)){
+					goalState = true;
+					break;
+				}
+			}
+		if(!goalState)
+			return false;
+		}
+		return true;
+	}
+
+	Box * Node::getBox(int row, int col)
+	{
+		for(Box * box : this->boxes)
+		{
+			if(box->location.getLeft() == row && box->location.getRight() == col)
+				return box;
+		}
+		return NULL;
+		//throw new NullPointerException("No box at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
+	}
+
+	Goal * Node::getGoal(int row, int col)
+	{
+		for(Goal * goal : goals)
+		{
+			if(goal->location.getLeft() == row && goal->location.getRight() == col)
+				return goal;
+		}
+		//throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
+		return NULL;
+	}
+
+
+	Agent * Node::getAgent(int row, int col)
+	{
+		for(Agent * a : this->agents)
+		{
+			if(a->location.getLeft() == row && a->location.getRight() == col)
+				return a;
+		}
+		return NULL;
+		//throw new NullPointerException("No agent at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
+	}
+
+	bool Node::cellIsFree(int row, int col)
+	{
+		return !walls[row][col] && !boxAt(row, col) && !agentAt(row, col);
+	}
+
+	bool Node::boxAt(int row, int col)
+	{
+		for(Box * box : this->boxes)
+		{
+			if(box->location.getLeft() == row && box->location.getRight() == col)
+				return true;
+		}
+		return false;
+	}
+
+	bool Node::goalAt(int row, int col)
+	{
+		for(Goal * goal : goals)
+		{
+			if(goal->location.getLeft() == row && goal->location.getRight() == col)
+				return true;
+		}
+		return false;
+	}
+
+	bool Node::agentAt(int row, int col)
+	{
+		for(Agent * a : this->agents)
+		{
+			if(a->location.getLeft() == row && a->location.getRight() == col)
+				return true;
+		}
+		return false;
+	}
+
+	std::vector<Agent*> Node::DeepCloneAgents(std::vector<Agent*> agents)
+	{
+		std::vector<Agent *> clone = std::vector<Agent *>(agents.size());
+		for(int i = 0; i < boxes.size(); i++){
+			*(clone[i]) = new Agent(*agents[i]);
+		}
+		return clone;
+	}
+
+	std::vector<Box *> Node::DeepCloneBoxes(std::vector<Box *> boxes)
+	{
+		std::vector<Box *> clone = std::vector<Box *>(boxes.size());
+		for(int i = 0; i < boxes.size(); i++){
+			*(clone[i]) = new Box(*boxes[i]);
+		}
+		return clone;
 	}
