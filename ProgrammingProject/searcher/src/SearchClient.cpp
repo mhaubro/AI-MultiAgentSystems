@@ -154,7 +154,6 @@ int main(int argc, char * argv[]){
 	argv[2] contains how often the print should happen. This is optional, default is 1000
 	*/
 	Memory::limit = atoi(argv[1]);
-	std::cerr << Memory::limit << "mem\n";
 
 	int printfreq = 1000;
 	if (argc > 2){
