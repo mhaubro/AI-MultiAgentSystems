@@ -1,7 +1,8 @@
 #include "Agent.h"
+#include <functional>
+#include <utility>
 
-
-Agent::Agent(int num, int rank, std::std::pair<int, int> location, std::string color)
+Agent::Agent(int num, int rank, std::pair<int, int> location, std::string color)
 {
     this->num = num;
     this->rank = rank;
@@ -9,7 +10,7 @@ Agent::Agent(int num, int rank, std::std::pair<int, int> location, std::string c
     this->color = color;
 }
 
-Agent::Agent(int num, std::std::pair<int, int> location, String color)
+Agent::Agent(int num, std::pair<int, int> location, std::string color)
 {
     this->num = num;
     this->rank = 0;
@@ -38,13 +39,13 @@ int Agent::hashCode()
     int result = 17;
     result = 31 * result + num;
     result = 31 * result + rank;
-    result = 31 * result + location.getLeft();
-    result = 31 * result + location.getRight();
-    result = 31 * result + color.hashCode();
+    result = 31 * result + std::get<0>(location);
+    result = 31 * result + std::get<1>(location);
+    result = 31 * result + std::hash<std::string>{}(color);
     return result;
 }
 
-bool Agent::equals(Agent agent)
+bool Agent::equals(Agent * agent)
 {
     if (agent == this) return true;
     /*if (!(o instanceof Agent)) {
@@ -53,13 +54,13 @@ bool Agent::equals(Agent agent)
 
     //Agent agent = (Agent) o;
 
-    return agent.num == num && agent.rank == rank && agent.color.equals(color) && agent.location.equals(location);
+    return agent->num == num && agent->rank == rank && agent->color == color && agent->location == location;
 }
 
 
 void Agent::setLocation(std::pair<int, int> location)
 {
-    if(location.getLeft() == null && location.getRight() == null)
+    if(std::get<0>(location) == NULL && std::get<1>(location) == NULL)
         throw "Cannot be null, Agent.setlocation";
     this->location = location;
 }

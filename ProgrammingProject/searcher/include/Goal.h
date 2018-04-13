@@ -14,5 +14,5 @@ public:
     Goal(char chr, std::pair<int, int> location, Box * box);
     void updateBox(Box * box);
     void setAgent(Agent * a);
-}
+};
 #endif

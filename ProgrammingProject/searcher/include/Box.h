@@ -12,5 +12,5 @@ public:
     void setLocation(std::pair<int, int> location);
     int hashCode();
     bool equals(Box box);
-}
+};
 #endif

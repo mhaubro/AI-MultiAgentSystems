@@ -2,7 +2,7 @@
 //Not in use as of right now
 #ifndef HEURISTIC_H
 #define HEURISTIC_H
-
+/*
 class Heuristic implements Comparator<Node>
 {
     public Heuristic(Node initialState)
@@ -115,7 +115,7 @@ class Heuristic implements Comparator<Node>
 			return "Greedy evaluation";
 		}
 	}
-}
-
+};
+*/
 
 #endif
