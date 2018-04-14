@@ -1,3 +1,8 @@
+
+#include "Box.h"
+#include <string>
+#include <utility>
+
 Box::Box(char chr, std::pair<int, int> location, std::string color)
 {
     this->chr = chr;
@@ -13,8 +18,8 @@ Box::Box(char chr, std::pair<int, int> location)
 }
 
 Box::Box(Box * box){
-    this->chr = box.chr;
-    this->location = box.location;
+    this->chr = box->chr;
+    this->location = box->location;
     this->color = "";
 }
 
@@ -26,15 +31,15 @@ void Box::setLocation(std::pair<int, int> location)
 int Box::hashCode()
 {
     int result = 17;
-    result = 31 * result + Character.getNumericValue(chr);
-    result = 31 * result + location.getLeft();
-    result = 31 * result + location.getRight();
-    result = 31 * result + color.hashCode();
+    result = 31 * result + (int) (chr);
+    result = 31 * result + std::get<0>(location);
+    result = 31 * result + std::get<1>(location);
+    result = 31 * result + std::hash<std::string>{}(color);
     return result;
 }
 
-bool Box::equals(Box box)
+bool Box::equals(Box * box)
 {
     if (box == this) return true;
-    return box.chr == chr && box.color.equals(color) && box.location.equals(location);
+    return box->chr == chr && box->color == color && box->location == location;
 }

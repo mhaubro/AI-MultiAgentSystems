@@ -1,6 +1,10 @@
 #ifndef GOAL_H
 #define GOAL_H
 
+#include <utility>
+#include "Box.h"
+#include "Agent.h"
+
 class Goal {
 public:
     char chr;

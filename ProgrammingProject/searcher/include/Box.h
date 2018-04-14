@@ -1,5 +1,10 @@
 #ifndef BOX_H
 #define BOX_H
+
+#include <utility>
+#include <string>
+
+
 class Box {
 public:
     char chr;
@@ -11,6 +16,6 @@ public:
     Box(Box * box);
     void setLocation(std::pair<int, int> location);
     int hashCode();
-    bool equals(Box box);
+    bool equals(Box * box);
 };
 #endif

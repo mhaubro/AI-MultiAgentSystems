@@ -1,43 +1,39 @@
-package searchclient;
+#include "Heuristic.h"
+#include <locale>
+#include <string>
+#include <sstream>
+#define INTEGER_MAX 0x7FFFFFFF//31 1-bits is max due to sign.
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-
-import static java.lang.Math.abs;
-
-public abstract class Heuristic implements Comparator<Node>
-{
-    public Heuristic(Node initialState)
+  Heuristic::Heuristic(Node * initialState)
 	{
-		for(Box box : initialState.boxes)
+		for(Box * box : initialState->boxes)
 		{
-			int minDist = Integer.MAX_VALUE;
-			for(Goal goal : Node.goals)
+			int minDist = INTEGER_MAX;
+			for(Goal * goal : Node::goals)
 			{
-				if(box.chr == Character.toUpperCase(goal.chr) && goal.box == null)
+				if(box->chr == std::toupper(goal->chr) && goal->box == NULL)
 				{
-					int dist = manhattan(goal.location, box.location);
+					int dist = manhattan(goal->location, box->location);
 					if(dist < minDist)
 					{
-						goal.box = box;
+						goal->box = box;
 						minDist = dist;
 					}
 				}
 			}
 		}
 
-		for(Agent a : initialState.agents)
+		for(Agent * a : initialState->agents)
 		{
-			int minDist = Integer.MAX_VALUE;
-			for(Goal goal : Node.goals)
+			int minDist = INTEGER_MAX;
+			for(Goal * goal : Node::goals)
 			{
-				if(goal.agent == null)
+				if(goal->agent == NULL)
 				{
-					int dist = manhattan(goal.box.location, a.location);
+					int dist = manhattan(goal->box->location, a->location);
 					if(dist < minDist)
 					{
-						goal.agent = a;
+						goal->agent = a;
 						minDist = dist;
 					}
 				}
@@ -45,18 +41,18 @@ public abstract class Heuristic implements Comparator<Node>
 		}
 	}
 
-	public int h(Node n)
+	int Heuristic::h(Node * n)
 	{
 		int sumDist = 0;
-		for(Goal goal : Node.goals)
+		for(Goal * goal : Node::goals)
 		{
-			sumDist += manhattan(goal.location, goal.box.location);
-			sumDist += manhattan(goal.agent.location, goal.box.location);
+			sumDist += manhattan(goal->location, goal->box->location);
+			sumDist += manhattan(goal->agent->location, goal->box->location);
 		}
 		return sumDist;
 		/**
-	    int minBDist = Integer.MAX_VALUE;
-	    int minADist = Integer.MAX_VALUE;
+	    int minBDist = INTEGER_MAX;
+	    int minADist = INTEGER_MAX;
         int sumDist = 0;
         for(int i = 0; i < Node.MAX_ROW; i++)
         {
@@ -65,14 +61,14 @@ public abstract class Heuristic implements Comparator<Node>
             	char chr = n.boxes[i][j];
                	if('A' <= chr && chr <= 'Z')
                	{
-                	minBDist = Integer.MAX_VALUE;
+                	minBDist = INTEGER_MAX;
                     int aDist = abs(i - n.agentRow) + abs(j - n.agentCol);
                     minADist = (aDist < minADist) ? aDist : minADist;
-                    ArrayList<Pair<Integer, Integer>> chrGoals = goalsMap.get(Character.toLowerCase(chr));
-                    for(Pair goal : chrGoals)
+                    ArrayList<std::pair<int, int>> chrGoals = goalsMap.get(Character.toLowerCase(chr));
+                    for(std::pair goal : chrGoals)
                     {
-                    	//if(n.boxes[i][j] == Node.goals[(int) goal.getLeft()][(int) goal.getRight()])
-                        int dist = abs(i - (int) goal.getLeft()) + abs(j - (int) goal.getRight());
+                    	//if(n.boxes[i][j] == Node.goals[(int) goal->getLeft()][(int) goal->getRight()])
+                        int dist = abs(i - (int) goal->getLeft()) + abs(j - (int) goal->getRight());
                         minBDist = (dist < minBDist) ? dist : minBDist;
                         // minDist = dist < minDist ? dist : minDist;
 					}
@@ -84,66 +80,58 @@ public abstract class Heuristic implements Comparator<Node>
 		 */
 	}
 
-	public int manhattan(Pair<Integer, Integer> loc1, Pair<Integer, Integer> loc2)
+	int Heuristic::manhattan(std::pair<int, int> loc1, std::pair<int, int> loc2)
 	{
-		return abs(loc2.getLeft() - loc1.getLeft()) + abs(loc2.getRight() - loc1.getRight());
+		return abs(std::get<0>(loc2) - std::get<0>(loc1)) + abs(std::get<1>(loc2) - std::get<1>(loc1));
 	}
 
-	public abstract int f(Node n);
 
-	@Override
-	public int compare(Node n1, Node n2) {
-		return this.f(n1) - this.f(n2);
-	}
+/*	int Heuristic::compare(Node * n1, Node * n2) {
+		return this->f(n1) - this->f(n2);
+	}*/
 
-	public static class AStar extends Heuristic {
-		public AStar(Node initialState) {
-			super(initialState);
+
+AStar::AStar(Node * initialState) : Heuristic(initialState) {
+}
+
+
+		int AStar::f(Node * n) {
+			return n->g() + this->h(n);
 		}
 
-		@Override
-		public int f(Node n) {
-			return n.g() + this.h(n);
-		}
 
-		@Override
-		public String toString() {
+		std::string AStar::toString() {
 			return "A* evaluation";
 		}
-	}
 
-	public static class WeightedAStar extends Heuristic {
-		private int W;
 
-		public WeightedAStar(Node initialState, int W) {
-			super(initialState);
-			this.W = W;
+
+	 WeightedAStar::WeightedAStar(Node *initialState, int W) : Heuristic(initialState){
+			this->W = W;
 		}
 
-		@Override
-		public int f(Node n) {
-			return n.g() + this.W * this.h(n);
+
+		int WeightedAStar::f(Node *n) {
+			return n->g() + this->W * this->h(n);
 		}
 
-		@Override
-		public String toString() {
-			return String.format("WA*(%d) evaluation", this.W);
-		}
-	}
 
-	public static class Greedy extends Heuristic {
-		public Greedy(Node initialState) {
-			super(initialState);
+		std::string WeightedAStar::toString() {
+      std::ostringstream os;
+      os << "WA*(" << this->W <<") evaluation\n";
+			return os.str();
 		}
 
-		@Override
-		public int f(Node n) {
-			return this.h(n);
+
+		Greedy::Greedy(Node * initialState) : Heuristic(initialState){
 		}
 
-		@Override
-		public String toString() {
+
+		int Greedy::f(Node * n) {
+			return this->h(n);
+		}
+
+
+		std::string Greedy::toString() {
 			return "Greedy evaluation";
 		}
-	}
-}

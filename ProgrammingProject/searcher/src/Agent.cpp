@@ -60,7 +60,7 @@ bool Agent::equals(Agent * agent)
 
 void Agent::setLocation(std::pair<int, int> location)
 {
-    if(std::get<0>(location) == NULL && std::get<1>(location) == NULL)
-        throw "Cannot be null, Agent.setlocation";
+    //if(std::get<0>(location) == NULL && std::get<1>(location) == NULL)
+    //    throw "Cannot be null, Agent.setlocation";
     this->location = location;
 }

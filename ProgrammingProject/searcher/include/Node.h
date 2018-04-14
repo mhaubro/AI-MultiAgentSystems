@@ -16,9 +16,9 @@ public:
 	static int MAX_ROW;
 	static int MAX_COL;
 	static std::vector<bool> walls;
-	static std::vector<Goal> goals;
-	std::vector<Box> boxes;
-	std::vector<Agent> agents;
+	static std::vector<Goal *> goals;
+	std::vector<Box *> boxes;
+	std::vector<Agent *> agents;
 
 	Node * parent;
 	Command * action;
@@ -38,20 +38,17 @@ public:
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
 
-	bool Node::isGoalState();
-
-
 private:
 	int gval;
 
-	std::vector<Agent *> Node::DeepCloneAgents(std::vector<Agent *> agents)
-	std::vector<Box *> Node::DeepCloneBoxes(std::vector<Box *> boxes)
+	std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
+	std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
 
 	Agent * getAgent(int row, int col);
-	bool Node::goalAt(int row, int col);
-	bool Node::agentAt(int row, int col);
-	Goal * Node::getGoal(int row, int col);
-	Box * Node::getBox(int row, int col);
+	bool goalAt(int row, int col);
+	bool agentAt(int row, int col);
+	Goal * getGoal(int row, int col);
+	Box * getBox(int row, int col);
 
 	bool cellIsFree(int row, int col);
 	bool boxAt(int row, int col);

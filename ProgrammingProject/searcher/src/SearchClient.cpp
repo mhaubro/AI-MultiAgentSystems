@@ -54,6 +54,10 @@ SearchClient::SearchClient()
 		string color;
 		getline(ss, color, ':');
 
+		std::vector<Box *> boxes = std::vector<Box *>();
+		std::vector<Agent *> agents = std::vector<Agent *>();
+		std::vector<Goal *> goals = std::vector<Goal *>();
+
 		string c;
 		while (getline(ss, c, ',')) {
 			c.erase(remove(c.begin(), c.end(), ' '), c.end());
@@ -125,12 +129,11 @@ SearchClient::SearchClient()
 				Node::walls[y + x*size] = true;
 
 			} else if (isAgent(chr)){
-				initialState->agentRow = x;
-				initialState->agentCol = y;
+				agents.push_back(new Agent( (int)(chr - '0'), std::pair<int, int>(row, col)));
 			} else if (isBox(chr)){
-				initialState->boxes[y+x*size] = chr;
+				boxes.push_back(new Box(chr, std::pair<int, int>(row, col)));
 			} else if (isGoal(chr)){
-				Node::goals[y+x*size] = chr;
+				goals.push_back(new Goal(chr, std::pair<int, int>(row, col)));
 			} else if (chr == ' '){
 				//Do nothing, as nothing is printed
 			}
