@@ -9,8 +9,8 @@
 #include <iostream>
 #include <iomanip>
 #define RANDOM_SEED 1
-
-
+#include "Goal.h"
+#include "Agent.h"
 
 bool Node::operator==(const Node * obj) const{
 	return (equals(obj));
@@ -32,16 +32,14 @@ namespace std {
 	int Node::MAX_ROW;
 	int Node::MAX_COL;
 	std::vector<bool> Node::walls;
-	std::vector<char> Node::goals;
+	std::vector<Goal *> Node::goals;
 
 	//This should only be used for the first node. Inits walls & goals.
 
 	Node::Node() {
 		this->parent = NULL;
 		this->gval = 0;
-		this->boxes = std::vector<char>(MAX_COL*MAX_ROW, '\0');
-		this->agentCol = 0;
-		this->agentRow = 0;
+		this->boxes = std::vector<Box *>();
 	}
 
 
@@ -49,10 +47,9 @@ namespace std {
 	Node::Node(Node * parent) {
 		this->parent = parent;
 		this->gval = parent->g() + 1;
-		this->agentCol = parent->agentCol;
-		this->agentRow = parent->agentRow;
 		//Inits boxes
-		this->boxes = std::vector<char>(MAX_COL*MAX_ROW, '\0');
+		this->agents = DeepCloneAgents(parent->agents);
+		this->boxes = DeepCloneBoxes(parent->boxes);
 	}
 
 	int Node::g() {
@@ -65,10 +62,12 @@ namespace std {
 
 	std::vector<Node *> Node::getExpandedNodes(){
 		std::vector<Node *> expandedNodes = std::vector<Node *>(0);
+		for (Agent * a : agents){
+
 		for (Command * c : Command::EVERY) {
 			// Determine applicability of action
-			int newAgentRow = this->agentRow + Command::dirToRowChange(c->dir1);
-			int newAgentCol = this->agentCol + Command::dirToColChange(c->dir1);
+			int newAgentRow = a->getY() + Command::dirToRowChange(c->dir1);
+			int newAgentCol = a->getX() + Command::dirToColChange(c->dir1);
 
 			if (c->actionType == Command::Move) {
 
@@ -77,8 +76,7 @@ namespace std {
 
 					Node * n = this->ChildNode();
 					n->action = c;
-					n->agentRow = newAgentRow;
-					n->agentCol = newAgentCol;
+					n->getAgent(a->getX(), a->getY())->setLocation(std::pair<int, int>(newAgentRow, newAgentCol));
 					expandedNodes.push_back(n);
 				}
 			} else if (c->actionType == Command::Push) {
@@ -92,39 +90,36 @@ namespace std {
 						Node * n = this->ChildNode();
 
 						n->action = c;
-						n->agentRow = newAgentRow;
-						n->agentCol = newAgentCol;
-						n->boxes[newBoxRow+newBoxCol*MAX_ROW] = this->boxes[newAgentRow+newAgentCol*MAX_ROW];
-						n->boxes[newAgentRow+newAgentCol*MAX_ROW] = 0;
+						n->getAgent(a->getX(), a->getY())->setLocation(std::pair<int, int>(newAgentRow, newAgentCol));
+
+						n->getBox(newAgentRow, newAgentCol)->setLocation(std::pair<int, int>(newBoxRow, newBoxCol));
+
 						expandedNodes.push_back(n);
 					}
 				}
 			} else if (c->actionType == Command::Pull) {
 				// Cell is free where agent is going
 				if (this->cellIsFree(newAgentRow, newAgentCol)) {
-					int boxRow = this->agentRow + Command::dirToRowChange(c->dir2);
-					int boxCol = this->agentCol + Command::dirToColChange(c->dir2);
+					int boxRow = a->getX() + Command::dirToRowChange(c->dir2);
+					int boxCol = a->getY() + Command::dirToColChange(c->dir2);
 					// .. and there's a box in "dir2" of the agent
 					if (this->boxAt(boxRow, boxCol)) {
 
 						Node * n = this->ChildNode();
 						n->action = c;
-						n->agentRow = newAgentRow;
-						n->agentCol = newAgentCol;
-						n->boxes[this->agentRow+this->agentCol*MAX_ROW] = this->boxes[boxRow+boxCol*MAX_ROW];
-						n->boxes[boxRow+boxCol*MAX_ROW] = 0;
+						n->getAgent(a->getX(), a->getY())->setLocation(std::pair<int, int>(newAgentRow, newAgentCol));
+						n->getBox(newAgentRow, newAgentCol)->setLocation(std::pair<int, int>(a->getX(), a->getY()));
 						expandedNodes.push_back(n);
 					}
 				}
 			}
 		}
+	}
+
 
 		return expandedNodes;
 	}
 
-	bool Node::boxAt(int row, int col) {
-		return boxes[row+col*MAX_ROW] > 0;
-	}
 
 	Node * Node::ChildNode() {
 		Node * copy = new Node(this);
@@ -148,14 +143,15 @@ namespace std {
 
 			int prime = 31;
 			int result = 1;
-			result = prime * result + this->agentCol;
-			result = prime * result + this->agentRow;
+			for (Agent * a : agents){
+				result = prime * result + a->getX();
+				result = prime * result + a->getY();
+			}
 			//Constructs a string and hashes it. Easier than hashing random vectors.
-			std::string str(this->boxes.begin(),this->boxes.end());
-			result = prime * result + std::hash<std::string>{}(str);;
-			//str = std::string(this->goals.begin(),this->goals.end());
-			//result = prime * result + std::hash<std::string>{}(str);
-			result = prime * result + std::hash<std::vector<bool>>{}(this->walls);
+			for (Box * b : boxes){
+				result = prime * result + b->getX();
+				result = prime * result + b->getY();
+			}
 
 			return result;
 	}
@@ -164,10 +160,22 @@ namespace std {
 		if (obj == NULL)
 			return false;
 			//Using == works with std::vector
-		if (this->agentRow != obj->agentRow || this->agentCol != obj->agentCol)
-			return false;
-		if ((this->boxes != obj->boxes))
-			return false;
+			//Assumes the size of agents is the same. Maybe this should be rectified later.
+			//This might be an issue. We must ensure that the order of boxes and agents are always identical.
+			for (int i = 0; i < agents.size(); i++){
+				if (!agents[i]->equals(obj->agents[i])){
+					return false;
+				}
+			}
+
+			//Assumes the size of boxes is the same. Maybe this should be rectified later.
+			//This might be an issue. We must ensure that the order of boxes and agents are always identical.
+			for (int i = 0; i < boxes.size(); i++){
+				if (!boxes[i]->equals(obj->boxes[i])){
+					return false;
+				}
+			}
+
 		return true;
 	}
 
@@ -176,31 +184,37 @@ namespace std {
 
 			for (int row = 0; row < MAX_ROW; row++) {
 				for (int col = 0; col < MAX_COL; col++) {
-
-				if (Node::boxes[row+col*MAX_ROW] != '\0') {
-					s += (boxes[row+col*MAX_ROW]);
-				} else if (Node::goals[row+col*MAX_ROW] != '\0') {
-					s += (goals[row+col*MAX_ROW]);
-				} else if (Node::walls[row+col*MAX_ROW]) {
-					s += ("+");
-				} else if (row == this->agentRow && col == this->agentCol) {
-					s += ("0");
-				} else {
-					s += (" ");
+					if (Node::walls[row+col*MAX_ROW]) {
+						s += ("+");
+					} else {
+						s += (" ");
+					}
 				}
-			}
 			s.append("\n");
-		}
+			}
+			//Write a goal at location for each goal.
+			for (Goal * g : goals){
+				int col = g->getX();
+				int row = g->getY();
+				s[row+col*(MAX_ROW+1)] = g->chr;
+			}
+			//Write a box at location for each goal.
+			for (Box * b : boxes){
+				int col = b->getX();
+				int row = b->getY();
+				s[row+col*(MAX_ROW+1)] = b->chr;
+			}
+
 		return s;
 	}
 
 	bool Node::isGoalState()
 	{
-		for(Goal * goal : Node->goals)
+		for(Goal * goal : Node::goals)
 		{
 			bool goalState = false;
 			for(Box * box : this->boxes){
-				if(goal->location->equals(box->location)){
+				if(goal->location == box->location){
 					goalState = true;
 					break;
 				}
@@ -215,7 +229,7 @@ namespace std {
 	{
 		for(Box * box : this->boxes)
 		{
-			if(box->location.getLeft() == row && box->location.getRight() == col)
+			if(box->getX() == row && box->getY() == col)
 				return box;
 		}
 		return NULL;
@@ -226,7 +240,7 @@ namespace std {
 	{
 		for(Goal * goal : goals)
 		{
-			if(goal->location.getLeft() == row && goal->location.getRight() == col)
+			if(goal->getX() == row && goal->getY() == col)
 				return goal;
 		}
 		//throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
@@ -238,7 +252,7 @@ namespace std {
 	{
 		for(Agent * a : this->agents)
 		{
-			if(a->location.getLeft() == row && a->location.getRight() == col)
+			if(a->getX() == row && a->getY() == col)
 				return a;
 		}
 		return NULL;
@@ -247,14 +261,14 @@ namespace std {
 
 	bool Node::cellIsFree(int row, int col)
 	{
-		return !walls[row][col] && !boxAt(row, col) && !agentAt(row, col);
+		return !walls[row + col*MAX_ROW] && !boxAt(row, col) && !agentAt(row, col);
 	}
 
 	bool Node::boxAt(int row, int col)
 	{
 		for(Box * box : this->boxes)
 		{
-			if(box->location.getLeft() == row && box->location.getRight() == col)
+			if(box->getX() == row && box->getY() == col)
 				return true;
 		}
 		return false;
@@ -264,7 +278,7 @@ namespace std {
 	{
 		for(Goal * goal : goals)
 		{
-			if(goal->location.getLeft() == row && goal->location.getRight() == col)
+			if(goal->getX() == row && goal->getY() == col)
 				return true;
 		}
 		return false;
@@ -274,7 +288,7 @@ namespace std {
 	{
 		for(Agent * a : this->agents)
 		{
-			if(a->location.getLeft() == row && a->location.getRight() == col)
+			if(a->getX() == row && a->getY() == col)
 				return true;
 		}
 		return false;

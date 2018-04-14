@@ -50,8 +50,8 @@ public abstract class Heuristic implements Comparator<Node> {
                        ArrayList<Pair<Integer, Integer>> chrGoals = goalsMap.get(Character.toLowerCase(chr));
                        for(Pair goal : chrGoals)
                        {
-                           //if(n.boxes[i][j] == Node.goals[(int) goal.getLeft()][(int) goal.getRight()])
-                           int dist = abs(i - (int) goal.getLeft()) + abs(j - (int) goal.getRight());
+                           //if(n.boxes[i][j] == Node.goals[(int) goal.getX()][(int) goal.getY()])
+                           int dist = abs(i - (int) goal.getX()) + abs(j - (int) goal.getY());
                            minBDist = (dist < minBDist) ? dist : minBDist;
                            // minDist = dist < minDist ? dist : minDist;
                        }

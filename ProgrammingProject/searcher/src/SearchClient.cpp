@@ -47,6 +47,10 @@ SearchClient::SearchClient()
 	Due to good style
 	*/
 
+	std::vector<Box *> boxes = std::vector<Box *>();
+	std::vector<Agent *> agents = std::vector<Agent *>();
+	std::vector<Goal *> goals = std::vector<Goal *>();
+
 	while (getline (std::cin, line) && !line.compare("") && std::regex_match(line, match, color_regex)) {
 
 		printf("%s\n", line.c_str());
@@ -54,9 +58,7 @@ SearchClient::SearchClient()
 		string color;
 		getline(ss, color, ':');
 
-		std::vector<Box *> boxes = std::vector<Box *>();
-		std::vector<Agent *> agents = std::vector<Agent *>();
-		std::vector<Goal *> goals = std::vector<Goal *>();
+
 
 		string c;
 		while (getline(ss, c, ',')) {
@@ -66,15 +68,15 @@ SearchClient::SearchClient()
 
 	}
 
-	int agents = 0;
-	int boxes = 0;
+	int agentnum = 0;
+	int boxnum = 0;
 	for (auto it = colors.begin(); it != colors.end(); ++it) {
 		if (isAgent(it->first)) {
-			agents++;
+			agentnum++;
 		}
 
 		if (isBox(it->first)) {
-			boxes++;
+			boxnum++;
 		}
 	}
 
@@ -101,8 +103,8 @@ SearchClient::SearchClient()
 	Input is stored in a startnode. State is stored.
 	*/
 
-	std::cerr << "Agents: " << agents <<
-		"\nBoxes: " << boxes <<
+	std::cerr << "Agents: " << agentnum <<
+		"\nBoxes: " << boxnum <<
 		"\nDim: [" << cols << "," << rows.size() << "]\n";
 
 	Node::MAX_ROW = rows.size();
@@ -111,10 +113,10 @@ SearchClient::SearchClient()
 	int size = rows.size();
 
 	Node::walls.resize(rows.size()*cols, false);
-	Node::goals.resize(rows.size()*cols, '\0');
+	//Node::goals.resize(rows.size()*cols);
 
 	initialState = new Node();
-	initialState->boxes = vector<char>(rows.size()*cols, '\0');
+	//initialState->boxes = vector<char>(rows.size()*cols, '\0');
 
 	for (int y = 0; y < size; y++){
 
@@ -129,16 +131,19 @@ SearchClient::SearchClient()
 				Node::walls[y + x*size] = true;
 
 			} else if (isAgent(chr)){
-				agents.push_back(new Agent( (int)(chr - '0'), std::pair<int, int>(row, col)));
+				agents.push_back(new Agent( (int)(chr - '0'), std::pair<int, int>(x, y)));
 			} else if (isBox(chr)){
-				boxes.push_back(new Box(chr, std::pair<int, int>(row, col)));
+				boxes.push_back(new Box(chr, std::pair<int, int>(x, y)));
 			} else if (isGoal(chr)){
-				goals.push_back(new Goal(chr, std::pair<int, int>(row, col)));
+				goals.push_back(new Goal(chr, std::pair<int, int>(x, y)));
 			} else if (chr == ' '){
 				//Do nothing, as nothing is printed
 			}
 		}
 	}
+	Node::goals = goals;
+	this->initialState->boxes = boxes;
+	this->initialState->agents = agents;
 	/*
 	Everything is stored, so we print the state as a sanity check for the user
 	*/

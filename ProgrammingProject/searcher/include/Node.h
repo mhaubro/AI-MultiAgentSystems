@@ -13,8 +13,8 @@ class Node {
 
 public:
 	//Fields
-	static int MAX_ROW;
-	static int MAX_COL;
+	static int maxX;
+	static int maxY;
 	static std::vector<bool> walls;
 	static std::vector<Goal *> goals;
 	std::vector<Box *> boxes;

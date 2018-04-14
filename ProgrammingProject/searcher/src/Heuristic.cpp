@@ -4,6 +4,10 @@
 #include <sstream>
 #define INTEGER_MAX 0x7FFFFFFF//31 1-bits is max due to sign.
 
+  Heuristic::~Heuristic(){
+
+  }
+
   Heuristic::Heuristic(Node * initialState)
 	{
 		for(Box * box : initialState->boxes)
@@ -67,8 +71,8 @@
                     ArrayList<std::pair<int, int>> chrGoals = goalsMap.get(Character.toLowerCase(chr));
                     for(std::pair goal : chrGoals)
                     {
-                    	//if(n.boxes[i][j] == Node.goals[(int) goal->getLeft()][(int) goal->getRight()])
-                        int dist = abs(i - (int) goal->getLeft()) + abs(j - (int) goal->getRight());
+                    	//if(n.boxes[i][j] == Node.goals[(int) goal->getX()][(int) goal->getY()])
+                        int dist = abs(i - (int) goal->getX()) + abs(j - (int) goal->getY());
                         minBDist = (dist < minBDist) ? dist : minBDist;
                         // minDist = dist < minDist ? dist : minDist;
 					}
@@ -84,6 +88,10 @@
 	{
 		return abs(std::get<0>(loc2) - std::get<0>(loc1)) + abs(std::get<1>(loc2) - std::get<1>(loc1));
 	}
+
+  int Heuristic::f(Node * n){
+    return 0;
+  }
 
 
 /*	int Heuristic::compare(Node * n1, Node * n2) {

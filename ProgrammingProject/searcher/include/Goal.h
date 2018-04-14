@@ -12,7 +12,8 @@ public:
     Box * box;
     Agent * agent;
     bool goalState;
-
+    int getX();
+    int getY();
     Goal(char chr, std::pair<int, int> location);
 
     Goal(char chr, std::pair<int, int> location, Box * box);

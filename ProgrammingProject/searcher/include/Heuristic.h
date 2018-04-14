@@ -12,6 +12,7 @@
 class Heuristic
 {
 public:
+    ~Heuristic();
     Heuristic(Node * initialState);
   	int h(Node * n);
     int manhattan(std::pair<int, int> loc1, std::pair<int, int> loc2);

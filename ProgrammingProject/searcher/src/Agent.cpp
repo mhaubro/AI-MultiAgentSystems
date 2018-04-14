@@ -18,6 +18,13 @@ Agent::Agent(int num, std::pair<int, int> location, std::string color)
     this->color = color;
 }
 
+int Agent::getX(){
+  return std::get<0>(location);
+}
+int Agent::getY(){
+  return std::get<1>(location);
+}
+
 Agent::Agent(int num, std::pair<int, int> location)
 {
     this->num = num;

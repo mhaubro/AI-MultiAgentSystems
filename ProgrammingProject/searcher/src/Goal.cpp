@@ -1,10 +1,10 @@
-#include "goal.h"
+#include "Goal.h"
 
 Goal::Goal(char chr, std::pair<int, int> location)
 {
     this->chr = chr;
     this->location = location;
-    this->box = null;
+    this->box = NULL;
     this->goalState = false;
 }
 
@@ -23,4 +23,10 @@ void Goal::updateBox(Box * box)
 void Goal::setAgent(Agent * a)
 {
     this->agent = a;
+}
+int Goal::getX(){
+  return std::get<0>(location);
+}
+int Goal::getY(){
+  return std::get<1>(location);
 }
