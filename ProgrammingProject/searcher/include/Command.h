@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <utility>
 
 class Command{
 private:
@@ -13,8 +14,8 @@ public:
   };
 
   static bool isOpposite(int d1, int d2);
-  static int dirToRowChange(int d);
-  static int dirToColChange(int d);
+  static int dirToXChange(int d);
+  static int dirToYChange(int d);
   std::string to_string();
 
   enum Type {

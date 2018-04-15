@@ -107,19 +107,16 @@ SearchClient::SearchClient()
 		"\nBoxes: " << boxnum <<
 		"\nDim: [" << cols << "," << rows.size() << "]\n";
 
-	Node::MAX_ROW = rows.size();
-	Node::MAX_COL = cols;
+	int ysize = rows.size();
+	int xsize = cols;
+	Node::maxX = xsize;
+	Node::maxY = ysize;
 
-	int size = rows.size();
-
-	Node::walls.resize(rows.size()*cols, false);
-	//Node::goals.resize(rows.size()*cols);
+	Node::walls.resize(xsize*ysize, false);
 
 	initialState = new Node();
-	//initialState->boxes = vector<char>(rows.size()*cols, '\0');
 
-	for (int y = 0; y < size; y++){
-
+	for (int y = 0; y < ysize; y++){
 		string row = rows.front();
 		rows.pop_front();
 		for (int x = 0; x < row.length(); x++){
@@ -128,7 +125,7 @@ SearchClient::SearchClient()
 
 			//This part is a bit iffy, as there's something odd with x and y, but IT WORKS.
 			if (chr == '+'){
-				Node::walls[y + x*size] = true;
+				Node::walls[x + y*xsize] = true;
 
 			} else if (isAgent(chr)){
 				agents.push_back(new Agent( (int)(chr - '0'), std::pair<int, int>(x, y)));
@@ -230,6 +227,10 @@ int main(int argc, char * argv[]){
 			}
 
 			Node * leafNode = strategy->getAndRemoveLeaf();
+			if (leafNode == NULL){
+				std::cerr << "Null\n";
+			}
+			std::cerr << "1\n";
 
 			if (leafNode->isGoalState()) {
 				//A goal is found, final state is printed
@@ -238,11 +239,15 @@ int main(int argc, char * argv[]){
 				std::cerr << leafNode->toString();
 				return leafNode->extractPlan();
 			}
+			std::cerr << "2\n";
 
 			strategy->addToExplored(leafNode);
+			std::cerr << "3\n";
 			//Gets all new nodes
 			std::vector<Node *> nodes = leafNode->getExpandedNodes();
+			std::cerr << "4\n";
 			for (Node * n : nodes) {
+				std::cerr << "5\n";
 				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
 					strategy->addToFrontier(n);
 				}

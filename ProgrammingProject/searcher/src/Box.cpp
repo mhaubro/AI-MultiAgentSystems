@@ -23,9 +23,13 @@ Box::Box(Box * box){
     this->color = "";
 }
 
-void Box::setLocation(std::pair<int, int> location)
+void Box::setLocation(int x, int y)
 {
-    this->location = location;
+  this->location = std::pair<int, int>(x,y);
+}
+
+std::pair<int, int> Box::getLocation(){
+  return location;
 }
 
 int Box::hashCode()

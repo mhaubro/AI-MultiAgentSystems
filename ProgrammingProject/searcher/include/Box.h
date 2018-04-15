@@ -15,7 +15,8 @@ public:
     Box(char chr, std::pair<int, int> location, std::string color);
     Box(char chr, std::pair<int, int> location);
     Box(Box * box);
-    void setLocation(std::pair<int, int> location);
+    void setLocation(int x, int y);
+    std::pair<int, int> getLocation();
     int hashCode();
     bool equals(Box * box);
 };

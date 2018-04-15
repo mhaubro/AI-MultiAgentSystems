@@ -52,6 +52,11 @@ int Agent::hashCode()
     return result;
 }
 
+std::pair<int, int> Agent::getLocation(){
+  return location;
+}
+
+
 bool Agent::equals(Agent * agent)
 {
     if (agent == this) return true;
@@ -65,9 +70,7 @@ bool Agent::equals(Agent * agent)
 }
 
 
-void Agent::setLocation(std::pair<int, int> location)
+void Agent::setLocation(int x, int y)
 {
-    //if(std::get<0>(location) == NULL && std::get<1>(location) == NULL)
-    //    throw "Cannot be null, Agent.setlocation";
-    this->location = location;
+    this->location = std::pair<int, int>(x,y);
 }

@@ -44,14 +44,14 @@ private:
 	std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
 	std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
 
-	Agent * getAgent(int row, int col);
-	bool goalAt(int row, int col);
-	bool agentAt(int row, int col);
-	Goal * getGoal(int row, int col);
-	Box * getBox(int row, int col);
+	Agent * getAgent(int x, int y);
+	bool goalAt(int x, int y);
+	bool agentAt(int x, int y);
+	Goal * getGoal(int x, int y);
+	Box * getBox(int x, int y);
 
-	bool cellIsFree(int row, int col);
-	bool boxAt(int row, int col);
+	bool cellIsFree(int x, int y);
+	bool boxAt(int x, int y);
 	Node * ChildNode();
 };
 /*

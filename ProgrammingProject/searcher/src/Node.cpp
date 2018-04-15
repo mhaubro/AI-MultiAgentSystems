@@ -16,22 +16,11 @@ bool Node::operator==(const Node * obj) const{
 	return (equals(obj));
 }
 
-
-namespace std {
-  template <> struct hash<Node *> {
-    size_t operator()(const Node * n) const {
-        // Some custom logic for calculating hash of CustomClass using
-        // the hash Values of its individual fields
-
-        return (n->hashCode());
-    }
-  };
-}
-
 	//Initialize static variables:
-	int Node::MAX_ROW;
-	int Node::MAX_COL;
+	int Node::maxX;
+	int Node::maxY;
 	std::vector<bool> Node::walls;
+	//Maybe make it true goals instead of pointers, as this one never needs editing.
 	std::vector<Goal *> Node::goals;
 
 	//This should only be used for the first node. Inits walls & goals.
@@ -61,60 +50,68 @@ namespace std {
 	}
 
 	std::vector<Node *> Node::getExpandedNodes(){
-		std::vector<Node *> expandedNodes = std::vector<Node *>(0);
+		std::vector<Node *> expandedNodes = std::vector<Node *>();
+		std::cerr << "3.1\n";
 		for (Agent * a : agents){
+			std::cerr << "3.2\n";
+			for (Command * c : Command::EVERY) {
+				// Determine applicability of action
+				int newAgentX = a->getX() + Command::dirToXChange(c->dir1);
+				int newAgentY = a->getY() + Command::dirToYChange(c->dir1);
 
-		for (Command * c : Command::EVERY) {
-			// Determine applicability of action
-			int newAgentRow = a->getY() + Command::dirToRowChange(c->dir1);
-			int newAgentCol = a->getX() + Command::dirToColChange(c->dir1);
+				if (c->actionType == Command::Move) {
 
-			if (c->actionType == Command::Move) {
-
-				// Check if there's a wall or box on the cell to which the agent is moving
-				if (this->cellIsFree(newAgentRow, newAgentCol)) {
-
-					Node * n = this->ChildNode();
-					n->action = c;
-					n->getAgent(a->getX(), a->getY())->setLocation(std::pair<int, int>(newAgentRow, newAgentCol));
-					expandedNodes.push_back(n);
-				}
-			} else if (c->actionType == Command::Push) {
-				// Make sure that there's actually a box to move
-				if (this->boxAt(newAgentRow, newAgentCol)) {
-					int newBoxRow = newAgentRow + Command::dirToRowChange(c->dir2);
-					int newBoxCol = newAgentCol + Command::dirToColChange(c->dir2);
-					// .. and that new cell of box is free
-					if (this->cellIsFree(newBoxRow, newBoxCol)) {
+					// Check if there's a wall or box on the cell to which the agent is moving
+					if (this->cellIsFree(newAgentX, newAgentY)) {
+						std::cerr << "3.3\n";
 
 						Node * n = this->ChildNode();
-
 						n->action = c;
-						n->getAgent(a->getX(), a->getY())->setLocation(std::pair<int, int>(newAgentRow, newAgentCol));
-
-						n->getBox(newAgentRow, newAgentCol)->setLocation(std::pair<int, int>(newBoxRow, newBoxCol));
-
+						n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
 						expandedNodes.push_back(n);
 					}
-				}
-			} else if (c->actionType == Command::Pull) {
-				// Cell is free where agent is going
-				if (this->cellIsFree(newAgentRow, newAgentCol)) {
-					int boxRow = a->getX() + Command::dirToRowChange(c->dir2);
-					int boxCol = a->getY() + Command::dirToColChange(c->dir2);
-					// .. and there's a box in "dir2" of the agent
-					if (this->boxAt(boxRow, boxCol)) {
+				} else if (c->actionType == Command::Push) {
+					std::cerr << "3.4\n";
+					// Make sure that there's actually a box to move
+					if (this->boxAt(newAgentX, newAgentY)) {
+						int newBoxX = newAgentX + Command::dirToXChange(c->dir2);
+						int newBoxY = newAgentY + Command::dirToYChange(c->dir2);
+						// .. and that new cell of box is free
+						if (this->cellIsFree(newBoxX, newBoxY)) {
+							std::cerr << "3.5\n";
 
-						Node * n = this->ChildNode();
-						n->action = c;
-						n->getAgent(a->getX(), a->getY())->setLocation(std::pair<int, int>(newAgentRow, newAgentCol));
-						n->getBox(newAgentRow, newAgentCol)->setLocation(std::pair<int, int>(a->getX(), a->getY()));
-						expandedNodes.push_back(n);
+							Node * n = this->ChildNode();
+							std::cerr << "3.5\n";
+
+							n->action = c;
+							n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
+							std::cerr << "3.6\n";
+
+							n->getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
+							std::cerr << "3.7\n";
+
+							expandedNodes.push_back(n);
+							std::cerr << "3.8\n";
+						}
+					}
+				} else if (c->actionType == Command::Pull) {
+					// Cell is free where agent is going
+					if (this->cellIsFree(newAgentX, newAgentY)) {
+						int boxX = a->getX() + Command::dirToXChange(c->dir2);
+						int boxY = a->getY() + Command::dirToYChange(c->dir2);
+						// .. and there's a box in "dir2" of the agent
+						if (this->boxAt(boxX, boxY)) {
+
+							Node * n = this->ChildNode();
+							n->action = c;
+							n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
+							n->getBox(newAgentX, newAgentY)->setLocation(a->getX(), a->getY());
+							expandedNodes.push_back(n);
+						}
 					}
 				}
 			}
 		}
-	}
 
 
 		return expandedNodes;
@@ -122,6 +119,8 @@ namespace std {
 
 
 	Node * Node::ChildNode() {
+		std::cerr << "3.10\n";
+
 		Node * copy = new Node(this);
 		//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
 		copy->boxes = this->boxes;
@@ -182,9 +181,9 @@ namespace std {
 	std::string Node::toString() {
 		std::string s("");
 
-			for (int row = 0; row < MAX_ROW; row++) {
-				for (int col = 0; col < MAX_COL; col++) {
-					if (Node::walls[row+col*MAX_ROW]) {
+			for (int y = 0; y < maxY; y++) {
+				for (int x = 0; x < maxX; x++) {
+					if (Node::walls[x+y*maxX]) {
 						s += ("+");
 					} else {
 						s += (" ");
@@ -194,16 +193,23 @@ namespace std {
 			}
 			//Write a goal at location for each goal.
 			for (Goal * g : goals){
-				int col = g->getX();
-				int row = g->getY();
-				s[row+col*(MAX_ROW+1)] = g->chr;
+				int x = g->getX();
+				int y = g->getY();
+				s[x+y*(maxX+1)] = g->chr;
 			}
 			//Write a box at location for each goal.
 			for (Box * b : boxes){
-				int col = b->getX();
-				int row = b->getY();
-				s[row+col*(MAX_ROW+1)] = b->chr;
+				int x = b->getX();
+				int y = b->getY();
+				s[x+y*(maxX+1)] = b->chr;
 			}
+
+			for (Agent * a : agents){
+				int x = a->getX();
+				int y = a->getY();
+				s[x+y*(maxX+1)] = (char) (a->num + (int) '0');
+			}
+
 
 		return s;
 	}
@@ -225,22 +231,23 @@ namespace std {
 		return true;
 	}
 
-	Box * Node::getBox(int row, int col)
+	Box * Node::getBox(int x, int y)
 	{
+		std::pair<int, int> loc(x,y);
 		for(Box * box : this->boxes)
 		{
-			if(box->getX() == row && box->getY() == col)
+			if(box->getLocation() == loc)
 				return box;
 		}
 		return NULL;
-		//throw new NullPointerException("No box at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 	}
 
-	Goal * Node::getGoal(int row, int col)
+	Goal * Node::getGoal(int x, int y)
 	{
+		std::pair<int, int> loc(x,y);
 		for(Goal * goal : goals)
 		{
-			if(goal->getX() == row && goal->getY() == col)
+			if(goal->getLocation() == loc)
 				return goal;
 		}
 		//throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
@@ -248,47 +255,51 @@ namespace std {
 	}
 
 
-	Agent * Node::getAgent(int row, int col)
+	Agent * Node::getAgent(int x, int y)
 	{
+		std::pair<int, int> loc(x,y);
 		for(Agent * a : this->agents)
 		{
-			if(a->getX() == row && a->getY() == col)
+			if(a->getLocation() == loc)
 				return a;
 		}
 		return NULL;
 		//throw new NullPointerException("No agent at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 	}
 
-	bool Node::cellIsFree(int row, int col)
+	bool Node::cellIsFree(int x, int y)
 	{
-		return !walls[row + col*MAX_ROW] && !boxAt(row, col) && !agentAt(row, col);
+		return !walls[x + y*maxX] && !boxAt(x, y) && !agentAt(x, y);
 	}
 
-	bool Node::boxAt(int row, int col)
+	bool Node::boxAt(int x, int y)
 	{
+		std::pair<int, int> loc(x,y);
 		for(Box * box : this->boxes)
 		{
-			if(box->getX() == row && box->getY() == col)
+			if(box->getLocation() == loc)
 				return true;
 		}
 		return false;
 	}
 
-	bool Node::goalAt(int row, int col)
+	bool Node::goalAt(int x, int y)
 	{
+		std::pair<int, int> loc(x,y);
 		for(Goal * goal : goals)
 		{
-			if(goal->getX() == row && goal->getY() == col)
+			if(goal->getLocation() == loc)
 				return true;
 		}
 		return false;
 	}
 
-	bool Node::agentAt(int row, int col)
+	bool Node::agentAt(int x, int y)
 	{
+		std::pair<int, int> loc(x,y);
 		for(Agent * a : this->agents)
 		{
-			if(a->getX() == row && a->getY() == col)
+			if(a->getLocation() == loc)
 				return true;
 		}
 		return false;
@@ -297,17 +308,17 @@ namespace std {
 	std::vector<Agent*> Node::DeepCloneAgents(std::vector<Agent*> agents)
 	{
 		std::vector<Agent *> clone = std::vector<Agent *>(agents.size());
-		for(int i = 0; i < boxes.size(); i++){
-			*(clone[i]) = new Agent(*agents[i]);
+		for(int i = 0; i < agents.size(); i++){
+			(clone[i]) = new Agent(agents[i]);
 		}
 		return clone;
 	}
 
-	std::vector<Box *> Node::DeepCloneBoxes(std::vector<Box *> boxes)
+	std::vector<Box*> Node::DeepCloneBoxes(std::vector<Box *> boxes)
 	{
 		std::vector<Box *> clone = std::vector<Box *>(boxes.size());
 		for(int i = 0; i < boxes.size(); i++){
-			*(clone[i]) = new Box(*boxes[i]);
+			(clone[i]) = new Box(boxes[i]);
 		}
 		return clone;
 	}

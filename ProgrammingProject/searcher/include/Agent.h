@@ -23,6 +23,7 @@ public:
 
     int hashCode();
     bool equals(Agent * o);
-    void setLocation(std::pair<int, int> location);
+    void setLocation(int x, int y);
+    std::pair<int, int> getLocation();
 };
 #endif

@@ -14,8 +14,9 @@ public:
     bool goalState;
     int getX();
     int getY();
+    std::pair<int, int> getLocation();
+    
     Goal(char chr, std::pair<int, int> location);
-
     Goal(char chr, std::pair<int, int> location, Box * box);
     void updateBox(Box * box);
     void setAgent(Agent * a);

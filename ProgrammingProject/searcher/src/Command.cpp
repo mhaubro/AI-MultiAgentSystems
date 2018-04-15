@@ -39,7 +39,7 @@
 		return d1 + d2 == 3;
 	}
 
-	int Command::dirToRowChange(int d) {
+	int Command::dirToYChange(int d) {
 		// South is down one row (1), north is up one row (-1).
 		switch (d) {
 		case S:
@@ -51,7 +51,7 @@
 		}
 	}
 
-	int Command::dirToColChange(int d) {
+	int Command::dirToXChange(int d) {
 		// East is right one column (1), west is left one column (-1).
 		switch (d) {
 		case E:

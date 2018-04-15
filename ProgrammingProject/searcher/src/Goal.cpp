@@ -15,6 +15,10 @@ Goal::Goal(char chr, std::pair<int, int> location, Box * box)
     this->box = box;
 }
 
+std::pair<int, int> Goal::getLocation(){
+  return location;
+}
+
 void Goal::updateBox(Box * box)
 {
     this->box = box;
