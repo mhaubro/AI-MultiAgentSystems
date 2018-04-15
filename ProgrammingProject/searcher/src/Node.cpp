@@ -8,9 +8,11 @@
 #include <functional>
 #include <iostream>
 #include <iomanip>
-#define RANDOM_SEED 1
 #include "Goal.h"
 #include "Agent.h"
+#include <boost/pool/object_pool.hpp>
+
+boost::object_pool<Node> Node::pool;
 
 bool Node::operator==(const Node * obj) const{
 	return (equals(obj));
@@ -51,62 +53,51 @@ bool Node::operator==(const Node * obj) const{
 
 	std::vector<Node *> Node::getExpandedNodes(){
 		std::vector<Node *> expandedNodes = std::vector<Node *>();
-		std::cerr << "3.1\n";
 		for (Agent * a : agents){
-			std::cerr << "3.2\n";
 			for (Command * c : Command::EVERY) {
 				// Determine applicability of action
-				int newAgentX = a->getX() + Command::dirToXChange(c->dir1);
-				int newAgentY = a->getY() + Command::dirToYChange(c->dir1);
+				int newAgentX = a->getX() + Command::dirToXChange(c->dirAgent);
+				int newAgentY = a->getY() + Command::dirToYChange(c->dirAgent);
 
 				if (c->actionType == Command::Move) {
 
 					// Check if there's a wall or box on the cell to which the agent is moving
 					if (this->cellIsFree(newAgentX, newAgentY)) {
-						std::cerr << "3.3\n";
-
 						Node * n = this->ChildNode();
 						n->action = c;
 						n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
 						expandedNodes.push_back(n);
 					}
 				} else if (c->actionType == Command::Push) {
-					std::cerr << "3.4\n";
 					// Make sure that there's actually a box to move
 					if (this->boxAt(newAgentX, newAgentY)) {
-						int newBoxX = newAgentX + Command::dirToXChange(c->dir2);
-						int newBoxY = newAgentY + Command::dirToYChange(c->dir2);
+						int newBoxX = newAgentX + Command::dirToXChange(c->dirBox);
+						int newBoxY = newAgentY + Command::dirToYChange(c->dirBox);
 						// .. and that new cell of box is free
 						if (this->cellIsFree(newBoxX, newBoxY)) {
-							std::cerr << "3.5\n";
-
 							Node * n = this->ChildNode();
-							std::cerr << "3.5\n";
 
 							n->action = c;
 							n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
-							std::cerr << "3.6\n";
 
 							n->getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
-							std::cerr << "3.7\n";
 
 							expandedNodes.push_back(n);
-							std::cerr << "3.8\n";
 						}
 					}
 				} else if (c->actionType == Command::Pull) {
 					// Cell is free where agent is going
 					if (this->cellIsFree(newAgentX, newAgentY)) {
-						int boxX = a->getX() + Command::dirToXChange(c->dir2);
-						int boxY = a->getY() + Command::dirToYChange(c->dir2);
-						// .. and there's a box in "dir2" of the agent
+						int boxX = a->getX() + Command::dirToXChange(c->dirBox);
+						int boxY = a->getY() + Command::dirToYChange(c->dirBox);
+						// .. and there's a box in "dirBox" of the agent
 						if (this->boxAt(boxX, boxY)) {
-
 							Node * n = this->ChildNode();
 							n->action = c;
 							n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
-							n->getBox(newAgentX, newAgentY)->setLocation(a->getX(), a->getY());
+							n->getBox(boxX, boxY)->setLocation(a->getX(), a->getY());
 							expandedNodes.push_back(n);
+
 						}
 					}
 				}
@@ -119,11 +110,10 @@ bool Node::operator==(const Node * obj) const{
 
 
 	Node * Node::ChildNode() {
-		std::cerr << "3.10\n";
-
-		Node * copy = new Node(this);
+		//std::cerr << "Child\n";
+		Node * copy = Node::pool.construct(this);
 		//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
-		copy->boxes = this->boxes;
+		//copy->boxes = this->boxes;
 		return copy;
 	}
 
@@ -307,18 +297,20 @@ bool Node::operator==(const Node * obj) const{
 
 	std::vector<Agent*> Node::DeepCloneAgents(std::vector<Agent*> agents)
 	{
-		std::vector<Agent *> clone = std::vector<Agent *>(agents.size());
+		std::vector<Agent *> clone (agents.size());
 		for(int i = 0; i < agents.size(); i++){
-			(clone[i]) = new Agent(agents[i]);
+			//std::cerr << "Creating agent\n";
+			clone[i] = Agent::pool.construct(agents[i]);
 		}
 		return clone;
 	}
 
 	std::vector<Box*> Node::DeepCloneBoxes(std::vector<Box *> boxes)
 	{
-		std::vector<Box *> clone = std::vector<Box *>(boxes.size());
+		std::vector<Box *> clone (boxes.size());
 		for(int i = 0; i < boxes.size(); i++){
-			(clone[i]) = new Box(boxes[i]);
+			//std::cerr << "Creating box\n";
+			clone[i] = Box::pool.construct(boxes[i]);
 		}
 		return clone;
 	}

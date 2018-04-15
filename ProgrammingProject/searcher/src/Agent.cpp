@@ -1,8 +1,13 @@
 #include "Agent.h"
 #include <functional>
 #include <utility>
+#include <boost/pool/object_pool.hpp>
 
-Agent::Agent(int num, int rank, std::pair<int, int> location, std::string color)
+
+boost::object_pool<Agent> Agent::pool;
+
+
+Agent::Agent(int num, int rank, std::pair<int, int> location, std::string * color)
 {
     this->num = num;
     this->rank = rank;
@@ -10,7 +15,7 @@ Agent::Agent(int num, int rank, std::pair<int, int> location, std::string color)
     this->color = color;
 }
 
-Agent::Agent(int num, std::pair<int, int> location, std::string color)
+Agent::Agent(int num, std::pair<int, int> location, std::string * color)
 {
     this->num = num;
     this->rank = 0;
@@ -30,7 +35,7 @@ Agent::Agent(int num, std::pair<int, int> location)
     this->num = num;
     this->rank = 0;
     this->location = location;
-    this->color = "";
+    this->color = (new std::string(""));
 }
 
 Agent::Agent(Agent * agt)
@@ -38,7 +43,7 @@ Agent::Agent(Agent * agt)
     this->num = agt->num;
     this->rank = 0;
     this->location = agt->location;
-    this->color = "";
+    this->color = (agt->color);
 }
 
 int Agent::hashCode()
@@ -48,7 +53,7 @@ int Agent::hashCode()
     result = 31 * result + rank;
     result = 31 * result + std::get<0>(location);
     result = 31 * result + std::get<1>(location);
-    result = 31 * result + std::hash<std::string>{}(color);
+    result = 31 * result + std::hash<std::string>{}(*color);
     return result;
 }
 
@@ -66,7 +71,7 @@ bool Agent::equals(Agent * agent)
 
     //Agent agent = (Agent) o;
 
-    return agent->num == num && agent->rank == rank && agent->color == color && agent->location == location;
+    return agent->num == num && agent->rank == rank && *agent->color == *color && agent->location == location;
 }
 
 

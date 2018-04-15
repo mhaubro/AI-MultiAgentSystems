@@ -29,8 +29,8 @@ public:
   ~Command();
 
   int actionType;
-	int dir1;
-	int dir2;
+	int dirAgent;
+	int dirBox;
 
 };
 

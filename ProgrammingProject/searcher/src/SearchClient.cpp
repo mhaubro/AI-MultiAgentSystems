@@ -179,13 +179,10 @@ int main(int argc, char * argv[]){
 
 	for (Node * n : solution) {
 		//std::cerr << "Printing solution1";
-		if (n == NULL){
+		if (n->action == NULL){
 			std::cerr << "Something is null";
 		}
 		std::string act = n->action->to_string();
-		//std::cerr << n->action->to_string();
-		//std::cerr << "Printing solution2";
-		std::cerr << act;
 		std::cout << act;
 		std::cout << "\n";
 		std::string response;
@@ -227,10 +224,6 @@ int main(int argc, char * argv[]){
 			}
 
 			Node * leafNode = strategy->getAndRemoveLeaf();
-			if (leafNode == NULL){
-				std::cerr << "Null\n";
-			}
-			std::cerr << "1\n";
 
 			if (leafNode->isGoalState()) {
 				//A goal is found, final state is printed
@@ -239,15 +232,11 @@ int main(int argc, char * argv[]){
 				std::cerr << leafNode->toString();
 				return leafNode->extractPlan();
 			}
-			std::cerr << "2\n";
 
 			strategy->addToExplored(leafNode);
-			std::cerr << "3\n";
 			//Gets all new nodes
 			std::vector<Node *> nodes = leafNode->getExpandedNodes();
-			std::cerr << "4\n";
 			for (Node * n : nodes) {
-				std::cerr << "5\n";
 				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
 					strategy->addToFrontier(n);
 				}

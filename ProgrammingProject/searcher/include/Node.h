@@ -8,6 +8,8 @@
 #include "Goal.h"
 #include "Agent.h"
 #include "Box.h"
+#include <boost/pool/object_pool.hpp>
+
 
 class Node {
 
@@ -37,12 +39,14 @@ public:
 	int hashCode () const;
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
+	static boost::object_pool<Node> pool;
 
 private:
 	int gval;
 
-	std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
-	std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
+
+	static std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
+	static std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
 
 	Agent * getAgent(int x, int y);
 	bool goalAt(int x, int y);

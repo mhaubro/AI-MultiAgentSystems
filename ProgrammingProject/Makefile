@@ -3,6 +3,11 @@
 #prober etc., as well as make clean for all of them, tidying up things
 #
 #
+
+CPP = g++
+CPP_FLAGS = -std=c++14#Using -O3 to aggressively optimize. Use -g to use with gdb
+#gdb requires hacks for now.
+
 .PHONY: all clean allclean
 #-include $(SOURCEDIR)/Makefile.mk
 Root_Directory =  ${strip $(CURDIR)}
@@ -59,9 +64,6 @@ prober: $(AUX_DIR)/prober.cpp
 maketable: $(AUX_DIR)/maketable.cpp
 	$(CPP) $(CPP_FLAGS) $< -o $(BINDIR)/maketable
 
-
-CPP = g++
-CPP_FLAGS = -std=c++14#Using -O3 to aggressively optimize
 
 #Takes all of include_temp, and puts on -I flag.
 INCLUDE_DIRS = $(foreach dir, $(basename $(INCLUDE_TEMP)), -I$(dir))

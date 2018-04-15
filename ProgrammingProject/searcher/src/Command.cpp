@@ -65,14 +65,14 @@
 
 	Command::Command(int d) {
 		this->actionType = Command::Move;
-		this->dir1 = d;
-		this->dir2 = -1;//Indicates illegal direction
+		this->dirAgent = d;
+		this->dirBox = -1;//Indicates illegal direction
 	}
 
 	Command::Command(int t, int d1, int d2) {
 		this->actionType = t;
-		this->dir1 = d1;
-		this->dir2 = d2;
+		this->dirAgent = d1;
+		this->dirBox = d2;
 	}
 
 	//Destructor
@@ -89,12 +89,12 @@
 		if (this->actionType == Command::Move){
 			//Command will be 5 chars long
 			s.resize(9);
-			sprintf(newC, "[%s(%s)]", TypeNames[this->actionType], DirNames[this->dir1]);
+			sprintf(newC, "[%s(%s)]", TypeNames[this->actionType], DirNames[this->dirAgent]);
 			std::memcpy(&s[0], newC, 9);
 			return s;
 		} else {
 			s.resize(11);
-			sprintf(newC, "[%s(%s,%s)]", TypeNames[this->actionType], DirNames[this->dir1], DirNames[this->dir2]);
+			sprintf(newC, "[%s(%s,%s)]", TypeNames[this->actionType], DirNames[this->dirAgent], DirNames[this->dirBox]);
 			std::memcpy(&s[0], newC, 11);
 			return s;
 		}
