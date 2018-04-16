@@ -22,6 +22,8 @@ public:
 	std::vector<Box *> boxes;
 	std::vector<Agent *> agents;
 
+	static boost::object_pool<Node> pool;
+
 	Node * parent;
 	Command * action;
 
@@ -39,7 +41,6 @@ public:
 	int hashCode () const;
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
-	static boost::object_pool<Node> pool;
 
 private:
 	int gval;

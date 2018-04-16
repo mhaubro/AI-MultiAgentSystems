@@ -11,9 +11,7 @@ class Goal {
 public:
     char chr;
     std::pair<int, int> location;
-    Box * box;
-    Agent * agent;
-    
+
     bool goalState;
     int getX();
     int getY();
@@ -21,7 +19,5 @@ public:
 
     Goal(char chr, std::pair<int, int> location);
     Goal(char chr, std::pair<int, int> location, Box * box);
-    void updateBox(Box * box);
-    void setAgent(Agent * a);
 };
 #endif

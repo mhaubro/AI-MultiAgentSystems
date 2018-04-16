@@ -5,7 +5,7 @@
 #include <string>
 #include <boost/pool/object_pool.hpp>
 
-
+#include "Task.h"
 class Agent
 {
 public:
@@ -15,6 +15,7 @@ public:
     std::pair<int, int> location;
     std::string * color;
 
+    Task * task;
     int getX();
     int getY();
 

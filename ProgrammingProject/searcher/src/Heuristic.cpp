@@ -15,12 +15,12 @@
 			int minDist = INTEGER_MAX;
 			for(Goal * goal : Node::goals)
 			{
-				if(box->chr == std::toupper(goal->chr) && goal->box == NULL)
+				if(box->chr == std::toupper(goal->chr))// && goal->box == NULL)
 				{
 					int dist = manhattan(goal->location, box->location);
 					if(dist < minDist)
 					{
-						goal->box = box;
+						//goal->box = box;
 						minDist = dist;
 					}
 				}
@@ -32,7 +32,7 @@
 			int minDist = INTEGER_MAX;
 			for(Goal * goal : Node::goals)
 			{
-				if(goal->agent == NULL)
+				/*if(goal->agent == NULL)
 				{
 					int dist = manhattan(goal->box->location, a->location);
 					if(dist < minDist)
@@ -40,7 +40,7 @@
 						goal->agent = a;
 						minDist = dist;
 					}
-				}
+				}*/
 			}
 		}
 	}
@@ -50,8 +50,8 @@
 		int sumDist = 0;
 		for(Goal * goal : Node::goals)
 		{
-			sumDist += manhattan(goal->location, goal->box->location);
-			sumDist += manhattan(goal->agent->location, goal->box->location);
+		//	sumDist += manhattan(goal->location, goal->box->location);
+		//	sumDist += manhattan(goal->agent->location, goal->box->location);
 		}
 		return sumDist;
 		/**
