@@ -179,9 +179,6 @@ int main(int argc, char * argv[]){
 
 	for (Node * n : solution) {
 		//std::cerr << "Printing solution1";
-		if (n->action == NULL){
-			std::cerr << "Something is null";
-		}
 		std::string act = n->action->to_string();
 		std::cout << act;
 		std::cout << "\n";

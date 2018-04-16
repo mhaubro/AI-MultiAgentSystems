@@ -11,7 +11,7 @@
 	This works, gives every single possible command except NoOp.
 	TODO: Add NOOP. Maybe add other commands as well.
 	*/
-	std::vector<Command *> Command::EVERY = []() -> std::vector<Command *> {
+	std::vector<Command> Command::EVERY = []() -> std::vector<Command > {
 		std::list<Command *> cmds = std::list<Command *>();
 		for (int d1 = 0; d1 < Command::LASTD; d1++) {
 			for (int d2 = 0; d2 < Command::LASTD; d2++) {
@@ -30,9 +30,14 @@
 		for (int d = 0; d < Command::LASTD; d++) {
 			cmds.push_back(new Command(d));
 		}
+		int elements = cmds.size();
+		std::vector<Command> com(elements);
+		for (int i = 0; i < elements; i++){
+			com[i] = *(cmds.back());
+			cmds.pop_back();
+		}
 
-		return 		std::vector<Command *> { std::make_move_iterator(std::begin(cmds)),
-                  std::make_move_iterator(std::end(cmds)) };;
+		return com;
 	}();//Lambda ends here
 
 	bool Command::isOpposite(int d1, int d2) {
@@ -49,6 +54,12 @@
 		default:
 			return 0;
 		}
+	}
+
+	Command::Command(){
+		actionType = -1;
+		dirAgent = -1;
+		dirBox = -1;
 	}
 
 	int Command::dirToXChange(int d) {

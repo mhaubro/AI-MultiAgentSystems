@@ -54,7 +54,9 @@ bool Node::operator==(const Node * obj) const{
 	std::vector<Node *> Node::getExpandedNodes(){
 		std::vector<Node *> expandedNodes = std::vector<Node *>();
 		for (Agent * a : agents){
-			for (Command * c : Command::EVERY) {
+			int coms = Command::EVERY.size();
+			for (int i = 0; i < coms; i++) {
+				Command * c = &(Command::EVERY[i]);
 				// Determine applicability of action
 				int newAgentX = a->getX() + Command::dirToXChange(c->dirAgent);
 				int newAgentY = a->getY() + Command::dirToYChange(c->dirAgent);
