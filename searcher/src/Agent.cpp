@@ -4,7 +4,7 @@
 #include <boost/pool/object_pool.hpp>
 
 
-boost::object_pool<Agent> Agent::pool;
+//boost::object_pool<Agent> Agent::pool;
 
 
 Agent::Agent(int num, int rank, std::pair<int, int> location, std::string * color)
@@ -23,10 +23,10 @@ Agent::Agent(int num, std::pair<int, int> location, std::string * color)
     this->color = color;
 }
 
-int Agent::getX(){
+int Agent::getX() const{
   return std::get<0>(location);
 }
-int Agent::getY(){
+int Agent::getY() const{
   return std::get<1>(location);
 }
 
@@ -62,7 +62,7 @@ std::pair<int, int> Agent::getLocation(){
 }
 
 
-bool Agent::equals(Agent * agent)
+bool Agent::equals(const Agent * agent) const
 {
     if (agent == this) return true;
     /*if (!(o instanceof Agent)) {

@@ -47,14 +47,14 @@ int Box::hashCode()
     return result;
 }
 
-bool Box::equals(Box * box)
+bool Box::equals(const Box * box) const
 {
     if (box == this) return true;
     return box->chr == chr && *box->color == *color && box->location == location;
 }
-int Box::getX(){
+int Box::getX() const{
   return std::get<0>(location);
 }
-int Box::getY(){
+int Box::getY() const{
   return std::get<1>(location);
 }

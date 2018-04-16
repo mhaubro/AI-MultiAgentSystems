@@ -14,6 +14,18 @@
 
 boost::object_pool<Node> Node::pool;
 
+Node * Node::getopCopy(Node * n){
+		return Node::pool.construct(n, &n->agents, &n->boxes);
+}
+
+Node::Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes){
+	this->parent = current->parent;
+	this->agents = *agents;
+	this->boxes = *boxes;
+	this->gval = current->g();
+	this->action = current->action;
+}
+
 bool Node::operator==(const Node * obj) const{
 	return (equals(obj));
 }
@@ -23,14 +35,14 @@ bool Node::operator==(const Node * obj) const{
 	int Node::maxY;
 	std::vector<bool> Node::walls;
 	//Maybe make it true goals instead of pointers, as this one never needs editing.
-	std::vector<Goal *> Node::goals;
+	std::vector<Goal> Node::goals;
 
 	//This should only be used for the first node. Inits walls & goals.
 
 	Node::Node() {
 		this->parent = NULL;
 		this->gval = 0;
-		this->boxes = std::vector<Box *>();
+		this->boxes = std::vector<Box>();
 	}
 
 
@@ -39,8 +51,8 @@ bool Node::operator==(const Node * obj) const{
 		this->parent = parent;
 		this->gval = parent->g() + 1;
 		//Inits boxes
-		this->agents = DeepCloneAgents(parent->agents);
-		this->boxes = DeepCloneBoxes(parent->boxes);
+		this->agents = (parent->agents);
+		this->boxes = (parent->boxes);
 	}
 
 	int Node::g() {
@@ -51,23 +63,23 @@ bool Node::operator==(const Node * obj) const{
 		return this->parent == NULL;
 	}
 
-	std::vector<Node *> Node::getExpandedNodes(){
-		std::vector<Node *> expandedNodes = std::vector<Node *>();
-		for (Agent * a : agents){
+	std::vector<Node> Node::getExpandedNodes(){
+		std::vector<Node> expandedNodes = std::vector<Node>();
+		for (auto & a : agents){
 			int coms = Command::EVERY.size();
 			for (int i = 0; i < coms; i++) {
 				Command * c = &(Command::EVERY[i]);
 				// Determine applicability of action
-				int newAgentX = a->getX() + Command::dirToXChange(c->dirAgent);
-				int newAgentY = a->getY() + Command::dirToYChange(c->dirAgent);
+				int newAgentX = a.getX() + Command::dirToXChange(c->dirAgent);
+				int newAgentY = a.getY() + Command::dirToYChange(c->dirAgent);
 
 				if (c->actionType == Command::Move) {
 
 					// Check if there's a wall or box on the cell to which the agent is moving
 					if (this->cellIsFree(newAgentX, newAgentY)) {
-						Node * n = this->ChildNode();
-						n->action = c;
-						n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
+						Node n = Node(this);
+						n.action = c;
+						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 						expandedNodes.push_back(n);
 					}
 				} else if (c->actionType == Command::Push) {
@@ -77,12 +89,12 @@ bool Node::operator==(const Node * obj) const{
 						int newBoxY = newAgentY + Command::dirToYChange(c->dirBox);
 						// .. and that new cell of box is free
 						if (this->cellIsFree(newBoxX, newBoxY)) {
-							Node * n = this->ChildNode();
+							Node n = Node(this);
 
-							n->action = c;
-							n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
+							n.action = c;
+							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 
-							n->getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
+							n.getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
 
 							expandedNodes.push_back(n);
 						}
@@ -90,14 +102,14 @@ bool Node::operator==(const Node * obj) const{
 				} else if (c->actionType == Command::Pull) {
 					// Cell is free where agent is going
 					if (this->cellIsFree(newAgentX, newAgentY)) {
-						int boxX = a->getX() + Command::dirToXChange(c->dirBox);
-						int boxY = a->getY() + Command::dirToYChange(c->dirBox);
+						int boxX = a.getX() + Command::dirToXChange(c->dirBox);
+						int boxY = a.getY() + Command::dirToYChange(c->dirBox);
 						// .. and there's a box in "dirBox" of the agent
 						if (this->boxAt(boxX, boxY)) {
-							Node * n = this->ChildNode();
-							n->action = c;
-							n->getAgent(a->getX(), a->getY())->setLocation(newAgentX, newAgentY);
-							n->getBox(boxX, boxY)->setLocation(a->getX(), a->getY());
+							Node n = Node(this);
+							n.action = c;
+							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+							n.getBox(boxX, boxY)->setLocation(a.getX(), a.getY());
 							expandedNodes.push_back(n);
 
 						}
@@ -123,6 +135,7 @@ bool Node::operator==(const Node * obj) const{
 		std::list<Node*> plan = std::list<Node*>();
 		Node * n = this;
 
+
 		while (!(n->isInitialState())) {
 			plan.push_front(n);
 			n = n->parent;
@@ -134,14 +147,14 @@ bool Node::operator==(const Node * obj) const{
 
 			int prime = 31;
 			int result = 1;
-			for (Agent * a : agents){
-				result = prime * result + a->getX();
-				result = prime * result + a->getY();
+			for (auto & a : agents){
+				result = prime * result + a.getX();
+				result = prime * result + a.getY();
 			}
 			//Constructs a string and hashes it. Easier than hashing random vectors.
-			for (Box * b : boxes){
-				result = prime * result + b->getX();
-				result = prime * result + b->getY();
+			for (auto & b : boxes){
+				result = prime * result + b.getX();
+				result = prime * result + b.getY();
 			}
 
 			return result;
@@ -154,7 +167,7 @@ bool Node::operator==(const Node * obj) const{
 			//Assumes the size of agents is the same. Maybe this should be rectified later.
 			//This might be an issue. We must ensure that the order of boxes and agents are always identical.
 			for (int i = 0; i < agents.size(); i++){
-				if (!agents[i]->equals(obj->agents[i])){
+				if (!agents[i].equals(&obj->agents[i])){
 					return false;
 				}
 			}
@@ -162,7 +175,7 @@ bool Node::operator==(const Node * obj) const{
 			//Assumes the size of boxes is the same. Maybe this should be rectified later.
 			//This might be an issue. We must ensure that the order of boxes and agents are always identical.
 			for (int i = 0; i < boxes.size(); i++){
-				if (!boxes[i]->equals(obj->boxes[i])){
+				if (!boxes[i].equals(&obj->boxes[i])){
 					return false;
 				}
 			}
@@ -184,22 +197,22 @@ bool Node::operator==(const Node * obj) const{
 			s.append("\n");
 			}
 			//Write a goal at location for each goal.
-			for (Goal * g : goals){
-				int x = g->getX();
-				int y = g->getY();
-				s[x+y*(maxX+1)] = g->chr;
+			for (auto & g : goals){
+				int x = g.getX();
+				int y = g.getY();
+				s[x+y*(maxX+1)] = g.chr;
 			}
 			//Write a box at location for each goal.
-			for (Box * b : boxes){
-				int x = b->getX();
-				int y = b->getY();
-				s[x+y*(maxX+1)] = b->chr;
+			for (auto & b : boxes){
+				int x = b.getX();
+				int y = b.getY();
+				s[x+y*(maxX+1)] = b.chr;
 			}
 
-			for (Agent * a : agents){
-				int x = a->getX();
-				int y = a->getY();
-				s[x+y*(maxX+1)] = (char) (a->num + (int) '0');
+			for (auto & a : agents){
+				int x = a.getX();
+				int y = a.getY();
+				s[x+y*(maxX+1)] = (char) (a.num + (int) '0');
 			}
 
 
@@ -208,11 +221,11 @@ bool Node::operator==(const Node * obj) const{
 
 	bool Node::isGoalState()
 	{
-		for(Goal * goal : Node::goals)
+		for(auto & goal : Node::goals)
 		{
 			bool goalState = false;
-			for(Box * box : this->boxes){
-				if(goal->location == box->location){
+			for(auto & box : this->boxes){
+				if(goal.location == box.location){
 					goalState = true;
 					break;
 				}
@@ -226,10 +239,10 @@ bool Node::operator==(const Node * obj) const{
 	Box * Node::getBox(int x, int y)
 	{
 		std::pair<int, int> loc(x,y);
-		for(Box * box : this->boxes)
+		for(auto & box : this->boxes)
 		{
-			if(box->getLocation() == loc)
-				return box;
+			if(box.getLocation() == loc)
+				return &box;
 		}
 		return NULL;
 	}
@@ -237,10 +250,10 @@ bool Node::operator==(const Node * obj) const{
 	Goal * Node::getGoal(int x, int y)
 	{
 		std::pair<int, int> loc(x,y);
-		for(Goal * goal : goals)
+		for(auto & goal : goals)
 		{
-			if(goal->getLocation() == loc)
-				return goal;
+			if(goal.getLocation() == loc)
+				return &goal;
 		}
 		//throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 		return NULL;
@@ -250,10 +263,10 @@ bool Node::operator==(const Node * obj) const{
 	Agent * Node::getAgent(int x, int y)
 	{
 		std::pair<int, int> loc(x,y);
-		for(Agent * a : this->agents)
+		for(auto & a : this->agents)
 		{
-			if(a->getLocation() == loc)
-				return a;
+			if(a.getLocation() == loc)
+				return &a;
 		}
 		return NULL;
 		//throw new NullPointerException("No agent at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
@@ -267,9 +280,9 @@ bool Node::operator==(const Node * obj) const{
 	bool Node::boxAt(int x, int y)
 	{
 		std::pair<int, int> loc(x,y);
-		for(Box * box : this->boxes)
+		for(auto & box : this->boxes)
 		{
-			if(box->getLocation() == loc)
+			if(box.getLocation() == loc)
 				return true;
 		}
 		return false;
@@ -278,9 +291,9 @@ bool Node::operator==(const Node * obj) const{
 	bool Node::goalAt(int x, int y)
 	{
 		std::pair<int, int> loc(x,y);
-		for(Goal * goal : goals)
+		for(auto & goal : goals)
 		{
-			if(goal->getLocation() == loc)
+			if(goal.getLocation() == loc)
 				return true;
 		}
 		return false;
@@ -289,14 +302,14 @@ bool Node::operator==(const Node * obj) const{
 	bool Node::agentAt(int x, int y)
 	{
 		std::pair<int, int> loc(x,y);
-		for(Agent * a : this->agents)
+		for(auto & a : this->agents)
 		{
-			if(a->getLocation() == loc)
+			if(a.getLocation() == loc)
 				return true;
 		}
 		return false;
 	}
-
+/*
 	std::vector<Agent*> Node::DeepCloneAgents(std::vector<Agent*> agents)
 	{
 		std::vector<Agent *> clone (agents.size());
@@ -316,3 +329,4 @@ bool Node::operator==(const Node * obj) const{
 		}
 		return clone;
 	}
+*/

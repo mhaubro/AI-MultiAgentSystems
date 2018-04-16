@@ -13,9 +13,9 @@ std::pair<int, int> Goal::getLocation(){
 
 
 
-int Goal::getX(){
+int Goal::getX() const{
   return std::get<0>(location);
 }
-int Goal::getY(){
+int Goal::getY() const{
   return std::get<1>(location);
 }

@@ -47,9 +47,9 @@ SearchClient::SearchClient()
 	Due to good style
 	*/
 
-	std::vector<Box *> boxes = std::vector<Box *>();
-	std::vector<Agent *> agents = std::vector<Agent *>();
-	std::vector<Goal *> goals = std::vector<Goal *>();
+	std::vector<Box> boxes = std::vector<Box>();
+	std::vector<Agent> agents = std::vector<Agent>();
+	std::vector<Goal> goals = std::vector<Goal>();
 
 	while (getline (std::cin, line) && !line.compare("") && std::regex_match(line, match, color_regex)) {
 
@@ -123,16 +123,15 @@ SearchClient::SearchClient()
 
 			char chr = row[x];
 
-			//This part is a bit iffy, as there's something odd with x and y, but IT WORKS.
 			if (chr == '+'){
 				Node::walls[x + y*xsize] = true;
 
 			} else if (isAgent(chr)){
-				agents.push_back(new Agent( (int)(chr - '0'), std::pair<int, int>(x, y)));
+				agents.emplace_back((int)(chr - '0'), std::pair<int, int>(x, y));
 			} else if (isBox(chr)){
-				boxes.push_back(new Box(chr, std::pair<int, int>(x, y)));
+				boxes.emplace_back(chr, std::pair<int, int>(x, y));
 			} else if (isGoal(chr)){
-				goals.push_back(new Goal(chr, std::pair<int, int>(x, y)));
+				goals.emplace_back(chr, std::pair<int, int>(x, y));
 			} else if (chr == ' '){
 				//Do nothing, as nothing is printed
 			}
@@ -175,9 +174,8 @@ int main(int argc, char * argv[]){
 	solution = client.search(&strategy, printfreq);
 	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
 	std::cerr << "Found solution of length " << solution.size() << ".\n";
-	//std::cerr << strategy.searchStatus();
 
-	for (Node * n : solution) {
+	for (const auto & n : solution) {
 		//std::cerr << "Printing solution1";
 		std::string act = n->action->to_string();
 		std::cout << act;
@@ -232,10 +230,10 @@ int main(int argc, char * argv[]){
 
 			strategy->addToExplored(leafNode);
 			//Gets all new nodes
-			std::vector<Node *> nodes = leafNode->getExpandedNodes();
-			for (Node * n : nodes) {
-				if (!strategy->isExplored(n) && !strategy->inFrontier(n)) {
-					strategy->addToFrontier(n);
+			std::vector<Node> nodes = leafNode->getExpandedNodes();
+			for (auto & n : nodes) {
+				if (!strategy->isExplored(&n) && !strategy->inFrontier(&n)) {
+					strategy->addToFrontier(Node::getopCopy(&n));
 				}
 			}
 			iterations++;

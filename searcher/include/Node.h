@@ -18,11 +18,13 @@ public:
 	static int maxX;
 	static int maxY;
 	static std::vector<bool> walls;
-	static std::vector<Goal *> goals;
-	std::vector<Box *> boxes;
-	std::vector<Agent *> agents;
+	static std::vector<Goal> goals;
+	std::vector<Box> boxes;
+	std::vector<Agent> agents;
 
 	static boost::object_pool<Node> pool;
+
+	static Node * getopCopy(Node * n);
 
 	Node * parent;
 	Command * action;
@@ -30,11 +32,12 @@ public:
 	//Methods
 	Node();
 	Node(Node * parent);
+	Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes);
 	int g();
 
 	bool isInitialState();
 	bool isGoalState();
-	std::vector<Node*> getExpandedNodes();
+	std::vector<Node> getExpandedNodes();
 	std::list<Node*> extractPlan();
 
 	std::string toString();
@@ -46,8 +49,8 @@ private:
 	int gval;
 
 
-	static std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
-	static std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
+	//static std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
+	//static std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
 
 	Agent * getAgent(int x, int y);
 	bool goalAt(int x, int y);

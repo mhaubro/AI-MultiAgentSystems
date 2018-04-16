@@ -13,8 +13,8 @@ public:
     std::pair<int, int> location;
 
     bool goalState;
-    int getX();
-    int getY();
+    int getX() const;
+    int getY() const;
     std::pair<int, int> getLocation();
 
     Goal(char chr, std::pair<int, int> location);
