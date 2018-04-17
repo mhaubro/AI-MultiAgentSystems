@@ -6,7 +6,15 @@
 
 class Agent;
 
-class MoveAgentTask
+class Task
+{
+  public:
+    Task();
+    int manhattan(std::pair<int, int> loc1, std::pair<int, int> loc2);
+    int h();
+};
+
+class MoveAgentTask : public Task
 {
   public:
     Agent * agent;
@@ -14,9 +22,10 @@ class MoveAgentTask
     int rank;
 
     MoveAgentTask(Agent * agent, std::pair<int, int> loc, int rank);
+    int h();
 };
 
-class MoveBoxTask
+class MoveBoxTask : public Task
 {
   public:
     Box * box;
@@ -24,5 +33,6 @@ class MoveBoxTask
     int rank;
 
     MoveBoxTask(Box * box, std::pair<int, int> loc, int rank);
+    int h();
 };
 #endif
