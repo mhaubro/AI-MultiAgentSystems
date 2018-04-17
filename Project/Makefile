@@ -5,7 +5,7 @@
 #
 
 CPP = g++
-CPP_FLAGS = -std=c++14 -O3#Using -O3 to aggressively optimize. Use -g to use with gdb
+CPP_FLAGS = -std=c++14 -O3 -lboost_system#Using -O3 to aggressively optimize. Use -g to use with gdb
 #gdb requires hacks for now.
 
 .PHONY: all clean allclean
@@ -42,7 +42,7 @@ OBJS = $(foreach d, $(CPPSHORT), $(OBJECT_DIR)$(d).o)
 #OBJ_SC = $(foreach d, $(basename $(CPP_FILES)), $(d).cpp.o)
 
 searcher: $(OBJS)
-	$(CPP) -o $(BINDIR)/searcher $^
+	$(CPP) -o $(BINDIR)/searcher $^ -lboost_system
 
 EXECUTABLESSEARCHER += $(Root_Directory)/searcher
 
