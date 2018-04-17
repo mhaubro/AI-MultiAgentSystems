@@ -16,3 +16,7 @@ Note that the iteration-concept is up for change
 As a default: "make" only creates the searcher, "make all" creates searcher, prober and latex-folder, make clean cleans searcher, make cleanall cleans everything.
 
 For doing a testrun, try executing the shell-script ./runSearchClient.sh
+Multiple agents, do :
+for (i = 0; i < #num; i++){
+[Action], [Action], ...
+If no action -> NoOp.
