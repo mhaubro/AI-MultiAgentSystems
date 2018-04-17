@@ -29,8 +29,9 @@ int MoveAgentTask::h()
   return manhattan(this->agent->location, this->destination);
 }
 
-MoveBoxTask::MoveBoxTask(Box * box, std::pair<int, int> loc, int rank)
+MoveBoxTask::MoveBoxTask(Agent * agent, Box * box, std::pair<int, int> loc, int rank)
 {
+  this->agent = agent;
   this->box = box;
   this->destination = loc;
   this->rank = rank;
@@ -38,5 +39,5 @@ MoveBoxTask::MoveBoxTask(Box * box, std::pair<int, int> loc, int rank)
 
 int MoveBoxTask::h()
 {
-  return manhattan(this->box->location, this->destination);
+  return manhattan(this->agent->location, this->destination) + manhattan(this->box->location, this->destination);
 }

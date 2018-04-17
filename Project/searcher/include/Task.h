@@ -28,11 +28,12 @@ class MoveAgentTask : public Task
 class MoveBoxTask : public Task
 {
   public:
+    Agent * agent;
     Box * box;
     std::pair<int, int> destination;
     int rank;
 
-    MoveBoxTask(Box * box, std::pair<int, int> loc, int rank);
+    MoveBoxTask(Agent * agent, Box * box, std::pair<int, int> loc, int rank);
     int h();
 };
 #endif
