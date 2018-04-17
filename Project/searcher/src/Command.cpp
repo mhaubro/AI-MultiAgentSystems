@@ -100,12 +100,12 @@
 		if (this->actionType == Command::Move){
 			//Command will be 5 chars long
 			s.resize(9);
-			sprintf(newC, "[%s(%s)]", TypeNames[this->actionType], DirNames[this->dirAgent]);
+			sprintf(newC, "%s(%s)", TypeNames[this->actionType], DirNames[this->dirAgent]);
 			std::memcpy(&s[0], newC, 9);
 			return s;
 		} else {
 			s.resize(11);
-			sprintf(newC, "[%s(%s,%s)]", TypeNames[this->actionType], DirNames[this->dirAgent], DirNames[this->dirBox]);
+			sprintf(newC, "%s(%s,%s)", TypeNames[this->actionType], DirNames[this->dirAgent], DirNames[this->dirBox]);
 			std::memcpy(&s[0], newC, 11);
 			return s;
 		}

@@ -1,4 +1,4 @@
-#include "SearchClient.h"
+#include "Client.h"
 #include <string>
 #include <list>
 #include <unordered_map>
@@ -8,6 +8,8 @@
 #include "Strategy.h"
 #include "Command.h"
 #include "Memory.h"
+#include "MasterSearcher.h"
+#include "Initializer.h"
 
 using std::stringstream;
 using std::istream;
@@ -29,70 +31,18 @@ bool isGoal(char c) {
 	return ('a' <= c && c <= 'z');
 }
 
-SearchClient::SearchClient()
+Client::Client()
 {
+	Initializer::setupEnvironment();
 	/*
 	 * This is a constructor that reads input from std::cin, from the server about the map
 	 * This should not be necessary to edit, and if need be, most likely only in main method
 	 * Where input parameters are read and might be added.
 	 */
-	std::unordered_map<char, std::string> colors;
-	std::string line;
+	 std::vector<Box> boxes = std::vector<Box>();
+ 	std::vector<Agent> agents = std::vector<Agent>();
+ 	std::vector<Goal> goals = std::vector<Goal>();
 
-	std::regex color_regex("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$");
-	std::smatch match;
-
-	/*
-	This following segment reads input from the server, and should probably be in its own function
-	Due to good style
-	*/
-
-	std::vector<Box> boxes = std::vector<Box>();
-	std::vector<Agent> agents = std::vector<Agent>();
-	std::vector<Goal> goals = std::vector<Goal>();
-
-	while (getline (std::cin, line) && !line.compare("") && std::regex_match(line, match, color_regex)) {
-
-		printf("%s\n", line.c_str());
-		stringstream ss(line);
-		string color;
-		getline(ss, color, ':');
-
-
-
-		string c;
-		while (getline(ss, c, ',')) {
-			c.erase(remove(c.begin(), c.end(), ' '), c.end());
-			colors.insert(pair<char,string>(c.c_str()[0], color));
-		}
-
-	}
-
-	int agentnum = 0;
-	int boxnum = 0;
-	for (auto it = colors.begin(); it != colors.end(); ++it) {
-		if (isAgent(it->first)) {
-			agentnum++;
-		}
-
-		if (isBox(it->first)) {
-			boxnum++;
-		}
-	}
-
-	list<string> rows;
-
-	int cols = 0;
-	do
-	{
-
-		if (line.length() > cols) {
-			cols = line.length();
-		}
-
-		rows.push_back(line);
-		getline(std::cin, line);
-	} while (!std::cin.eof() && (line.length() != 0));
 
 
 	/*
@@ -147,7 +97,7 @@ SearchClient::SearchClient()
 }
 
 //As we never expect to have more than 1, this is not implemented.
-SearchClient::~SearchClient()
+Client::~Client()
 {
 }
 
@@ -165,7 +115,7 @@ int main(int argc, char * argv[]){
 	}
 	char buffer[200];
 
-	SearchClient client = SearchClient();
+	Client client = Client();
 	std::cerr << "Search started\n";
 
 	StrategyBFS strategy = StrategyBFS();
@@ -200,7 +150,7 @@ int main(int argc, char * argv[]){
 	 */
 
 
-	std::list<Node *> SearchClient::search(Strategy * strategy, int printfrequency) {
+	std::list<Node *> Client::search(Strategy * strategy, int printfrequency) {
 		char buffer[100];
 		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
 		std::string s = std::string(buffer);
