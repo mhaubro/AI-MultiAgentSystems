@@ -25,3 +25,15 @@ hs_err_pid*
 *.o
 
 WarmUp/searchclient/searchclientbin
+
+Project/\.cproject
+
+Project/\.project
+
+Project/\.settings/language\.settings\.xml
+
+Project/bin/maketable
+
+Project/bin/prober
+
+Project/bin/searcher
