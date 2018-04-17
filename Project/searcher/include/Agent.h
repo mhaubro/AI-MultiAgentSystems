@@ -6,10 +6,12 @@
 #include <boost/pool/object_pool.hpp>
 
 #include "Task.h"
+
+class Task;
+
 class Agent
 {
-public:
-
+  public:
     int num;
     int rank;
     std::pair<int, int> location;

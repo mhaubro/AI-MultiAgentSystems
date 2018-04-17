@@ -6,7 +6,7 @@
 #include <chrono>
 #include <functional>
 #include <unordered_set>
-#include "memory.h"
+#include "Memory.h"
 #include "Node.h"
 
 class Strategy {

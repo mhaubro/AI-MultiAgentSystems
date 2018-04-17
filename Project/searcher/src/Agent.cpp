@@ -1,4 +1,5 @@
 #include "Agent.h"
+#include "Task.h"
 #include <functional>
 #include <utility>
 #include <boost/pool/object_pool.hpp>
@@ -26,6 +27,7 @@ Agent::Agent(int num, std::pair<int, int> location, std::string * color)
 int Agent::getX() const{
   return std::get<0>(location);
 }
+
 int Agent::getY() const{
   return std::get<1>(location);
 }
