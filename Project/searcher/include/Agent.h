@@ -6,33 +6,30 @@
 #include <boost/pool/object_pool.hpp>
 
 #include "Task.h"
-
+#include "Node.h"
+#include "Entity.h"
 class Task;
-
-class Agent
+class Node;
+class Agent : public Entity
 {
   public:
-    int num;
     int rank;
-    std::pair<int, int> location;
-    std::string * color;
+
+    std::list<Node *> Search();
 
     Task * task;
-    int getX() const;
-    int getY() const;
 
-    Agent(int num, int rank, std::pair<int, int> location, std::string * color);
-    Agent(int num, std::pair<int, int> location, std::string * color);
-    Agent(int num, std::pair<int, int> location);
+    Agent(char identifier, int rank, std::pair<int, int> location, Entity::COLOR color);
+    Agent(char identifier, std::pair<int, int> location, Entity::COLOR color);
+    Agent(char identifier, std::pair<int, int> location);
     Agent(Agent * agt);
 
     int hashCode();
+
     bool equals(const Agent * o) const;
-    void setLocation(int x, int y);
-    std::pair<int, int> getLocation();
-    static boost::object_pool<Agent> pool;
 
   private:
+    std::pair<int, int> location;
 
 };
 #endif

@@ -14,9 +14,9 @@ public:
   };
 
   static bool isOpposite(int d1, int d2);
-  static int dirToXChange(int d);
-  static int dirToYChange(int d);
-  std::string to_string();
+  static int getdx(int d);
+  static int getdy(int d);
+  std::string toString();
 
   enum Type {
     Move, Push, Pull, LASTT
@@ -28,7 +28,6 @@ public:
   Command(int t, int d1, int d2);
   Command();
   ~Command();
-
   int actionType;
 	int dirAgent;
 	int dirBox;

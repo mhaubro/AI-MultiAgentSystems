@@ -3,8 +3,8 @@
 #include <string>
 
 namespace MasterSearcher{
-  std::list<std::string> getPlan(Node * initialState);
+  std::vector<std::string> getPlan(Node * initialState);
   bool checkConflicts();
+  std::vector<Node *> Search(int i, Node * state);
 
-  
 }

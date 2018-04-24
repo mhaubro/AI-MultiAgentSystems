@@ -1,5 +1,9 @@
 #include <string>
 #include <list>
+#include "Agent.h"
+#include "MasterSearcher.h"
+#include "Node.h"
+//#include ""
 //Returns a list of strings to be printed when printing the total plan.
 namespace MasterSearcher{
 
@@ -7,36 +11,73 @@ namespace MasterSearcher{
     return false;
   }
 
-  std::list<std::string> getPlan(Node * initialState){
+  std::vector<std::string> getPlan(Node * initialState){
     int agents = initialState->agents.size();
 
-    std::vector<std::list<Node *>> plans(agents);
+    std::vector<std::vector<Node *>> plans(agents);
 
     int longestPlan = 0;
+    Node * state = initialState;
+    while (true){
 
-    for (int i = 0; i < agents; i++){
-      plans[i] = Search(i, initialState);
-      if (plans[i].size() > longestPlan){
-        longestPlan = plans[i].size();
-      }
-    }
+      /*Iteratively searches for a solutions*/
+      /*Do this over and over again*/
+      /* Start over whenever there's a conflict*/
+      /*Stores these plans*/
 
-    std::list<std::string> plan();
-
-    for (int i = 0; i < longestPlan; i++){
-      string s = "[";
-      for (int j = 0; j < agents-1; j++){
-        if (plans[j].size() > j){
-          s.append(plans[j][i]);
-          s.append(",");
+      for (int i = 0; i < agents; i++){
+        plans[i] = Search(i, initialState);
+        if (plans[i].size() > longestPlan){
+          longestPlan = plans[i].size();
         }
       }
-      if (plans[j].size() > j){
-        s.append(plans[j][agents-1]);
-        s.append("]");
+      /*Creates a list of strings that is the actual plan*/
+      /*Keeps checking for conflicts*/
+      std::vector<std::string> plan = std::vector<std::string>();
+
+      bool isPlanning = true;
+      for (int i = 0; i < longestPlan; i++){
+        std::string s = "[";
+        for (int j = 0; j < agents-1; j++){
+          if (plans[j].size() > i){
+            s.append("NoOp");
+            s.append(",");
+          }
+          /*Checks if we're planning or if there's been a conflict, and if the next move is okay*/
+          else if (state->checkAndChangeState(j, plans[j][i]) && isPlanning){
+            /*If the plans are okay, no conflict */
+            s.append(plans[j][i]->action->toString());
+            s.append(",");
+          } else {
+            isPlanning = false;
+            /*Do replanning*/
+            s.append("NoOp");
+            s.append(",");
+          }
+
+        }
+        /*Taking the last agent, fencepost type problem*/
+        if (plans[agents-1].size() > i){
+          s.append("NoOp");
+          s.append("]");
+        }
+        else if ( state->checkAndChangeState(agents-1, plans[agents-1][i]) && isPlanning){
+          //Handles fencepost, as only the elements must be ,-separated
+          s.append(plans[agents-1][i]->action->toString());
+          s.append("]");
+        } else {
+          isPlanning = false;
+          s.append("NoOp");
+          s.append("]");
+        }
+        plan.push_back(s);
+        if (state->isGoalState()){
+          return plan;
+        }
+        if (!isPlanning){
+          break;
+        }
       }
-      plan.append(s);
     }
-    return plan;
   }
 }

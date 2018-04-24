@@ -80,7 +80,7 @@
 
 	}
 
-	std::string Command::to_string() {
+	std::string Command::toString() {
 		static const char DirNames[4][1+1] = {"N", "W", "E", "S"};
 		static const char TypeNames[3][4+1] = {"Move", "Push", "Pull"};
 		std::string s = "";

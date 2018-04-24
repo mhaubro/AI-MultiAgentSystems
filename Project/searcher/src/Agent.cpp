@@ -3,81 +3,47 @@
 #include <functional>
 #include <utility>
 #include <boost/pool/object_pool.hpp>
-
+#include "Entity.h"
 
 //boost::object_pool<Agent> Agent::pool;
 
 
-Agent::Agent(int num, int rank, std::pair<int, int> location, std::string * color)
-{
-    this->num = num;
-    this->rank = rank;
-    this->location = location;
-    this->color = color;
+Agent::Agent(char identifier, int rank, std::pair<int, int> location, COLOR color):
+Entity(identifier, location, color){
+  this->rank = rank;
 }
 
-Agent::Agent(int num, std::pair<int, int> location, std::string * color)
+Agent::Agent(char identifier, std::pair<int, int> location, COLOR color):
+Entity(identifier, location, color)
 {
-    this->num = num;
     this->rank = 0;
-    this->location = location;
-    this->color = color;
 }
-
-int Agent::getX() const{
-  return std::get<0>(location);
-}
-
-int Agent::getY() const{
-  return std::get<1>(location);
-}
-
-Agent::Agent(int num, std::pair<int, int> location)
+//No color, for single agent levels
+Agent::Agent(char identifier, std::pair<int, int> location):
+Entity(identifier, location, Entity::BLUE)
 {
-    this->num = num;
     this->rank = 0;
-    this->location = location;
-    this->color = (new std::string(""));
 }
 
-Agent::Agent(Agent * agt)
+Agent::Agent(Agent * agt):
+Entity(agt->identifier, agt->location, agt->color)
 {
-    this->num = agt->num;
-    this->rank = 0;
-    this->location = agt->location;
-    this->color = (agt->color);
+    this->rank = agt->rank;
 }
 
 int Agent::hashCode()
 {
     int result = 17;
-    result = 31 * result + num;
+    result = 31 * result + (int) identifier;
     result = 31 * result + rank;
-    result = 31 * result + std::get<0>(location);
-    result = 31 * result + std::get<1>(location);
-    result = 31 * result + std::hash<std::string>{}(*color);
+    result = 31 * result + getX();
+    result = 31 * result + getY();
+    result = 31 * result + color;
     return result;
 }
-
-std::pair<int, int> Agent::getLocation(){
-  return location;
-}
-
 
 bool Agent::equals(const Agent * agent) const
 {
     if (agent == this) return true;
-    /*if (!(o instanceof Agent)) {
-        return false;
-    }*/
-
-    //Agent agent = (Agent) o;
-
-    return agent->num == num && agent->rank == rank && *agent->color == *color && agent->location == location;
-}
-
-
-void Agent::setLocation(int x, int y)
-{
-    this->location = std::pair<int, int>(x,y);
+    return agent->identifier == identifier && agent->rank == rank && agent->color == color && agent->location == location;
 }
