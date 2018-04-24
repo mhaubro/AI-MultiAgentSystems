@@ -1,5 +1,6 @@
 #include <string>
 #include <list>
+#include <iostream>
 #include "Agent.h"
 #include "MasterSearcher.h"
 #include "Node.h"
@@ -13,12 +14,13 @@ namespace MasterSearcher{
 
   std::vector<std::string> getPlan(Node * initialState){
     int agents = initialState->agents.size();
+    std::cerr << "Agents: " << agents;
 
-    std::vector<std::vector<Node *>> plans(agents);
+    std::vector<std::list<Node *>> plans(agents);
 
     int longestPlan = 0;
     Node * state = initialState;
-    while (true){
+    //while (true){
 
       /*Iteratively searches for a solutions*/
       /*Do this over and over again*/
@@ -26,7 +28,7 @@ namespace MasterSearcher{
       /*Stores these plans*/
 
       for (int i = 0; i < agents; i++){
-        plans[i] = Search(i, initialState);
+        plans[i] = state->agents[i].search( state);
         if (plans[i].size() > longestPlan){
           longestPlan = plans[i].size();
         }
@@ -44,10 +46,11 @@ namespace MasterSearcher{
             s.append(",");
           }
           /*Checks if we're planning or if there's been a conflict, and if the next move is okay*/
-          else if (state->checkAndChangeState(j, plans[j][i]) && isPlanning){
+          else if (state->checkAndChangeState(j, plans[j].front()->action) && isPlanning){
             /*If the plans are okay, no conflict */
-            s.append(plans[j][i]->action->toString());
+            s.append(plans[j].front()->action->toString());
             s.append(",");
+            plans[j].pop_front();
           } else {
             isPlanning = false;
             /*Do replanning*/
@@ -61,23 +64,25 @@ namespace MasterSearcher{
           s.append("NoOp");
           s.append("]");
         }
-        else if ( state->checkAndChangeState(agents-1, plans[agents-1][i]) && isPlanning){
+        else if ( state->checkAndChangeState(agents-1, plans[agents-1].front()->action) && isPlanning){
           //Handles fencepost, as only the elements must be ,-separated
-          s.append(plans[agents-1][i]->action->toString());
+          s.append(plans[agents-1].front()->action->toString());
           s.append("]");
+          plans[agents-1].pop_front();
         } else {
           isPlanning = false;
           s.append("NoOp");
           s.append("]");
         }
         plan.push_back(s);
+        std::cerr << "Iteration\n";
         if (state->isGoalState()){
           return plan;
         }
         if (!isPlanning){
           break;
         }
-      }
+      //}
     }
   }
 }

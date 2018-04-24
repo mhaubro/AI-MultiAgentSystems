@@ -46,9 +46,9 @@ int dirBox;
 */
 bool Node::checkAndChangeState(int agent, Command * c){
 //Checks for legality
-	if (!checkState(agent, c)){
-		return false;
-	}
+	//if (!checkState(agent, c)){
+	//	return false;
+	//}
 	//Changes state
 	if (c->actionType == Command::Move){
 		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
@@ -166,6 +166,70 @@ bool Node::checkAndChangeState(int agent, Command * c){
 		return expandedNodes;
 	}
 
+	std::vector<Node> Node::getExpandedNodes(char agent){
+		std::vector<Node> expandedNodes = std::vector<Node>();
+		for (auto & a : agents){
+			if (a.chr != agent){
+				continue;
+			}
+
+			int coms = Command::EVERY.size();
+			for (int i = 0; i < coms; i++) {
+				Command * c = &(Command::EVERY[i]);
+				// Determine applicability of action
+				int newAgentX = a.getX() + Command::getdx(c->dirAgent);
+				int newAgentY = a.getY() + Command::getdy(c->dirAgent);
+
+				if (c->actionType == Command::Move) {
+
+					// Check if there's a wall or box on the cell to which the agent is moving
+					if (this->cellIsFree(newAgentX, newAgentY)) {
+						Node n = Node(this);
+						n.action = c;
+						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+						expandedNodes.push_back(n);
+					}
+				} else if (c->actionType == Command::Push) {
+					// Make sure that there's actually a box to move
+
+					if (this->boxAt(newAgentX, newAgentY) && this->getBox(newAgentX, newAgentY)->color == a.color) {
+						int newBoxX = newAgentX + Command::getdx(c->dirBox);
+						int newBoxY = newAgentY + Command::getdy(c->dirBox);
+						// .. and that new cell of box is free
+						if (this->cellIsFree(newBoxX, newBoxY)) {
+							Node n = Node(this);
+
+							n.action = c;
+							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+
+							n.getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
+
+							expandedNodes.push_back(n);
+						}
+					}
+				} else if (c->actionType == Command::Pull) {
+					// Cell is free where agent is going
+					if (this->cellIsFree(newAgentX, newAgentY)) {
+						int boxX = a.getX() + Command::getdx(c->dirBox);
+						int boxY = a.getY() + Command::getdy(c->dirBox);
+						// .. and there's a box in "dirBox" of the agent
+						if (this->boxAt(boxX, boxY) && this->getBox(boxX, boxY)->color == a.color) {
+							Node n = Node(this);
+							n.action = c;
+							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+							n.getBox(boxX, boxY)->setLocation(a.getX(), a.getY());
+							expandedNodes.push_back(n);
+
+						}
+					}
+				}
+			}
+		}
+
+
+		return expandedNodes;
+	}
+
 
 	Node * Node::ChildNode() {
 		//std::cerr << "Child\n";
@@ -244,19 +308,19 @@ bool Node::checkAndChangeState(int agent, Command * c){
 			for (auto & g : goals){
 				int x = g.getX();
 				int y = g.getY();
-				s[x+y*(maxX+1)] = g.identifier;
+				s[x+y*(maxX+1)] = g.chr;
 			}
 			//Write a box at location for each goal.
 			for (auto & b : boxes){
 				int x = b.getX();
 				int y = b.getY();
-				s[x+y*(maxX+1)] = b.identifier;
+				s[x+y*(maxX+1)] = b.chr;
 			}
 
 			for (auto & a : agents){
 				int x = a.getX();
 				int y = a.getY();
-				s[x+y*(maxX+1)] = a.identifier;
+				s[x+y*(maxX+1)] = a.chr;
 			}
 
 
@@ -279,6 +343,29 @@ bool Node::checkAndChangeState(int agent, Command * c){
 		}
 		return true;
 	}
+
+	bool Node::isGoalState(Entity::COLOR color)
+	{
+		for(auto & goal : Node::goals)
+		{
+
+			bool goalState = false;
+			for(auto & box : this->boxes){
+				if(box.color != color){
+					continue;
+				}
+				if(goal.location == box.location && goal.chr == box.chr){
+					goalState = true;
+					break;
+				}
+			}
+		if(!goalState)
+			return false;
+		}
+		return true;
+	}
+
+
 
 	Box * Node::getBox(int x, int y)
 	{
