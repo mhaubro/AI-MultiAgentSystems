@@ -8,43 +8,32 @@
 #include <unordered_set>
 #include "Memory.h"
 #include "Node.h"
+#include "Command.h"
 
-class Strategy {
-private:
-  std::unordered_set<Node *, NodeHash, NodeEqual> explored;
-	std::chrono::high_resolution_clock::time_point startTime;
 
+template<class T>
+class Strategy	
+{
 public:
+	Strategy() = 0;
+	~Strategy() = 0;
 
-  double timeSpent();
-	Strategy();
-	void addToExplored(Node * n);
-	bool isExplored(Node * n);
-	int countExplored();
-  void searchStatus(int iterations);	//double timeSpent();
-	virtual Node * getAndRemoveLeaf();
-	virtual void addToFrontier(Node * n);
-	virtual bool inFrontier(Node * n);
-	virtual int countFrontier();
-	virtual bool frontierIsEmpty();
-	virtual std::string toString();
+	virtual queue<Command> search(Node& StartNode, Agent& agent, Task& task);
+}
 
-};
+class BFS	
+{
+public:
+	BFS() = 0;
+	~BFS() = 0;
 
-	class StrategyBFS : public Strategy {
-  public:
-		std::queue<Node *> frontier;
-		std::unordered_set<Node *, NodeHash, NodeEqual> frontierSet;
+	queue<Command> search(Node& StartNode, Agent& agent, Task& task);
+}
 
-		StrategyBFS();
 
-		Node * getAndRemoveLeaf() override;
-		void addToFrontier(Node * n) override;
-    bool inFrontier(Node * n) override;
-		int countFrontier() override;
-		bool frontierIsEmpty() override;
-    std::string toString() override;
 
-	};
+Class
+
+
 
 #endif
