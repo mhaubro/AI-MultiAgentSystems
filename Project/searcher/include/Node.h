@@ -35,6 +35,8 @@ public:
 	Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes);
 	int g();
 
+	bool checkState(int agent, Command * c);
+	bool checkAndChangeState(int agent, Command * c);
 	bool isInitialState();
 	bool isGoalState();
 	std::vector<Node> getExpandedNodes();

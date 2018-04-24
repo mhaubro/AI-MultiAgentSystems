@@ -30,6 +30,50 @@ bool Node::operator==(const Node * obj) const{
 	return (equals(obj));
 }
 
+/*
+Takes an agent, takes a command and checks if it is legal
+*/
+bool checkState(int agent, Command * c){
+	//Checks for an agent command that it is legal.
+}
+
+/*
+Takes an agent, executes a command and checks if it is legal. C
+command:
+int actionType;
+int dirAgent;
+int dirBox;
+*/
+bool Node::checkAndChangeState(int agent, Command * c){
+//Checks for legality
+	if (!checkState(agent, c)){
+		return false;
+	}
+	//Changes state
+	if (c->actionType == Command::Move){
+		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
+	} else if (c->actionType == Command::Pull){
+		//Calculates box' former position through knowing
+		// the new position and command changes from the old.
+		//Used for getting the box whose position changes
+		int boxx = agents[agent].getX()-c->getdx(c->dirBox);
+		int boxy = agents[agent].getY()-c->getdy(c->dirBox);
+		Box * box = getBox(boxx, boxy);
+		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
+		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
+
+	} else if (c->actionType == Command::Push){
+		int boxx = agents[agent].getX()+c->getdx(c->dirBox);
+		int boxy = agents[agent].getY()+c->getdy(c->dirBox);
+		Box * box = getBox(boxx, boxy);
+		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
+		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
+	} else {
+	//NoOp, do nothing
+	}
+}
+
+
 	//Initialize static variables:
 	int Node::maxX;
 	int Node::maxY;
@@ -70,8 +114,8 @@ bool Node::operator==(const Node * obj) const{
 			for (int i = 0; i < coms; i++) {
 				Command * c = &(Command::EVERY[i]);
 				// Determine applicability of action
-				int newAgentX = a.getX() + Command::dirToXChange(c->dirAgent);
-				int newAgentY = a.getY() + Command::dirToYChange(c->dirAgent);
+				int newAgentX = a.getX() + Command::getdx(c->dirAgent);
+				int newAgentY = a.getY() + Command::getdy(c->dirAgent);
 
 				if (c->actionType == Command::Move) {
 
@@ -85,8 +129,8 @@ bool Node::operator==(const Node * obj) const{
 				} else if (c->actionType == Command::Push) {
 					// Make sure that there's actually a box to move
 					if (this->boxAt(newAgentX, newAgentY)) {
-						int newBoxX = newAgentX + Command::dirToXChange(c->dirBox);
-						int newBoxY = newAgentY + Command::dirToYChange(c->dirBox);
+						int newBoxX = newAgentX + Command::getdx(c->dirBox);
+						int newBoxY = newAgentY + Command::getdy(c->dirBox);
 						// .. and that new cell of box is free
 						if (this->cellIsFree(newBoxX, newBoxY)) {
 							Node n = Node(this);
@@ -102,8 +146,8 @@ bool Node::operator==(const Node * obj) const{
 				} else if (c->actionType == Command::Pull) {
 					// Cell is free where agent is going
 					if (this->cellIsFree(newAgentX, newAgentY)) {
-						int boxX = a.getX() + Command::dirToXChange(c->dirBox);
-						int boxY = a.getY() + Command::dirToYChange(c->dirBox);
+						int boxX = a.getX() + Command::getdx(c->dirBox);
+						int boxY = a.getY() + Command::getdy(c->dirBox);
 						// .. and there's a box in "dirBox" of the agent
 						if (this->boxAt(boxX, boxY)) {
 							Node n = Node(this);
@@ -200,19 +244,19 @@ bool Node::operator==(const Node * obj) const{
 			for (auto & g : goals){
 				int x = g.getX();
 				int y = g.getY();
-				s[x+y*(maxX+1)] = g.chr;
+				s[x+y*(maxX+1)] = g.identifier;
 			}
 			//Write a box at location for each goal.
 			for (auto & b : boxes){
 				int x = b.getX();
 				int y = b.getY();
-				s[x+y*(maxX+1)] = b.chr;
+				s[x+y*(maxX+1)] = b.identifier;
 			}
 
 			for (auto & a : agents){
 				int x = a.getX();
 				int y = a.getY();
-				s[x+y*(maxX+1)] = (char) (a.num + (int) '0');
+				s[x+y*(maxX+1)] = a.identifier;
 			}
 
 
@@ -225,7 +269,7 @@ bool Node::operator==(const Node * obj) const{
 		{
 			bool goalState = false;
 			for(auto & box : this->boxes){
-				if(goal.location == box.location){
+				if(goal.location == box.location && goal.color == box.color){
 					goalState = true;
 					break;
 				}

@@ -1,16 +1,16 @@
-#ifndef SEARCHCLIENT_H
-#define SEARCHCLIENT_H
+#ifndef Client_H
+#define Client_H
 #include "Node.h"
 #include "Strategy.h"
 
 #include <iostream>
 #include <list>
 
-class SearchClient
+class Client
 {
 public:
-	SearchClient();
-	~SearchClient();
+	Client();
+	~Client();
 
 	std::list<Node *> search(Strategy * strategy, int printfrequency);
 

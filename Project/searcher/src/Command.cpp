@@ -44,7 +44,7 @@
 		return d1 + d2 == 3;
 	}
 
-	int Command::dirToYChange(int d) {
+	int Command::getdy(int d) {
 		// South is down one row (1), north is up one row (-1).
 		switch (d) {
 		case S:
@@ -62,7 +62,7 @@
 		dirBox = -1;
 	}
 
-	int Command::dirToXChange(int d) {
+	int Command::getdx(int d) {
 		// East is right one column (1), west is left one column (-1).
 		switch (d) {
 		case E:
@@ -91,7 +91,7 @@
 
 	}
 
-	std::string Command::to_string() {
+	std::string Command::toString() {
 		static const char DirNames[4][1+1] = {"N", "W", "E", "S"};
 		static const char TypeNames[3][4+1] = {"Move", "Push", "Pull"};
 		std::string s = "";
@@ -100,12 +100,12 @@
 		if (this->actionType == Command::Move){
 			//Command will be 5 chars long
 			s.resize(9);
-			sprintf(newC, "[%s(%s)]", TypeNames[this->actionType], DirNames[this->dirAgent]);
+			sprintf(newC, "%s(%s)", TypeNames[this->actionType], DirNames[this->dirAgent]);
 			std::memcpy(&s[0], newC, 9);
 			return s;
 		} else {
 			s.resize(11);
-			sprintf(newC, "[%s(%s,%s)]", TypeNames[this->actionType], DirNames[this->dirAgent], DirNames[this->dirBox]);
+			sprintf(newC, "%s(%s,%s)", TypeNames[this->actionType], DirNames[this->dirAgent], DirNames[this->dirBox]);
 			std::memcpy(&s[0], newC, 11);
 			return s;
 		}
