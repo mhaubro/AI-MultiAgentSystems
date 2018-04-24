@@ -13,6 +13,7 @@ namespace MasterSearcher{
   }
 
   std::vector<std::string> getPlan(Node * initialState){
+
     int agents = initialState->agents.size();
     std::cerr << "Agents: " << agents;
 
@@ -32,6 +33,16 @@ namespace MasterSearcher{
         if (plans[i].size() > longestPlan){
           longestPlan = plans[i].size();
         }
+      }
+
+      std::list<Node *> aOnePlan = plans[1];
+      std::cerr << "Printing plan for agent 0\n";
+      std::cerr << "Plan size: " << aOnePlan.size() << "\n";
+
+      int s = aOnePlan.size();
+      for(int i = 0; i < s; i++){
+        std::cerr << aOnePlan.front()->toString();
+        aOnePlan.pop_front();
       }
       /*Creates a list of strings that is the actual plan*/
       /*Keeps checking for conflicts*/

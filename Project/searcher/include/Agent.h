@@ -28,8 +28,6 @@ class Agent : public Entity
 
     bool equals(const Agent * o) const;
 
-  private:
-    std::pair<int, int> location;
 
 };
 #endif
