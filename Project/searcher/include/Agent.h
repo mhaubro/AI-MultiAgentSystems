@@ -15,13 +15,13 @@ class Agent : public Entity
   public:
     int rank;
 
-    std::list<Node *> Search();
+    //std::list<Node *> Search();
 
     Task * task;
-
-    Agent(char identifier, int rank, std::pair<int, int> location, Entity::COLOR color);
-    Agent(char identifier, std::pair<int, int> location, Entity::COLOR color);
-    Agent(char identifier, std::pair<int, int> location);
+    std::list<Node *> search(Node * state);
+    Agent(char chr, int rank, std::pair<int, int> location, Entity::COLOR color);
+    Agent(char chr, std::pair<int, int> location, Entity::COLOR color);
+    Agent(char chr, std::pair<int, int> location);
     Agent(Agent * agt);
 
     int hashCode();

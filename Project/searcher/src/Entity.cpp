@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-Entity::Entity(char identifier, std::pair<int, int> location, COLOR color) :
-identifier(identifier), location(location), color(color) {
+Entity::Entity(char chr, std::pair<int, int> location, COLOR color) :
+chr(chr), location(location), color(color) {
 
 }
 

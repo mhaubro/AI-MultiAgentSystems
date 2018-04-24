@@ -13,9 +13,9 @@ public:
 
   COLOR color;
 
-  Entity(char identifier, std::pair<int, int> location, COLOR color);
-  //The identifier is
-  char identifier;
+  Entity(char chr, std::pair<int, int> location, COLOR color);
+  //The chr is
+  char chr;
 
   std::pair<int, int> location;
 
