@@ -50,7 +50,6 @@ std::vector<std::string> getPlan(Node * initialState){
 			else if (state->checkAndChangeState(j, plans[j].front()->action) && isPlanning){
 				/*If the plans are okay, no conflict */
 				s += (plans[j].front()->action->toString());
-				std::cerr << "HI!\n";
 			} else {
 				isPlanning = false;
 				/*Do replanning*/
