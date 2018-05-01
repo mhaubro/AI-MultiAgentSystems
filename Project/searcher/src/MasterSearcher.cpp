@@ -72,5 +72,6 @@ namespace MasterSearcher{
         }
       //}
     }
+      return plan;
   }
 }
