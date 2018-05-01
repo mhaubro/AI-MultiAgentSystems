@@ -10,6 +10,7 @@ bool Task::isCompleted(Agent * a, Node * n)
 
 MoveAgentTask::MoveAgentTask(std::pair<int, int> loc, int rank)
 {
+  this->type = Task::Type::MoveAgentTask;
   this->destination = loc;
   this->rank = rank;
 }
@@ -28,6 +29,7 @@ bool MoveAgentTask::isCompleted(Agent * a, Node * n)
 
 MoveBoxTask::MoveBoxTask(Box * box, std::pair<int, int> loc, int rank)
 {
+  this->type = Task::Type::MoveBoxTask;
   this->box = box;
   this->destination = loc;
   this->rank = rank;

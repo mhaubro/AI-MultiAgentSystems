@@ -15,7 +15,7 @@ namespace MasterSearcher{
   std::vector<std::string> getPlan(Node * initialState){
 
     int agents = initialState->agents.size();
-    std::cerr << "Agents: " << agents;
+    std::cerr << "Agents: " << agents << "\n";
 
     std::vector<std::list<Node *>> plans(agents);
 
@@ -28,8 +28,11 @@ namespace MasterSearcher{
       /* Start over whenever there's a conflict*/
       /*Stores these plans*/
 
+      CentralPlanner c = CentralPlanner();
+      c.DetectTasks(state);
+      c.AssignTasks(state);
+
       for (int i = 0; i < agents; i++){
-        //std::cerr << state->agents[i].task->rank;
         plans[i] = state->agents[i].search(state);
         if (plans[i].size() > longestPlan){
           longestPlan = plans[i].size();

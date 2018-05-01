@@ -11,28 +11,33 @@ class Node;
 class Task
 {
 public:
+  enum class Type {
+    MoveAgentTask, MoveBoxTask
+  };
   int rank;
+  Type type;
+
   virtual bool isCompleted(Agent * a, Node * n);
 };
 
 class MoveAgentTask : public Task
 {
-  public:
-    std::pair<int, int> destination;
-    int rank;
+public:
+  std::pair<int, int> destination;
+  int rank;
 
-    MoveAgentTask(std::pair<int, int> loc, int rank);
-    bool isCompleted(Agent * a, Node * n);
+  MoveAgentTask(std::pair<int, int> loc, int rank);
+  bool isCompleted(Agent * a, Node * n);
 };
 
 class MoveBoxTask : public Task
 {
-  public:
-    Box * box;
-    std::pair<int, int> destination;
-    int rank;
+public:
+  Box * box;
+  std::pair<int, int> destination;
+  int rank;
 
-    MoveBoxTask(Box * box, std::pair<int, int> loc, int rank);
-    bool isCompleted(Agent * a, Node * n);
+  MoveBoxTask(Box * box, std::pair<int, int> loc, int rank);
+  bool isCompleted(Agent * a, Node * n);
 };
 #endif
