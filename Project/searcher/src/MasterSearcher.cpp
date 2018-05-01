@@ -29,6 +29,7 @@ namespace MasterSearcher{
       /*Stores these plans*/
 
       for (int i = 0; i < agents; i++){
+        //std::cerr << state->agents[i].task->rank;
         plans[i] = state->agents[i].search(state);
         if (plans[i].size() > longestPlan){
           longestPlan = plans[i].size();
