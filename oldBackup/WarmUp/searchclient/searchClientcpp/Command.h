@@ -15,7 +15,7 @@ public:
   static bool isOpposite(int d1, int d2);
   static int dirToRowChange(int d);
   static int dirToColChange(int d);
-  std::string to_string();
+  std::string toString();
 
   enum Type {
     Move, Push, Pull, LASTT

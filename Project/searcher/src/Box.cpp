@@ -4,37 +4,19 @@
 #include <utility>
 #include <boost/pool/object_pool.hpp>
 
-
-boost::object_pool<Box> Box::pool;
-
-
-Box::Box(char chr, std::pair<int, int> location, std::string * color)
+Box::Box(char chr, std::pair<int, int> location, Entity::COLOR color) :
+Entity(chr, location, color)
 {
-    this->chr = chr;
-    this->location = location;
-    this->color = color;
 }
 
-Box::Box(char chr, std::pair<int, int> location)
+Box::Box(char chr, std::pair<int, int> location) :
+Entity(chr, location, Entity::BLUE)
 {
-    this->chr = chr;
-    this->location = location;
-    this->color = (new std::string(""));;
 }
 
-Box::Box(Box * box){
-    this->chr = box->chr;
-    this->location = box->location;
-    this->color = box->color;
-}
-
-void Box::setLocation(int x, int y)
+Box::Box(Box * box) :
+Entity(box->chr, box->location, box->color)
 {
-  this->location = std::pair<int, int>(x,y);
-}
-
-std::pair<int, int> Box::getLocation(){
-  return location;
 }
 
 int Box::hashCode()
@@ -43,18 +25,12 @@ int Box::hashCode()
     result = 31 * result + (int) (chr);
     result = 31 * result + std::get<0>(location);
     result = 31 * result + std::get<1>(location);
-    result = 31 * result + std::hash<std::string>{}(*color);
+    result = 31 * result + color;
     return result;
 }
 
 bool Box::equals(const Box * box) const
 {
     if (box == this) return true;
-    return box->chr == chr && *box->color == *color && box->location == location;
-}
-int Box::getX() const{
-  return std::get<0>(location);
-}
-int Box::getY() const{
-  return std::get<1>(location);
+    return box->chr == chr && box->color == color && box->location == location;
 }

@@ -10,6 +10,9 @@
 #include "Box.h"
 #include <boost/pool/object_pool.hpp>
 
+class Goal;
+
+class Agent;
 
 class Node {
 
@@ -35,9 +38,13 @@ public:
 	Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes);
 	int g();
 
+	bool checkState(int agent, Command * c);
+	bool checkAndChangeState(int agent, Command * c);
 	bool isInitialState();
 	bool isGoalState();
+	bool isGoalState(Entity::COLOR);
 	std::vector<Node> getExpandedNodes();
+	std::vector<Node> getExpandedNodes(char agent);
 	std::list<Node*> extractPlan();
 
 	std::string toString();

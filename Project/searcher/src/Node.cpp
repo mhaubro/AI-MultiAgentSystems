@@ -7,6 +7,7 @@
 #include <random>
 #include <functional>
 #include <iostream>
+#include <cctype>
 #include <iomanip>
 #include "Goal.h"
 #include "Agent.h"
@@ -29,6 +30,50 @@ Node::Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes
 bool Node::operator==(const Node * obj) const{
 	return (equals(obj));
 }
+
+/*
+Takes an agent, takes a command and checks if it is legal
+*/
+bool checkState(int agent, Command * c){
+	//Checks for an agent command that it is legal.
+}
+
+/*
+Takes an agent, executes a command and checks if it is legal. C
+command:
+int actionType;
+int dirAgent;
+int dirBox;
+*/
+bool Node::checkAndChangeState(int agent, Command * c){
+//Checks for legality
+	//if (!checkState(agent, c)){
+	//	return false;
+	//}
+	//Changes state
+	if (c->actionType == Command::Move){
+		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
+	} else if (c->actionType == Command::Pull){
+		//Calculates box' former position through knowing
+		// the new position and command changes from the old.
+		//Used for getting the box whose position changes
+		int boxx = agents[agent].getX()-c->getdx(c->dirBox);
+		int boxy = agents[agent].getY()-c->getdy(c->dirBox);
+		Box * box = getBox(boxx, boxy);
+		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
+		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
+
+	} else if (c->actionType == Command::Push){
+		int boxx = agents[agent].getX()+c->getdx(c->dirBox);
+		int boxy = agents[agent].getY()+c->getdy(c->dirBox);
+		Box * box = getBox(boxx, boxy);
+		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
+		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
+	} else {
+	//NoOp, do nothing
+	}
+}
+
 
 	//Initialize static variables:
 	int Node::maxX;
@@ -70,8 +115,8 @@ bool Node::operator==(const Node * obj) const{
 			for (int i = 0; i < coms; i++) {
 				Command * c = &(Command::EVERY[i]);
 				// Determine applicability of action
-				int newAgentX = a.getX() + Command::dirToXChange(c->dirAgent);
-				int newAgentY = a.getY() + Command::dirToYChange(c->dirAgent);
+				int newAgentX = a.getX() + Command::getdx(c->dirAgent);
+				int newAgentY = a.getY() + Command::getdy(c->dirAgent);
 
 				if (c->actionType == Command::Move) {
 
@@ -85,8 +130,8 @@ bool Node::operator==(const Node * obj) const{
 				} else if (c->actionType == Command::Push) {
 					// Make sure that there's actually a box to move
 					if (this->boxAt(newAgentX, newAgentY)) {
-						int newBoxX = newAgentX + Command::dirToXChange(c->dirBox);
-						int newBoxY = newAgentY + Command::dirToYChange(c->dirBox);
+						int newBoxX = newAgentX + Command::getdx(c->dirBox);
+						int newBoxY = newAgentY + Command::getdy(c->dirBox);
 						// .. and that new cell of box is free
 						if (this->cellIsFree(newBoxX, newBoxY)) {
 							Node n = Node(this);
@@ -102,14 +147,80 @@ bool Node::operator==(const Node * obj) const{
 				} else if (c->actionType == Command::Pull) {
 					// Cell is free where agent is going
 					if (this->cellIsFree(newAgentX, newAgentY)) {
-						int boxX = a.getX() + Command::dirToXChange(c->dirBox);
-						int boxY = a.getY() + Command::dirToYChange(c->dirBox);
+						int boxX = a.getX() + Command::getdx(c->dirBox);
+						int boxY = a.getY() + Command::getdy(c->dirBox);
 						// .. and there's a box in "dirBox" of the agent
 						if (this->boxAt(boxX, boxY)) {
 							Node n = Node(this);
 							n.action = c;
 							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 							n.getBox(boxX, boxY)->setLocation(a.getX(), a.getY());
+							expandedNodes.push_back(n);
+
+						}
+					}
+				}
+			}
+		}
+
+
+		return expandedNodes;
+	}
+
+	std::vector<Node> Node::getExpandedNodes(char agent){
+		std::vector<Node> expandedNodes = std::vector<Node>();
+		for (auto & a : agents){
+			if (a.chr != agent){
+				continue;
+			}
+
+			int coms = Command::EVERY.size();
+			for (int i = 0; i < coms; i++) {
+				Command * c = &(Command::EVERY[i]);
+				// Determine applicability of action
+				int newAgentX = a.getX() + Command::getdx(c->dirAgent);
+				int newAgentY = a.getY() + Command::getdy(c->dirAgent);
+
+				if (c->actionType == Command::Move) {
+
+					// Check if there's a wall or box on the cell to which the agent is moving
+					if (this->cellIsFree(newAgentX, newAgentY)) {
+						Node n = Node(this);
+						n.action = c;
+						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+						//std::cerr << n.toString();
+						expandedNodes.push_back(n);
+					}
+				} else if (c->actionType == Command::Push) {
+					// Make sure that there's actually a box to move
+
+					if (this->boxAt(newAgentX, newAgentY) && this->getBox(newAgentX, newAgentY)->color == a.color) {
+						int newBoxX = newAgentX + Command::getdx(c->dirBox);
+						int newBoxY = newAgentY + Command::getdy(c->dirBox);
+						// .. and that new cell of box is free
+						if (this->cellIsFree(newBoxX, newBoxY)) {
+							Node n = Node(this);
+
+							n.action = c;
+							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+
+							n.getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
+							//std::cerr << n.toString();
+							expandedNodes.push_back(n);
+						}
+					}
+				} else if (c->actionType == Command::Pull) {
+					// Cell is free where agent is going
+					if (this->cellIsFree(newAgentX, newAgentY)) {
+						int boxX = a.getX() + Command::getdx(c->dirBox);
+						int boxY = a.getY() + Command::getdy(c->dirBox);
+						// .. and there's a box in "dirBox" of the agent
+						if (this->boxAt(boxX, boxY) && this->getBox(boxX, boxY)->color == a.color) {
+							Node n = Node(this);
+							n.action = c;
+							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+							n.getBox(boxX, boxY)->setLocation(a.getX(), a.getY());
+							//std::cerr << n.toString();
 							expandedNodes.push_back(n);
 
 						}
@@ -212,7 +323,7 @@ bool Node::operator==(const Node * obj) const{
 			for (auto & a : agents){
 				int x = a.getX();
 				int y = a.getY();
-				s[x+y*(maxX+1)] = (char) (a.num + (int) '0');
+				s[x+y*(maxX+1)] = a.chr;
 			}
 
 
@@ -225,7 +336,7 @@ bool Node::operator==(const Node * obj) const{
 		{
 			bool goalState = false;
 			for(auto & box : this->boxes){
-				if(goal.location == box.location){
+				if(goal.location == box.location && goal.color == box.color){
 					goalState = true;
 					break;
 				}
@@ -235,6 +346,26 @@ bool Node::operator==(const Node * obj) const{
 		}
 		return true;
 	}
+
+	bool Node::isGoalState(Entity::COLOR color)
+	{
+		bool goalState = false;
+		for(auto & box : this->boxes) {
+			if(box.color != color){
+					continue;
+				}
+			goalState = false;
+			for(auto & goal : Node::goals){
+				if(goal.location == box.location && std::tolower(goal.chr) == std::tolower(box.chr)){
+					goalState = true;
+					break;
+				}
+			}
+		}
+		return goalState;
+	}
+
+
 
 	Box * Node::getBox(int x, int y)
 	{

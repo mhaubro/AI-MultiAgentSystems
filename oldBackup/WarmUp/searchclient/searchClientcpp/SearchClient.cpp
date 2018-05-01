@@ -178,8 +178,8 @@ int main(int argc, char * argv[]){
 		if (n == NULL){
 			std::cerr << "Something is null";
 		}
-		std::string act = n->action->to_string();
-		//std::cerr << n->action->to_string();
+		std::string act = n->action->toString();
+		//std::cerr << n->action->toString();
 		//std::cerr << "Printing solution2";
 		std::cerr << act;
 		std::cout << act;
