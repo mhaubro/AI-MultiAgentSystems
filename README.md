@@ -42,5 +42,8 @@ MultiAgent:
 ```
 
 ## TODO List
-1. Everything
-2. Win competition
+1. Conflict handling (Request task?)
+2. Plan merging
+3. Plan execution loop
+4. Task finding
+5. Request tasks
