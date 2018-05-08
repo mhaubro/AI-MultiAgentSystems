@@ -5,6 +5,7 @@
 #include <boost/pool/object_pool.hpp>
 #include "Entity.h"
 #include "Strategy.h"
+#include "CentralPlanner.h"
 #include <iostream>
 //boost::object_pool<Agent> Agent::pool;
 
@@ -63,6 +64,10 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		std::cerr << "isEmpty\n";
 		//Do replanning
 		delete plan;
+    cPlanner.AssignTask(this);
+    MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
+    std::cerr << this->task << "\n";
+    std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 		plan = new Plan(search(startstate));
 	}
 	std::cerr << "HigetAction2!\n";

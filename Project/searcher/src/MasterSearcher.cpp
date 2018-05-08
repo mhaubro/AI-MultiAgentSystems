@@ -22,9 +22,8 @@ std::vector<std::string> getPlan(Node * initialState){
 	Node * tempstate;
 
 	// We need to do this multiple times
-	CentralPlanner c = CentralPlanner();
-	c.DetectTasks(state);
-	c.AssignTasks(state);
+	cPlanner = CentralPlanner();
+	cPlanner.DetectTasks(state);
 	/*Creates a list of strings that is the actual plan*/
 	/*Keeps checking for conflicts*/
 	std::vector<std::string> plan = std::vector<std::string>();
@@ -41,14 +40,10 @@ std::vector<std::string> getPlan(Node * initialState){
 				s += ", ";
 		}
 		state = tempstate;
-		std::cerr << state->toString();
 		plan.push_back(s);
-		for (int i = 0; i < plan.size(); i++){
-			std::cerr << plan[i];
-		}
+    std::cerr << state->toString();
 		if (state->isGoalState())
 			return plan;
-
 	}
 	return plan;
 }
