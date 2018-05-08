@@ -14,9 +14,11 @@ class Goal;
 
 class Agent;
 
+
 class Node {
 
 public:
+	Node & operator =( const Node &first );
 	//Fields
 	static int maxX;
 	static int maxY;
@@ -24,13 +26,12 @@ public:
 	static std::vector<Goal> goals;
 	std::vector<Box> boxes;
 	std::vector<Agent> agents;
-
-	static boost::object_pool<Node> pool;
-
-	static Node * getopCopy(Node * n);
-
 	Node * parent;
 	Command * action;
+
+	static boost::object_pool<Node> pool;
+	static Node * getopCopy(Node * n);
+
 
 	//Methods
 	Node();
@@ -51,6 +52,7 @@ public:
 	int hashCode () const;
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
+
 
 private:
 	int gval;
