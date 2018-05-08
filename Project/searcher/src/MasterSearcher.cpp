@@ -18,12 +18,12 @@ std::vector<std::string> getPlan(Node * initialState){
 	std::vector<std::list<Node *>> plans(agents);
 
 	int longestPlan = 0;
-	Node * state = initialState;
-	Node * tempstate = state;
+	Node state = *initialState;
+	Node tempstate = state;
 
 	// We need to do this multiple times
 	cPlanner = CentralPlanner();
-	cPlanner.DetectTasks(state);
+	cPlanner.DetectTasks(&state);
 	/*Creates a list of strings that is the actual plan*/
 	/*Keeps checking for conflicts*/
 	std::vector<std::string> plan = std::vector<std::string>();
@@ -33,15 +33,16 @@ std::vector<std::string> getPlan(Node * initialState){
 		{ 
 			//s += "NoOp";
 			/*Checks if we're planning or if there's been a conflict, and if the next move is okay*/
-			s += (tempstate->agents[i].getAction(state, tempstate)->toString());
+			s += (tempstate.agents[i].getAction(&state, &tempstate)->toString());
 			if (i == agents-1)
 				s += ']';
 			else
 				s += ", ";
 		}
+		//std::cerr << tempstate.toString();
 		state = tempstate;
 		plan.push_back(s);
-		if (state->isGoalState())
+		if (state.isGoalState())
 			return plan;
 	}
 	return plan;

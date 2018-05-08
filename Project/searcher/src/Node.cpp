@@ -383,20 +383,28 @@ bool Node::isGoalState()
 
 bool Node::isGoalState(Entity::COLOR color)
 {
-	bool goalState = false;
-	for(auto & box : this->boxes) {
-		if(box.color != color){
-			continue;
-		}
-		goalState = false;
-		for(auto & goal : Node::goals){
-			if(goal.location == box.location && std::tolower(goal.chr) == std::tolower(box.chr)){
+	for(auto & goal : Node::goals){
+		bool goalState = false;
+		bool goalHasBox = false;
+		for(auto & box : this->boxes) {
+			if(box.color != color){
+				continue;
+			}
+			if (std::tolower(goal.chr) == std::tolower(box.chr)){
+				goalHasBox = true;
+			}
+
+			if(goal.location == box.location){
 				goalState = true;
 				break;
 			}
 		}
+		if (!goalState && goalHasBox){
+			//Is Okay
+			return false;
+		}
 	}
-	return goalState;
+	return true;
 }
 
 

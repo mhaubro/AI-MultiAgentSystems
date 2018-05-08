@@ -32,11 +32,13 @@ Plan::~Plan() {
 }
 
 bool Plan::isEmpty(){
-	return actions.size() == 1;
+	return actions.empty();
 }
 
 Command * Plan::getStep(){
-	return actions.front();
+	Command * c = actions.front();
+	actions.pop_front();
+	return c;
 }
 
 void Plan::popFront(){
