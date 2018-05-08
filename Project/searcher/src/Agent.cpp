@@ -54,7 +54,6 @@ std::list<Node *> Agent::search(Node * state){
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
-	//std::cerr << "Hi!\n";
 	if (startstate->isGoalState(this->color)){
 		//std::cerr << "goal\n";
 		//NoOp
@@ -64,13 +63,13 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		std::cerr << "isEmpty\n";
 		//Do replanning
 		delete plan;
+    std::cerr << "assigning task\n";
     cPlanner.AssignTask(this);
     MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
-    std::cerr << this->task << "\n";
     std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 		plan = new Plan(search(startstate));
+    std::cerr << "plan pointer for agent: " << this->chr << " " << plan << "\n";
 	}
-	std::cerr << "HigetAction2!\n";
 	//Find next step
 	Command * c = plan->getStep();
 	plan->popFront();
@@ -78,7 +77,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	int number = (int)(chr - '0');
 
 	if (!startstate->checkState(number, c)){
-		std::cerr << "Conflict1!\n";
+		std::cerr << "Conflict1!\n";  
 		//Do replanning next time
 		plan->drain();
 		return &Command::EVERY[0];
@@ -89,8 +88,6 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		plan->drain();
 		return &Command::EVERY[0];
 	}
-
-
 	return c;
 }
 
@@ -99,6 +96,7 @@ Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 Entity(chr, location, color){
   this->task = nullptr;
   this->rank = rank;
+  this->plan = nullptr;
 }
 
 Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
@@ -106,6 +104,7 @@ Entity(chr, location, color)
 {
   this->task = nullptr;
   this->rank = 0;
+  this->plan = nullptr;
 }
 //No color, for single agent levels
 Agent::Agent(char chr, std::pair<int, int> location):
@@ -113,12 +112,14 @@ Entity(chr, location, Entity::BLUE)
 {
   this->task = nullptr;
   this->rank = 0;
+  this->plan = nullptr;
 }
 
 Agent::Agent(Agent * agt):
 Entity(agt->chr, agt->location, agt->color)
 {
   this->rank = agt->rank;
+  this->plan = nullptr;
 }
 
 int Agent::hashCode()

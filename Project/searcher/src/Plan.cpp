@@ -32,7 +32,7 @@ Plan::~Plan() {
 }
 
 bool Plan::isEmpty(){
-	return actions.empty();
+	return actions.size() == 1;
 }
 
 Command * Plan::getStep(){

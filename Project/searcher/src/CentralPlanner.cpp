@@ -9,7 +9,6 @@ CentralPlanner::CentralPlanner(){
   for(int i = 0; i < 8; i++){
     this->UnassignedTasks.push_back(std::stack<Task*>());
   }
-  std::cerr << "Size of UnassignedTasks: " << this->UnassignedTasks.size() << "\n";
 }
 
 void CentralPlanner::DetectTasks(Node * n)
@@ -23,7 +22,6 @@ void CentralPlanner::DetectTasks(Node * n)
         // Set rank?
         MoveBoxTask * t = new MoveBoxTask(&b, g.getLocation(), 0);
         this->UnassignedTasks[b.color].push(t);
-        std::cerr << "ELEMENT PUSHED \n";
       }
     }
   }
