@@ -26,7 +26,7 @@ void CentralPlanner::AssignTasks(Node * n)
   int s = this->UnassignedTasks.size();
   for(int i = 0; i < s; i++)
   {
-    MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
+    //MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
     if(this->UnassignedTasks[i]->type == Task::Type::MoveBoxTask)
     {
       MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
