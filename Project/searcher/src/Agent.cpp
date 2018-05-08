@@ -52,10 +52,14 @@ std::list<Node *> Agent::search(Node * state){
   }
 }
 
-Command * Agent::getAction(Node * startstate){
+Command * Agent::getAction(Node * startstate, Node * tempstate){
 
 
+	//Find next step
 
+
+	//Find number
+	int number = atoi(&chr);
 
 	return NULL;
 }

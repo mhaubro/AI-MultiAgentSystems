@@ -13,11 +13,12 @@ class Node;
 class Agent : public Entity
 {
   public:
+	//Is this the number, or an actual rank. I assume actual rank.
     int rank;
 
     //std::list<Node *> Search();
 
-    Command * getAction(Node * startstate);
+    Command * getAction(Node * startstate, Node * temptate);
 
     Task * task;
     std::list<Node *> search(Node * state);
