@@ -31,9 +31,10 @@ std::list<Node *> Agent::search(Node * state){
 
     Node * leafNode = strategy->getAndRemoveLeaf();
 
-    if (leafNode->isGoalState(this->color)) {
+
+    if (this->task->isCompleted(this, leafNode)) {
       //A goal is found, final state is printed
-      std::cerr << "Goal!\n";
+      std::cerr << "Task completed!\n";
       strategy->searchStatus(iterations);
       std::cerr << leafNode->toString();
       return leafNode->extractPlan();

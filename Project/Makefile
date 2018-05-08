@@ -8,7 +8,7 @@ CPP = g++
 CPP_FLAGS = -std=c++14 -O3 -lboost_system#Using -O3 to aggressively optimize. Use -g to use with gdb
 #gdb requires hacks for now.
 
-.PHONY: all clean allclean
+.PHONY: all clean allclean alltools
 #-include $(SOURCEDIR)/Makefile.mk
 Root_Directory =  ${strip $(CURDIR)}
 SCDIR = $(Root_Directory)/searcher
@@ -49,7 +49,8 @@ EXECUTABLESSEARCHER += $(Root_Directory)/searcher
 #-I marks that headers can be found in a directory
 INCLUDE_TEMP += $(SCDIR)/include
 
-all: prober maketable searcher
+alltools: searcher prober maketable
+all: searcher
 
 testCompile:
 	@echo $(CPP_FILES)

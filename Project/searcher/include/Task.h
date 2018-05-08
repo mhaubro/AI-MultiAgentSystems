@@ -3,26 +3,41 @@
 
 #include "Agent.h"
 #include "Box.h"
+#include "Node.h"
 
 class Agent;
+class Node;
 
-class MoveAgentTask
+class Task
 {
-  public:
-    Agent * agent;
-    std::pair<int, int> destination;
-    int rank;
+public:
+  enum class Type {
+    MoveAgentTask, MoveBoxTask
+  };
+  int rank;
+  Type type;
 
-    MoveAgentTask(Agent * agent, std::pair<int, int> loc, int rank);
+  virtual bool isCompleted(Agent * a, Node * n);
 };
 
-class MoveBoxTask
+class MoveAgentTask : public Task
 {
-  public:
-    Box * box;
-    std::pair<int, int> destination;
-    int rank;
+public:
+  std::pair<int, int> destination;
+  int rank;
 
-    MoveBoxTask(Box * box, std::pair<int, int> loc, int rank);
+  MoveAgentTask(std::pair<int, int> loc, int rank);
+  bool isCompleted(Agent * a, Node * n);
+};
+
+class MoveBoxTask : public Task
+{
+public:
+  Box * box;
+  std::pair<int, int> destination;
+  int rank;
+
+  MoveBoxTask(Box * box, std::pair<int, int> loc, int rank);
+  bool isCompleted(Agent * a, Node * n);
 };
 #endif

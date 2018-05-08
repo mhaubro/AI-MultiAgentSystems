@@ -12,6 +12,8 @@
 
 class Goal;
 
+class Agent;
+
 class Node {
 
 public:

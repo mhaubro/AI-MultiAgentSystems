@@ -7,12 +7,12 @@
 
 class CentralPlanner {
 public:
-  std::vector<Box *> UnassignedBoxes;
-  std::vector<Goal *> UnassignedGoals;
+  std::vector<Task*> UnassignedTasks;
 
-  CentralPlanner(std::vector<Box *> boxes, std::vector<Goal *> goals);
+  CentralPlanner();
 
-  void AssignTasks();
+  void DetectTasks(Node * n);
+  void AssignTasks(Node * n);
   Task * RequestTask();
   Task * RequestHelp();
 };
