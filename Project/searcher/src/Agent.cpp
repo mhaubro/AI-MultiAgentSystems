@@ -52,6 +52,15 @@ std::list<Node *> Agent::search(Node * state){
   }
 }
 
+Command * Agent::getAction(Node * startstate){
+
+
+
+
+	return NULL;
+}
+
+
 Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 Entity(chr, location, color){
   this->rank = rank;

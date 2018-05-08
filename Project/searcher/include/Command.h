@@ -19,7 +19,7 @@ public:
   std::string toString();
 
   enum Type {
-    Move, Push, Pull, LASTT
+    Move, Push, Pull, NoOp
   };
 
   static std::vector<Command> EVERY;

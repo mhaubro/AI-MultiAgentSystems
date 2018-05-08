@@ -17,6 +17,8 @@ class Agent : public Entity
 
     //std::list<Node *> Search();
 
+    Command * getAction(Node * startstate);
+
     Task * task;
     std::list<Node *> search(Node * state);
     Agent(char chr, int rank, std::pair<int, int> location, Entity::COLOR color);
