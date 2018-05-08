@@ -24,6 +24,7 @@ public:
 
   static std::vector<Command> EVERY;
 
+
   Command(int d);
   Command(int t, int d1, int d2);
   Command();

@@ -53,15 +53,40 @@ std::list<Node *> Agent::search(Node * state){
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
-
-
+	//std::cerr << "Hi!\n";
+	if (startstate->isGoalState(this->color)){
+		//std::cerr << "goal\n";
+		//NoOp
+		return &Command::EVERY[0];
+	}
+	if (plan == NULL || plan->isEmpty()){
+		std::cerr << "isEmpty\n";
+		//Do replanning
+		delete plan;
+		plan = new Plan(search(startstate));
+	}
+	std::cerr << "HigetAction2!\n";
 	//Find next step
-
-
+	Command * c = plan->getStep();
+	plan->popFront();
 	//Find number
-	int number = atoi(&chr);
+	int number = (int)(chr - '0');
 
-	return NULL;
+	if (!startstate->checkState(number, c)){
+		std::cerr << "Conflict1!\n";
+		//Do replanning next time
+		plan->drain();
+		return &Command::EVERY[0];
+	}
+	if (!tempstate->checkAndChangeState(number, c)){
+		std::cerr << "Conflict2!\n";
+		//Do replanning next time
+		plan->drain();
+		return &Command::EVERY[0];
+	}
+
+
+	return c;
 }
 
 

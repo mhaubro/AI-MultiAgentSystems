@@ -70,6 +70,7 @@ namespace Initializer {
     Everything is stored, so we print the state as a sanity check for the user
     */
     cerr << initialState->toString();
+    //std::cerr << "Hi\n";
     return initialState;
   }
 

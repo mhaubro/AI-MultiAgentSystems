@@ -11,6 +11,7 @@ namespace MasterSearcher
 
 
 std::vector<std::string> getPlan(Node * initialState){
+	std::cerr << "test0\n";
 
 	int agents = initialState->agents.size();
 	std::cerr << "Agents: " << agents << "\n";
@@ -24,11 +25,9 @@ std::vector<std::string> getPlan(Node * initialState){
 	CentralPlanner c = CentralPlanner();
 	c.DetectTasks(state);
 	c.AssignTasks(state);
-
 	/*Creates a list of strings that is the actual plan*/
 	/*Keeps checking for conflicts*/
 	std::vector<std::string> plan = std::vector<std::string>();
-
 	while (true){
 		std::string s = "[";
 		for (int i = 0; i < agents; i++)
@@ -41,7 +40,12 @@ std::vector<std::string> getPlan(Node * initialState){
 			else
 				s += ", ";
 		}
+		state = tempstate;
+		std::cerr << state->toString();
 		plan.push_back(s);
+		for (int i = 0; i < plan.size(); i++){
+			std::cerr << plan[i];
+		}
 		if (state->isGoalState())
 			return plan;
 

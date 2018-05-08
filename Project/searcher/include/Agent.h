@@ -7,9 +7,11 @@
 
 #include "Task.h"
 #include "Node.h"
+#include "Plan.h"
 #include "Entity.h"
-class Task;
-class Node;
+
+class Plan;
+
 class Agent : public Entity
 {
   public:
@@ -31,6 +33,8 @@ class Agent : public Entity
 
     bool equals(const Agent * o) const;
 
+private:
+    Plan * plan;
 
 };
 #endif
