@@ -13,6 +13,8 @@ public:
 
   void DetectTasks(Node * n);
   void AssignTasks(Node * n);
+  void AssignTask(Agent * a);
+  bool TaskAvailable(Agent * a);
   Task * RequestTask();
   Task * RequestHelp();
 };

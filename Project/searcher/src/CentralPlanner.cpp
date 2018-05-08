@@ -44,6 +44,36 @@ void CentralPlanner::AssignTasks(Node * n)
   }
 }
 
+void CentralPlanner::AssignTask(Agent * a)
+{
+  int s = this->UnassignedTasks.size();
+  for(int i = 0; i < s; i++)
+  {
+    if(this->UnassignedTasks[i]->type == Task::Type::MoveBoxTask)
+    {
+      MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
+      if(tmp->box->color == a->color)
+        a->task = this->UnassignedTasks[i];
+    }
+  }
+  a->task = nullptr;
+}
+
+bool CentralPlanner::TaskAvailable(Agent * a)
+{
+  int s = this->UnassignedTasks.size();
+  for(int i = 0; i < s; i++)
+  {
+    if(this->UnassignedTasks[i]->type == Task::Type::MoveBoxTask)
+    {
+      MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
+      if(tmp->box->color == a->color)
+        return true;
+    }
+  }
+  return false;
+}
+
 Task * CentralPlanner::RequestTask(){
 
 }
