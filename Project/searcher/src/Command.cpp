@@ -30,6 +30,7 @@
 		for (int d = 0; d < Command::LASTD; d++) {
 			cmds.push_back(new Command(d));
 		}
+		cmds.push_back(new Command(Command::LASTD));
 		int elements = cmds.size();
 		std::vector<Command> com(elements);
 		for (int i = 0; i < elements; i++){
@@ -75,8 +76,13 @@
 	}
 
 	Command::Command(int d) {
-		this->actionType = Command::Move;
-		this->dirAgent = d;
+		if (d == Command::LASTD){
+			this->actionType = Command::NoOp;
+			this->dirAgent = -1;
+		} else {
+			this->actionType = Command::Move;
+			this->dirAgent = d;
+		}
 		this->dirBox = -1;//Indicates illegal direction
 	}
 
@@ -93,11 +99,15 @@
 
 	std::string Command::toString() {
 		static const char DirNames[4][1+1] = {"N", "W", "E", "S"};
-		static const char TypeNames[3][4+1] = {"Move", "Push", "Pull"};
+		static const char TypeNames[4][4+1] = {"Move", "Push", "Pull", "NoOp"};
 		std::stringstream ss;
 		char newC[12];
-
-		if (this->actionType == Command::Move){
+		//A switch would be more beautiful?
+		if (this->actionType == Command::NoOp){
+			ss << TypeNames[this->actionType];
+			return ss.str();
+		}
+		else if (this->actionType == Command::Move){
 			//Command will be 5 chars long
 
 			ss << TypeNames[this->actionType] << "(" << DirNames[this->dirAgent] << ")";

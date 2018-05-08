@@ -7,15 +7,20 @@
 
 #include "Task.h"
 #include "Node.h"
+#include "Plan.h"
 #include "Entity.h"
-class Task;
-class Node;
+
+class Plan;
+
 class Agent : public Entity
 {
   public:
+	//Is this the number, or an actual rank. I assume actual rank.
     int rank;
 
     //std::list<Node *> Search();
+
+    Command * getAction(Node * startstate, Node * temptate);
 
     Task * task;
     std::list<Node *> search(Node * state);
@@ -27,5 +32,9 @@ class Agent : public Entity
     int hashCode();
 
     bool equals(const Agent * o) const;
+
+private:
+    Plan * plan;
+
 };
 #endif
