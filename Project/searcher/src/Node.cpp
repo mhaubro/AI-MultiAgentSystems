@@ -36,9 +36,8 @@ Node & Node::operator=( const Node &first ){
 	this->agents = first.agents;
 	this->parent = first.parent;
 	this->action = first.action;
-
-
-
+	this->gval = first.gval;
+	std::cerr << "Copying!\n";
 	return *this;
 }
 

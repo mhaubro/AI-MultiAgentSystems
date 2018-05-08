@@ -32,7 +32,9 @@ std::list<Node *> Agent::search(Node * state){
     Node * leafNode = strategy->getAndRemoveLeaf();
 
 
-    if (this->task->isCompleted(this, leafNode)) {
+
+    if (leafNode->isGoalState(this->color)) {
+    	//I changed something
       //A goal is found, final state is printed
       std::cerr << "Task completed!\n";
       strategy->searchStatus(iterations);
@@ -53,24 +55,22 @@ std::list<Node *> Agent::search(Node * state){
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
-	//std::cerr << "Hi!\n";
 	if (startstate->isGoalState(this->color)){
-		//std::cerr << "goal\n";
 		//NoOp
 		return &Command::EVERY[0];
 	}
 	if (plan == NULL || plan->isEmpty()){
-		std::cerr << "isEmpty\n";
 		//Do replanning
 		delete plan;
 		plan = new Plan(search(startstate));
 	}
-	std::cerr << "HigetAction2!\n";
 	//Find next step
 	Command * c = plan->getStep();
 	plan->popFront();
 	//Find number
 	int number = (int)(chr - '0');
+
+
 
 	if (!startstate->checkState(number, c)){
 		std::cerr << "Conflict1!\n";
@@ -85,7 +85,6 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		return &Command::EVERY[0];
 	}
 
-
 	return c;
 }
 
@@ -94,6 +93,7 @@ Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 Entity(chr, location, color){
   this->task = nullptr;
   this->rank = rank;
+  plan = NULL;
 }
 
 Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
@@ -101,6 +101,7 @@ Entity(chr, location, color)
 {
   this->task = nullptr;
   this->rank = 0;
+  plan = NULL;
 }
 //No color, for single agent levels
 Agent::Agent(char chr, std::pair<int, int> location):
@@ -108,12 +109,15 @@ Entity(chr, location, Entity::BLUE)
 {
   this->task = nullptr;
   this->rank = 0;
+  plan = NULL;
 }
 
 Agent::Agent(Agent * agt):
 Entity(agt->chr, agt->location, agt->color)
 {
+  this->task = agt->task;
   this->rank = agt->rank;
+  this->plan = agt->plan;
 }
 
 int Agent::hashCode()

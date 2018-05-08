@@ -11,6 +11,7 @@
 #include "Entity.h"
 
 class Plan;
+class Task;
 
 class Agent : public Entity
 {
