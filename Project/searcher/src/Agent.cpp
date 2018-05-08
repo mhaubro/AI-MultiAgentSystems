@@ -54,18 +54,21 @@ std::list<Node *> Agent::search(Node * state){
 
 Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 Entity(chr, location, color){
+  this->task = nullptr;
   this->rank = rank;
 }
 
 Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
 Entity(chr, location, color)
 {
+  this->task = nullptr;
   this->rank = 0;
 }
 //No color, for single agent levels
 Agent::Agent(char chr, std::pair<int, int> location):
 Entity(chr, location, Entity::BLUE)
 {
+  this->task = nullptr;
   this->rank = 0;
 }
 

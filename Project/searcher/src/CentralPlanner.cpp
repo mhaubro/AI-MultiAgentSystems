@@ -31,6 +31,9 @@ void CentralPlanner::AssignTasks(Node * n)
       MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
       for(auto & a : n->agents)
       {
+        if(a.task != nullptr)
+          continue;
+
         if(tmp->box->color == a.color)
         {
           a.task = this->UnassignedTasks[i];

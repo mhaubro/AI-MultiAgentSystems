@@ -30,7 +30,10 @@ bool MoveAgentTask::isCompleted(Agent * a, Node * n)
   for(auto & ag : n->agents)
   {
     if(ag.getLocation() == this->destination && ag.chr == a->chr)
+    {
+      a->task = nullptr;
       return true;
+    }
   }
   return false;
 }
@@ -53,7 +56,10 @@ bool MoveBoxTask::isCompleted(Agent * a, Node * n)
   for(auto & b : n->boxes)
   {
     if(b.getLocation() == this->destination)
+    {
+      a->task = nullptr;
       return true;
+    }
   }
   return false;
 }
