@@ -27,6 +27,5 @@ class Agent : public Entity
     int hashCode();
 
     bool equals(const Agent * o) const;
-
 };
 #endif

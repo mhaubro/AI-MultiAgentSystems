@@ -7,6 +7,7 @@
 #include <random>
 #include <functional>
 #include <iostream>
+#include <cctype>
 #include <iomanip>
 #include "Goal.h"
 #include "Agent.h"
@@ -187,6 +188,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 						Node n = Node(this);
 						n.action = c;
 						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+						//std::cerr << n.toString();
 						expandedNodes.push_back(n);
 					}
 				} else if (c->actionType == Command::Push) {
@@ -203,7 +205,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 
 							n.getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
-
+							//std::cerr << n.toString();
 							expandedNodes.push_back(n);
 						}
 					}
@@ -218,6 +220,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 							n.action = c;
 							n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 							n.getBox(boxX, boxY)->setLocation(a.getX(), a.getY());
+							//std::cerr << n.toString();
 							expandedNodes.push_back(n);
 
 						}
@@ -346,23 +349,20 @@ bool Node::checkAndChangeState(int agent, Command * c){
 
 	bool Node::isGoalState(Entity::COLOR color)
 	{
-		for(auto & goal : Node::goals)
-		{
-
-			bool goalState = false;
-			for(auto & box : this->boxes){
-				if(box.color != color){
+		bool goalState = false;
+		for(auto & box : this->boxes) {
+			if(box.color != color){
 					continue;
 				}
-				if(goal.location == box.location && goal.chr == box.chr){
+			goalState = false;
+			for(auto & goal : Node::goals){
+				if(goal.location == box.location && std::tolower(goal.chr) == std::tolower(box.chr)){
 					goalState = true;
 					break;
 				}
 			}
-		if(!goalState)
-			return false;
 		}
-		return true;
+		return goalState;
 	}
 
 

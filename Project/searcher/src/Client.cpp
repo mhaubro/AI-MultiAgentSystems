@@ -77,10 +77,10 @@ int main(int argc, char * argv[]){
 			sprintf(buffer, "%s was attempted in a state\n", cmd);
 			std::cerr << std::string(buffer);
 			break;
-		}
-		}
-		return 0;
+	  }
 	}
+	return 0;
+}
 
 	/*
 	 * Here an actual search is being done. This is so critical, it might deserve it's own class.

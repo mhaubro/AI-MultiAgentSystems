@@ -1,43 +1,44 @@
 #include "Task.h"
 #include "Agent.h"
 #include "Box.h"
+#include <iostream>
 
-Task::Task()
+bool Task::isCompleted(Agent * a, Node * n)
 {
-
+  return false;
 }
 
-int Task::h()
+MoveAgentTask::MoveAgentTask(std::pair<int, int> loc, int rank)
 {
-  return 0;
-}
-
-int Task::manhattan(std::pair<int, int> loc1, std::pair<int, int> loc2)
-{
-  return abs(std::get<0>(loc2) - std::get<0>(loc1)) + abs(std::get<1>(loc2) - std::get<1>(loc1));
-}
-
-MoveAgentTask::MoveAgentTask(Agent * agent, std::pair<int, int> loc, int rank)
-{
-  this->agent = agent;
+  this->type = Task::Type::MoveAgentTask;
   this->destination = loc;
   this->rank = rank;
 }
 
-int MoveAgentTask::h()
+bool MoveAgentTask::isCompleted(Agent * a, Node * n)
 {
-  return manhattan(this->agent->location, this->destination);
+  for(auto & ag : n->agents)
+  {
+    if(ag.getLocation() == this->destination && ag.chr == a->chr)
+      return true;
+  }
+  return false;
 }
 
-MoveBoxTask::MoveBoxTask(Agent * agent, Box * box, std::pair<int, int> loc, int rank)
+MoveBoxTask::MoveBoxTask(Box * box, std::pair<int, int> loc, int rank)
 {
-  this->agent = agent;
+  this->type = Task::Type::MoveBoxTask;
   this->box = box;
   this->destination = loc;
   this->rank = rank;
 }
 
-int MoveBoxTask::h()
+bool MoveBoxTask::isCompleted(Agent * a, Node * n)
 {
-  return manhattan(this->agent->location, this->destination) + manhattan(this->box->location, this->destination);
+  for(auto & b : n->boxes)
+  {
+    if(b.getLocation() == this->destination)
+      return true;
+  }
+  return false;
 }
