@@ -5,7 +5,6 @@
 #include <regex>
 #include <iostream>
 #include <iterator>
-#include "Strategy.h"
 #include "Command.h"
 #include "Memory.h"
 #include "MasterSearcher.h"
@@ -52,13 +51,13 @@ int main(int argc, char * argv[]){
 	Client client = Client();
 	std::cerr << "Search started\n";
 
-	StrategyBFS strategy = StrategyBFS();
+	//StrategyBFS strategy = StrategyBFS();
 
 	std::vector<std::string> solution;
 
 	solution = MasterSearcher::getPlan(client.initialState);
 
-	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
+	//std::cerr << "\nSummary for " << strategy.toString() << ".\n";
 	std::cerr << "Found solution of length " << solution.size() << ".\n";
 
 	for (const auto & cmd : solution) {
@@ -86,7 +85,7 @@ int main(int argc, char * argv[]){
 	 * Here an actual search is being done. This is so critical, it might deserve it's own class.
 	 */
 
-
+/*
 	std::list<Node *> Client::search(Strategy * strategy, int printfrequency) {
 		char buffer[100];
 		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
@@ -126,3 +125,4 @@ int main(int argc, char * argv[]){
 			iterations++;
 		}
 	}
+*/

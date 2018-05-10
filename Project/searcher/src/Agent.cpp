@@ -9,6 +9,7 @@
 //boost::object_pool<Agent> Agent::pool;
 
 std::list<Node *> Agent::search(Node * state){
+    /*
   int printfrequency = 10000;
   StrategyBFS * strategy = new StrategyBFS();
 
@@ -50,6 +51,7 @@ std::list<Node *> Agent::search(Node * state){
     }
     iterations++;
   }
+  */return a_star_search(state, this, this->task);
 }
 
 Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
