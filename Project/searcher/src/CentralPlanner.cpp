@@ -52,9 +52,11 @@ void CentralPlanner::AssignTasks(Node * n)
 */
 void CentralPlanner::AssignTask(Agent * a)
 {
-  if(cPlanner.UnassignedTasks[a->color].empty()){
+  if(cPlanner.UnassignedTasks[a->color].empty())
+  {
     a->task = nullptr;
-  } else
+  }
+  else
   {
     a->task = cPlanner.UnassignedTasks[a->color].top();
     cPlanner.UnassignedTasks[a->color].pop();

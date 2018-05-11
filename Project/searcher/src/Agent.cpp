@@ -76,7 +76,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	int number = (int)(chr - '0');
 
 	if (!startstate->checkState(number, c)){
-		std::cerr << "Conflict1!\n";  
+		std::cerr << "Conflict1!\n";
 		//Do replanning next time
 		plan->drain();
 		return &Command::EVERY[0];

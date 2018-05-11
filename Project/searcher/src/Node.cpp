@@ -368,8 +368,10 @@ bool Node::isGoalState()
 	for(auto & goal : Node::goals)
 	{
 		bool goalState = false;
-		for(auto & box : this->boxes){
-			if(goal.location == box.location && goal.chr == std::tolower(box.chr)){
+		for(auto & box : this->boxes)
+    {
+			if(goal.location == box.location && goal.chr == std::tolower(box.chr))
+      {
 				goalState = true;
 				break;
 			}

@@ -55,10 +55,11 @@ bool MoveBoxTask::isCompleted(Agent * a, Node * n)
 {
   for(auto & b : n->boxes)
   {
+    if(b.chr != this->box->chr)
+      continue;
     if(b.getLocation() == this->destination)
     {
       a->task = nullptr;
-      std::cerr << "Found plan for moving box " << b.chr << "\n";
       return true;
     }
   }
