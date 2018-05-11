@@ -5,6 +5,7 @@
 #include <boost/pool/object_pool.hpp>
 #include "Entity.h"
 #include "Strategy.h"
+#include "CentralPlanner.h"
 #include <iostream>
 //boost::object_pool<Agent> Agent::pool;
 
@@ -55,18 +56,25 @@ std::list<Node *> Agent::search(Node * state){
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
-	if (startstate->isGoalState(this->color)){
+	if (startstate->isGoalState(this->color))
+  {
+		std::cerr << "agent: " << chr << " goal\n";
 		//NoOp
 		return &Command::EVERY[0];
 	}
-	if (plan == NULL || plan->isEmpty()){
+	if (plan == NULL || plan->actions.size()==0){
+    if(cPlanner.UnassignedTasks[this->color].size() == 0){
+      return &Command::EVERY[0];
+    }
 		//Do replanning
 		delete plan;
+    cPlanner.AssignTask(this);
+    MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
+    std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 		plan = new Plan(search(startstate));
 	}
 	//Find next step
 	Command * c = plan->getStep();
-	plan->popFront();
 	//Find number
 	int number = (int)(chr - '0');
 
@@ -84,7 +92,6 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		plan->drain();
 		return &Command::EVERY[0];
 	}
-
 	return c;
 }
 

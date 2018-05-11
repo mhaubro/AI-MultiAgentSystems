@@ -2,12 +2,15 @@
 #define CENTRALPLANNER_H
 #include "Box.h"
 #include "Goal.h"
-
+#include "Task.h"
 #include <vector>
+#include <stack>
+
+class Task;
 
 class CentralPlanner {
 public:
-  std::vector<Task*> UnassignedTasks;
+  std::vector<std::stack<Task*>> UnassignedTasks;
 
   CentralPlanner();
 
@@ -19,5 +22,6 @@ public:
   Task * RequestHelp();
 };
 
+extern CentralPlanner cPlanner;
 
 #endif

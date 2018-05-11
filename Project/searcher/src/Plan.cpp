@@ -36,7 +36,9 @@ bool Plan::isEmpty(){
 }
 
 Command * Plan::getStep(){
-	return actions.front();
+	Command * c = actions.front();
+	actions.pop_front();
+	return c;
 }
 
 void Plan::popFront(){
