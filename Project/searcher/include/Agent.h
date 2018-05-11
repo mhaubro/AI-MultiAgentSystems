@@ -9,8 +9,10 @@
 #include "Node.h"
 #include "Plan.h"
 #include "Entity.h"
+#include "CentralPlanner.h"
 
 class Plan;
+class Task;
 
 class Agent : public Entity
 {
