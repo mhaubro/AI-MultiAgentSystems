@@ -8,6 +8,9 @@
 #include <iterator>
 #include <algorithm>
 
+//Used for sorting agent array, cause I'm lazy /Martin
+bool compAgents (Agent & i,Agent & j) { return (i.chr<j.chr); }
+
 namespace Initializer {
   bool isAgent(char c) {
   	return ('0' <= c && c <= '9');
@@ -20,9 +23,6 @@ namespace Initializer {
   bool isGoal(char c) {
   	return ('a' <= c && c <= 'z');
   }
-
-
-
 
   Node * storeInput(std::list<std::string> rows, int cols, std::unordered_map<char, Entity::COLOR> colors){
     using namespace std;
@@ -63,7 +63,7 @@ namespace Initializer {
       }
     }
 //    Node::goals = goals;
-
+    std::sort (agents.begin(), agents.end(), compAgents);
     initialState->boxes = boxes;
     initialState->agents = agents;
     /*

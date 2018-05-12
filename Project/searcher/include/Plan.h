@@ -26,9 +26,9 @@ public:
 	Command * getStep();
 	void popFront();
 	void drain();
+	std::list<Command *> actions;
 private:
 	//std::list<Node *> nodes;
-	std::list<Command *> actions;
 	//A pair is used here to indicate the (x,y) of a new location for each command
 	std::list<std::pair<int, int>> locations;//The locations that the plan will reach.
 
