@@ -37,7 +37,6 @@ Node & Node::operator=( const Node &first ){
 	this->parent = first.parent;
 	this->action = first.action;
 	this->gval = first.gval;
-	std::cerr << "Copying!\n";
 	return *this;
 }
 
@@ -95,8 +94,8 @@ bool Node::checkAndChangeState(int agent, Command * c){
 		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
 
 	} else if (c->actionType == Command::Push){
-		int boxx = agents[agent].getX()+c->getdx(c->dirBox);
-		int boxy = agents[agent].getY()+c->getdy(c->dirBox);
+		int boxx = agents[agent].getX()+c->getdx(c->dirAgent);
+		int boxy = agents[agent].getY()+c->getdy(c->dirAgent);
 		Box * box = getBox(boxx, boxy);
 		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
 		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
