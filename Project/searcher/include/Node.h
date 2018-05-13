@@ -23,7 +23,7 @@ public:
 	static int maxX;
 	static int maxY;
 	static std::vector<bool> walls;
-	static std::vector<Goal> goals;
+	static std::vector<Goal> goals;//Goals are read once, and order will NEVER change.
 	std::vector<Box> boxes;
 	std::vector<Agent> agents;
 	Node * parent;

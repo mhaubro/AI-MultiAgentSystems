@@ -12,7 +12,12 @@ class CentralPlanner {
 public:
   std::vector<std::stack<Task*>> UnassignedTasks;
 
+  //std::vector of goals, each containing a vector of size 8,
+  std::vector<std::vector<bool>> compatibleGoals;
+
   CentralPlanner();
+  bool isGoalCompatible(int goal, Entity::COLOR color);
+  void preAnalyse(Node * n);
 
   void DetectTasks(Node * n);
   void AssignTasks(Node * n);
@@ -20,6 +25,9 @@ public:
   bool TaskAvailable(Agent * a);
   Task * RequestTask();
   Task * RequestHelp();
+
+private:
+  void getCompatibleGoals(Node * n);
 };
 
 extern CentralPlanner cPlanner;

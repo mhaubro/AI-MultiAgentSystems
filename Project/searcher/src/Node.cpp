@@ -53,6 +53,11 @@ bool Node::checkState(int agent, Command * c){
 		//Calculates box' former position through knowing
 		// the new position and command changes from the old.
 		//Used for getting the box whose position changes
+		int boxx = agents[agent].getX()-c->getdx(c->dirBox);
+		int boxy = agents[agent].getY()-c->getdy(c->dirBox);
+		Box * box = getBox(boxx, boxy);
+		if (box == NULL)
+			return false;
 		int agentx = agents[agent].getX()+c->getdx(c->dirAgent);
 		int agenty = agents[agent].getY()+c->getdy(c->dirAgent);
 		return this->cellIsFree(agentx, agenty);
@@ -60,6 +65,8 @@ bool Node::checkState(int agent, Command * c){
 		int boxx = agents[agent].getX()+c->getdx(c->dirAgent);
 		int boxy = agents[agent].getY()+c->getdy(c->dirAgent);
 		Box * box = getBox(boxx, boxy);
+		if (box == NULL)
+			return false;
 		int newboxx = box->getX()+c->getdx(c->dirBox);
 		int newboxy = box->getY()+c->getdy(c->dirBox);
 		return this->cellIsFree(newboxx, newboxy);
@@ -87,7 +94,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 		//Calculates box' former position through knowing
 		// the new position and command changes from the old.
 		//Used for getting the box whose position changes
-		int boxx = agents[agent].getX()-c->getdx(c->dirBox);
+		int boxx = agents[agent].getX()+c->getdx(c->dirBox);
 		int boxy = agents[agent].getY()-c->getdy(c->dirBox);
 		Box * box = getBox(boxx, boxy);
 		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
@@ -178,8 +185,8 @@ std::vector<Node> Node::getExpandedNodes(){
 			} else if (c->actionType == Command::Pull) {
 				// Cell is free where agent is going
 				if (this->cellIsFree(newAgentX, newAgentY)) {
-					int boxX = a.getX() + Command::getdx(c->dirBox);
-					int boxY = a.getY() + Command::getdy(c->dirBox);
+					int boxX = a.getX() - Command::getdx(c->dirBox);
+					int boxY = a.getY() - Command::getdy(c->dirBox);
 					// .. and there's a box in "dirBox" of the agent
 					if (this->boxAt(boxX, boxY)) {
 						Node n = Node(this);
