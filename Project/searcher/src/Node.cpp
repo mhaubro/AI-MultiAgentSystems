@@ -53,7 +53,7 @@ bool Node::checkState(int agent, Command * c){
 		//Calculates box' former position through knowing
 		// the new position and command changes from the old.
 		//Used for getting the box whose position changes
-		int boxx = agents[agent].getX()-c->getdx(c->dirBox);
+		int boxx = agents[agent].getX()+c->getdx(c->dirBox);
 		int boxy = agents[agent].getY()-c->getdy(c->dirBox);
 		Box * box = getBox(boxx, boxy);
 		if (box == NULL)
