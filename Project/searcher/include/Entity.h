@@ -9,7 +9,7 @@ Base class for goals, agents and boxes
 class Entity {
 
 public:
-  enum COLOR {BLUE, RED, GREEN, CYAN, MAGENTA, ORANGE, PINK, YELLOW};
+  enum COLOR {BLUE, RED, GREEN, CYAN, MAGENTA, ORANGE, PINK, YELLOW, NUMCOLS};
 
   COLOR color;
 

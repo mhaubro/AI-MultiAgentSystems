@@ -1,0 +1,19 @@
+readme fil til at gøre gdb klar
+
+Det anbefales at hente gdb vha. package manager (sudo apt-get install gdb eller sudo pacman -S gdb)
+
+For setup skal der egentlig kun køres echo 'set history save on' >> ~/.gdbinit && chmod 600 ~/.gdbinit (Tak til https://stackoverflow.com/questions/3176800/how-can-i-make-gdb-save-the-command-history)
+
+Derudover er optimizations slået fra, så det er langt nemmere at debugge. Så kan man slå dem til, når det betyder noget ift. tider.
+
+For så at finde ud af crashet, starter man gdb med gdb bin/searcher (Fra dette directory). Det starter gdb, hvorefter man fx kan sætte breakpoints med (vistnok) break file::line - der er autocompletion på filnavne.
+
+Det jeg plejer at gøre, efter gdb er startet, er at køre searcheren - "run 512 10000 < levels/MAsimple1.lvl". Dette vil køre den, og crashe hvis der er et crash.
+
+Ved crash kan man så kalde backtrace, hvilket giver en de forskellige stackframe. Info locals giver samtlige lokale variable, og det er også muligt fx at kalde print <expression> (print agents[agent].getX() er fx lovligt).
+
+Man vælger stackframe ved "frame tal", fx "frame 1", og kalder så kommandoer i det frame der passer. info locals og print <expression> er nok bedste bud.
+
+og hvis man kalder "print pointer" og få 0x0, så har man en null-pointer...
+
+Enjoy, /Martin

@@ -41,3 +41,5 @@ Project/bin/searcher
 Project/bin/
 
 Project/testNoGraphics\.sh
+
+Project/\.gdb_history

@@ -57,8 +57,9 @@ int main(int argc, char * argv[]){
 	std::vector<std::string> solution;
 
 	solution = MasterSearcher::getPlan(client.initialState);
-
-	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
+	return 0;
+	//Went over to printing on the go, makes it easier to understand errors
+/*	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
 	std::cerr << "Found solution of length " << solution.size() << ".\n";
 
 	for (const auto & cmd : solution) {
@@ -78,7 +79,7 @@ int main(int argc, char * argv[]){
 			std::cerr << std::string(buffer);
 			break;
 	  }
-	}
+	}*/
 	return 0;
 }
 
