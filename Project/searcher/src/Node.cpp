@@ -11,12 +11,18 @@
 #include <iomanip>
 #include "Goal.h"
 #include "Agent.h"
-#include <boost/pool/object_pool.hpp>
+#include "ManualNodePool.h"
+//#include <boost/pool/object_pool.hpp>
+//Very possibly we should do our own, considering we don't have to "destruct" node *.
+//boost::object_pool<Node> Node::pool;
 
-boost::object_pool<Node> Node::pool;
+void Node::resetPool(){
+	pool.clearNodes();
+}
 
 Node * Node::getopCopy(Node * n){
-	return Node::pool.construct(n, &n->agents, &n->boxes);
+	//std::cerr << "creating Node copy\n";
+	return pool.createNodeCopy(n, n->agents, n->boxes);
 }
 
 Node::Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes){
@@ -84,6 +90,7 @@ int dirBox;
  */
 bool Node::checkAndChangeState(int agent, Command * c){
 	//Checks for legality
+	//if (c == )
 	if (!checkState(agent, c)){
 		return false;
 	}
@@ -97,7 +104,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 		int boxx = agents[agent].getX()+c->getdx(c->dirBox);
 		int boxy = agents[agent].getY()+c->getdy(c->dirBox);
 		Box * box = getBox(boxx, boxy);
-		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
+		box->setLocation(agents[agent].getLocation());
 		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
 
 	} else if (c->actionType == Command::Push){
@@ -272,16 +279,19 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 
 
 Node * Node::ChildNode() {
-	//std::cerr << "Child\n";
-	Node * copy = Node::pool.construct(this);
-	//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
-	//copy->boxes = this->boxes;
-	return copy;
+//	//std::cerr << "Child\n";
+//	Node * copy = Node::pool.construct(this);
+//	//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
+//	//copy->boxes = this->boxes;
+	return pool.createNodeCopy(this);
 }
 
-std::list<Node *> Node::extractPlan() {
-	std::list<Node*> plan = std::list<Node*>();
-	Node * n = this;
+	std::list<Node *> Node::extractPlan() {
+
+		std::cerr << "Node::extractPlan: extracting plan.\n";
+
+		std::list<Node*> plan = std::list<Node*>();
+		Node * n = this;
 
 
 	while (!(n->isInitialState())) {
@@ -304,7 +314,7 @@ int Node::hashCode() const{
 		result = prime * result + b.getX();
 		result = prime * result + b.getY();
 	}
-
+	//std::cerr << "Calling hash with val" << result << "\n";
 	return result;
 }
 
@@ -327,7 +337,7 @@ bool Node::equals(const Node * obj) const {
 			return false;
 		}
 	}
-
+	//std::cerr << "Objects are equal\n";
 	return true;
 }
 
@@ -488,24 +498,4 @@ bool Node::agentAt(int x, int y)
 	}
 	return false;
 }
-/*
-	std::vector<Agent*> Node::DeepCloneAgents(std::vector<Agent*> agents)
-	{
-		std::vector<Agent *> clone (agents.size());
-		for(int i = 0; i < agents.size(); i++){
-			//std::cerr << "Creating agent\n";
-			clone[i] = Agent::pool.construct(agents[i]);
-		}
-		return clone;
-	}
 
-	std::vector<Box*> Node::DeepCloneBoxes(std::vector<Box *> boxes)
-	{
-		std::vector<Box *> clone (boxes.size());
-		for(int i = 0; i < boxes.size(); i++){
-			//std::cerr << "Creating box\n";
-			clone[i] = Box::pool.construct(boxes[i]);
-		}
-		return clone;
-	}
- */
