@@ -98,7 +98,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 		int boxx = agents[agent].getX()+c->getdx(c->dirBox);
 		int boxy = agents[agent].getY()+c->getdy(c->dirBox);
 		Box * box = getBox(boxx, boxy);
-		box->setDLocation(c->getdx(c->dirBox), c->getdy(c->dirBox));
+		box->setLocation(agents[agent].getLocation());
 		agents[agent].setDLocation(c->getdx(c->dirAgent), c->getdy(c->dirAgent));
 
 	} else if (c->actionType == Command::Push){

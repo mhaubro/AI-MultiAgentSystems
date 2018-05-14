@@ -19,6 +19,8 @@ public:
 
   std::pair<int, int> location;
 
+  void setLocation(std::pair<int, int> loc);
+  void setDLocation(std::pair<int, int> loc);
   void setLocation(int x, int y);
   void setDLocation(int dx, int dy);
   int getX() const;

@@ -111,9 +111,9 @@ bool CentralPlanner::TaskAvailable(Agent * a)
 }
  */
 Task * CentralPlanner::RequestTask(){
-
+	return NULL;
 }
 
 Task * CentralPlanner::RequestHelp(){
-
+	return NULL;
 }

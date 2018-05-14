@@ -16,6 +16,13 @@ void Entity::setDLocation(int dx, int dy)
   setLocation(dx + this->getX(), dy + this->getY());
 }
 
+void Entity::setLocation(std::pair<int, int> loc){
+	location = loc;
+}
+void Entity::setDLocation(std::pair<int, int> loc){
+	location = loc;
+}
+
 int Entity::getX() const
 {
   return std::get<0>(location);
@@ -30,3 +37,5 @@ std::pair<int, int> Entity::getLocation()
 {
   return location;
 }
+
+
