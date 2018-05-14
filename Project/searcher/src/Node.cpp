@@ -90,6 +90,7 @@ int dirBox;
  */
 bool Node::checkAndChangeState(int agent, Command * c){
 	//Checks for legality
+	//if (c == )
 	if (!checkState(agent, c)){
 		return false;
 	}

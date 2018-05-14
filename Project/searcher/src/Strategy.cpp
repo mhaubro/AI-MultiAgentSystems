@@ -97,12 +97,12 @@ double getHValue(Node * n, Agent * agent, Task * task){
 			if (b.chr == t->box->chr){
 				hval += getDistance(b, t->destination);
 
-				if (getDistance(b, agent->getLocation()) < 1.3){//Ensures they're next to
+				if (getDistance(b, n->agents[agent->chr - '0'].getLocation() < 1.3){//Ensures they're next to
 					hval -= 5.0;
-					std::cerr << "Next to box" << b.chr << " Position: " << b.getX() <<"," <<b.getY() << "\n";
-					std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
+					//std::cerr << "Next to box" << b.chr << " Position: " << b.getX() <<"," <<b.getY() << "\n";
+					//std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
 				} else {
-					hval += getDistance(b, agent->getLocation());
+					hval += getDistance(b, n->agents[agent->chr - '0'].getLocation());
 				}
 
 				//The right box
@@ -118,8 +118,7 @@ double getHValue(Node * n, Agent * agent, Task * task){
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
-	//std::cerr << std::flush;
-	int interation = 0;
+	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();
 	// frontier used to select which nodes to process next.
@@ -130,32 +129,23 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
 	// search loop
 	while(true){
-		//std::cerr << "Strategy.cpp: Interation nr. " << interation << "\n";
 
-		//std::cerr << "test0\n";
 		// if frontier is empty and no solution is found, return an empty list.
 		if (frontier.empty()){
-			//std::cerr << "Strategy.cpp: No solution found." << std::flush;
 			return list<Node*>();
 		}
-		//std::cerr << "test1\n";
 		Node* leaf = frontier.pull();
-
-		//std::cerr << "test2 | leaf = " << leaf << "\n";
+		std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
-			//std::cerr << "Strategy.cpp: Task complete!\n" << std::flush;
 			return leaf->extractPlan();
 		}
-		//std::cerr << "test3\n";
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->chr);
 		for (auto& n : new_nodes){
 			if (!frontier.is_explored(&n)){
-				//std::cerr << "Pushing object\n" << n.toString()<< "\n";
 				frontier.push(Node::getopCopy(&n), getHValue(&n, agent, task));
 			}
 		}
-		//std::cerr << "test4\n";
-		interation++;
+		iteration++;
 	}
 }
 /*
