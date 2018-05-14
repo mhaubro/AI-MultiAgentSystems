@@ -66,18 +66,18 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 
 
 	if (!startstate->checkState(number, c)){
-//		double prob = 0.3;
-//		if (((double)rand())/RAND_MAX + prob > 1)
-//			skipNextIte = true;
+		double prob = 0.3;
+		if (((double)rand())/RAND_MAX + prob > 1)
+			skipNextIte = true;
 		//std::cerr << "Conflict1!\n";
 		//Do replanning next time
 		plan->drain();
 		return &Command::EVERY[0];
 	}
 	if (!tempstate->checkAndChangeState(number, c)){
-//		double prob = 0.3;
-//		if (((double)rand())/RAND_MAX + prob > 1)
-//			skipNextIte = true;
+		double prob = 0.3;
+		if (((double)rand())/RAND_MAX + prob > 1)
+			skipNextIte = true;
 		//std::cerr << "Conflict2!\n";
 		//Do replanning next time
 		plan->drain();

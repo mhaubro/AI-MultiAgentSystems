@@ -97,7 +97,7 @@ double getHValue(Node * n, Agent * agent, Task * task){
 			if (b.chr == t->box->chr){
 				hval += getDistance(b, t->destination);
 
-				if (getDistance(b, n->agents[agent->chr - '0'].getLocation() < 1.3){//Ensures they're next to
+				if (getDistance(b, n->agents[agent->chr - '0'].getLocation()) < 1.3){//Ensures they're next to
 					hval -= 5.0;
 					//std::cerr << "Next to box" << b.chr << " Position: " << b.getX() <<"," <<b.getY() << "\n";
 					//std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
