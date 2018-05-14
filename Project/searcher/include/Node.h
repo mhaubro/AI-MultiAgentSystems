@@ -29,9 +29,10 @@ public:
 	Node * parent;
 	Command * action;
 
-	static boost::object_pool<Node> pool;
+	//static boost::object_pool<Node> pool;
 	static Node * getopCopy(Node * n);
 
+	static void resetPool();
 
 	//Methods
 	Node();

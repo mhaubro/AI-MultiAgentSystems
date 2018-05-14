@@ -10,42 +10,7 @@
 //boost::object_pool<Agent> Agent::pool;
 
 std::list<Node *> Agent::search(Node * state){
-    /*
-  int printfrequency = 10000;
-  StrategyBFS * strategy = new StrategyBFS();
-
-	char buffer[100];
-	sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
-	std::string s = std::string(buffer);
-	std::cerr << s;
-	strategy->addToFrontier(state);
-	int iterations = 0;
-
-	while (true) {
-		if (iterations % printfrequency == 0) {
-			strategy->searchStatus(iterations);
-		}
-
-		if (strategy->frontierIsEmpty()) {
-			//Empty list
-			return std::list<Node *>();
-		}
-
-		Node * leafNode = strategy->getAndRemoveLeaf();
-
-
-
-    strategy->addToExplored(leafNode);
-    //Gets all new nodes
-    std::vector<Node> nodes = leafNode->getExpandedNodes(this->chr);
-    for (auto & n : nodes) {
-      if (!strategy->isExplored(&n) && !strategy->inFrontier(&n)) {
-        strategy->addToFrontier(Node::getopCopy(&n));
-      }
-    }
-    iterations++;
-  }
-  */return a_star_search(state, this, this->task);
+	return a_star_search(state, this, this->task);
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
@@ -65,6 +30,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 			MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
 			std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 			plan = new Plan(search(startstate));
+			Node::resetPool();
 		}
 		//We don't have a task/have completed
 		else if(cPlanner.UnassignedTasks[this->color].size() == 0){

@@ -9,6 +9,7 @@
 #include "Memory.h"
 #include "MasterSearcher.h"
 #include "Initializer.h"
+#include "ManualNodePool.h"
 
 using std::stringstream;
 using std::istream;
@@ -41,6 +42,7 @@ int main(int argc, char * argv[]){
 	argv[2] contains how often the print should happen. This is optional, default is 1000
 	*/
 	Memory::limit = atoi(argv[1]);
+	pool.setup(Memory::limit);
 
 	int printfreq = 1000;
 	if (argc > 2){
