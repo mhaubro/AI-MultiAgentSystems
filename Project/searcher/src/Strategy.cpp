@@ -142,6 +142,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->chr);
 		for (auto& n : new_nodes){
 			if (!frontier.is_explored(&n)){
+				//std::cerr << "Pushing object\n" << n.toString()<< "\n";
 				frontier.push(Node::getopCopy(&n), getHValue(&n, agent, task));
 			}
 		}
