@@ -7,6 +7,10 @@ bool Task::isCompleted(Agent * a, Node * n)
 {
   return false;
 }
+bool Task::seemsCompleted(Agent * a, Node * n)
+{
+  return false;
+}
 
 int Task::h(Agent * a, Node * n)
 {
@@ -37,6 +41,18 @@ bool MoveAgentTask::isCompleted(Agent * a, Node * n)
   }
   return false;
 }
+bool MoveAgentTask::seemsCompleted(Agent * a, Node * n)
+{
+  for(auto & ag : n->agents)
+  {
+    if(ag.getLocation() == this->destination && ag.chr == a->chr)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 int MoveAgentTask::h(Agent * a, Node * n)
 {
@@ -65,6 +81,19 @@ bool MoveBoxTask::isCompleted(Agent * a, Node * n)
   }
   return false;
 }
+bool MoveBoxTask::seemsCompleted(Agent * a, Node * n)
+{
+  for(auto & b : n->boxes)
+  {
+    if(b.chr != this->box->chr)
+      continue;
+    if(b.getLocation() == this->destination)
+    {
+      return true;
+    }
+  }
+  return false;
+}
 
 int MoveBoxTask::h(Agent * a, Node * n)
 {
@@ -75,4 +104,5 @@ int MoveBoxTask::h(Agent * a, Node * n)
       return manhattan(a->getLocation(), b.getLocation()) + manhattan(b.getLocation(), destination);
     }
   }
+  return 0x7FFFFFFF;
 }

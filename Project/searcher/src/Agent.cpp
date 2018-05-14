@@ -24,12 +24,13 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		//Short-cirrcuit. We have a task, which is not completed
 		if (this->task != NULL && !this->task->isCompleted(this, startstate)){
 			//Task wasn't completed, let's replan
-			std::cerr << "Doing replanning\n";
+			std::cerr << "Doing replanning with original task\n";
 			//Do replanning
 			delete plan;
 			MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
 			std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 			plan = new Plan(search(startstate));
+			std::cerr << plan->toString() << "\n";
 			Node::resetPool();
 		}
 		//We don't have a task/have completed
@@ -39,13 +40,14 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 			return &Command::EVERY[0];
 		} else {
 			//Task was completed, there's more tasks for us.
-			std::cerr << "Doing replanning\n";
+			std::cerr <<"Task was: " << task << " Doing replanning\n" ;
 			//Do replanning
 			delete plan;
 			cPlanner.AssignTask(this);
 			MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
 			std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 			plan = new Plan(search(startstate));
+			std::cerr << plan->toString() << "\n";
 		}
 	}
 	//Find next step
