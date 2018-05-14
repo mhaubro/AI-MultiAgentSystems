@@ -43,10 +43,10 @@ void CentralPlanner::DetectTasks(Node * n)
 {
 	for(auto & g : n->goals)
 	{
-		//Box * b = n->getBox(g.getX(), g.getY());
+		Box * b = n->getBox(g.getX(), g.getY());
 		//Goal is already done
-		//if (b != NULL && tolower(b.chr) == g.chr)
-		//	continue;
+		if (b != NULL && std::tolower(b->chr) == g.chr)
+			continue;
 		for(auto & b : n->boxes)
 		{
 			if(std::tolower(g.chr) == std::tolower(b.chr))

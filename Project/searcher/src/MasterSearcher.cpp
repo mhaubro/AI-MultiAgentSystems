@@ -1,6 +1,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <sstream>
 #include "Agent.h"
 #include "MasterSearcher.h"
 #include "Node.h"
@@ -38,6 +39,7 @@ std::vector<std::string> getPlan(Node * initialState)
 
 		state = tempstate;
 		plan.push_back(s);
+		std::cerr << s << "\n";
 		printStep(s);
 		if (state.isGoalState())
 			return plan;
@@ -47,7 +49,7 @@ std::vector<std::string> getPlan(Node * initialState)
 
 
 void printStep(std::string s){
-	char buffer[200];
+	std::stringstream ss;
 
 	std::cout << s;
 	std::cout << "\n";
@@ -56,13 +58,14 @@ void printStep(std::string s){
 	std::getline(std::cin, response);
 	//std::cerr << "Printing solution4";
 	if (response.find(std::string("false")) != std::string::npos) {
-		sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, s);
-		std::cerr << std::string(buffer);
+		ss << "Server responsed with "<< response <<"%s to the inapplicable action: "<< s <<"\n";
+		std::cerr << ss.str();
+		ss.str("");
 		//Maybe we should actually be able to print the state. However, sending
 		//A plan assumes that the thing actually works, and we will never
 		//Replan out here.
-		sprintf(buffer, "%s was attempted in a state\n", s);
-		std::cerr << std::string(buffer);
+		ss << s << " was attempted in a state\n";
+		std::cerr << ss.str();
 		throw ("Command Error, printing step\n");
 	}
 }
