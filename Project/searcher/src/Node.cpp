@@ -16,7 +16,8 @@
 boost::object_pool<Node> Node::pool;
 
 Node * Node::getopCopy(Node * n){
-	return Node::pool.construct(n, &n->agents, &n->boxes);
+	std::cerr << "creating Node copy\n";
+	return new Node(n, &n->agents, &n->boxes);
 }
 
 Node::Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes){
@@ -279,9 +280,12 @@ Node * Node::ChildNode() {
 	return copy;
 }
 
-std::list<Node *> Node::extractPlan() {
-	std::list<Node*> plan = std::list<Node*>();
-	Node * n = this;
+	std::list<Node *> Node::extractPlan() {
+
+		std::cerr << "Node::extractPlan: extracting plan.\n";
+
+		std::list<Node*> plan = std::list<Node*>();
+		Node * n = this;
 
 
 	while (!(n->isInitialState())) {

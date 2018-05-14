@@ -10,8 +10,9 @@
 //boost::object_pool<Agent> Agent::pool;
 
 std::list<Node *> Agent::search(Node * state){
-	int printfrequency = 10000;
-	StrategyBFS * strategy = new StrategyBFS();
+    /*
+  int printfrequency = 10000;
+  StrategyBFS * strategy = new StrategyBFS();
 
 	char buffer[100];
 	sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
@@ -34,25 +35,17 @@ std::list<Node *> Agent::search(Node * state){
 
 
 
-		if (leafNode->isGoalState(this->color)) {
-			//I changed something
-			//A goal is found, final state is printed
-			std::cerr << "Task completed!\n";
-			strategy->searchStatus(iterations);
-			std::cerr << leafNode->toString();
-			return leafNode->extractPlan();
-		}
-
-		strategy->addToExplored(leafNode);
-		//Gets all new nodes
-		std::vector<Node> nodes = leafNode->getExpandedNodes(this->chr);
-		for (auto & n : nodes) {
-			if (!strategy->isExplored(&n) && !strategy->inFrontier(&n)) {
-				strategy->addToFrontier(Node::getopCopy(&n));
-			}
-		}
-		iterations++;
-	}
+    strategy->addToExplored(leafNode);
+    //Gets all new nodes
+    std::vector<Node> nodes = leafNode->getExpandedNodes(this->chr);
+    for (auto & n : nodes) {
+      if (!strategy->isExplored(&n) && !strategy->inFrontier(&n)) {
+        strategy->addToFrontier(Node::getopCopy(&n));
+      }
+    }
+    iterations++;
+  }
+  */return a_star_search(state, this, this->task);
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){

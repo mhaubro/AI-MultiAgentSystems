@@ -5,9 +5,109 @@
 #include <chrono>
 #include <utility>
 #include <iostream>
+#include <functional>
+#include <unordered_set>
+#include <list>
 
-#include <ratio>
 
+#include "Node.h"
+#include "Agent.h"
+#include "Task.h"
+
+using std::pair;
+using std::vector;
+using std::list;
+
+class Frontier {
+private:
+	struct valued_node {
+		Node* node;
+		float value;
+		bool operator()(const valued_node& left, const valued_node& right){
+			return left.value > right.value;
+		};
+	};
+
+	//auto cmp = [](valued_node left,valued_node right){return left.value < right.value;};
+	std::unordered_set<Node *, NodeHash, NodeEqual > explored = std::unordered_set<Node *, NodeHash, NodeEqual >();
+	std::priority_queue<valued_node, vector<valued_node>, valued_node> queue = std::priority_queue<valued_node, vector<valued_node>, valued_node>();
+
+public:
+	Frontier(){}
+	~Frontier(){}
+
+	void push(Node* n, float score){
+		std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
+		valued_node vn = {};
+		vn.node = n;
+		vn.value = score;
+		queue.push(vn);
+		explored.insert(n);
+	}
+
+	Node* pull(){
+		valued_node vn = queue.top();
+		queue.pop();
+		std::cerr << "Pulling best node: value = " << vn.value << " node: " << vn.node << "\n" << std::flush;
+		return vn.node;
+	}
+
+	int size(){
+		return queue.size();
+	}
+
+	bool empty(){
+		return queue.empty();
+	}
+
+	bool is_explored(Node* n){
+		bool result =  this->explored.count(n) == 1;
+		return result;
+	}
+};
+
+list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
+
+	std::cerr << std::flush;
+	int interation = 0;
+	// vector holding and assuming ownership of all nodes
+	std::vector<Node> explored_nodes = std::vector<Node>();
+	// frontier used to select which nodes to process next.
+	Frontier frontier = Frontier();
+
+	// add start state to frontier
+	frontier.push(start_state, start_state->g());
+
+	// search loop
+	while(true){
+		std::cerr << "Strategy.cpp: Interation nr. " << interation << "\n";
+
+		std::cerr << "test0\n";
+		// if frontier is empty and no solution is found, return an empty list.
+		if (frontier.empty()){
+			std::cerr << "Strategy.cpp: No solution found." << std::flush;
+			return list<Node*>();
+		}
+		std::cerr << "test1\n";
+		Node* leaf = frontier.pull();
+
+		std::cerr << "test2 | leaf = " << leaf << "\n";
+		if (task->isCompleted(agent, leaf)){
+			std::cerr << "Strategy.cpp: Task complete!\n" << std::flush;
+			return leaf->extractPlan();
+		}
+		std::cerr << "test3\n";
+		vector<Node> new_nodes = leaf->getExpandedNodes(agent->chr);
+		for (auto& n : new_nodes){
+			if (!frontier.is_explored(&n)){
+				frontier.push(Node::getopCopy(&n), n.g());
+			}
+		}
+		std::cerr << "test4\n";
+		interation++;
+	}
+}
+/*
 Strategy::Strategy() {
 	this->explored = std::unordered_set<Node *, NodeHash, NodeEqual >();
 	this->startTime = std::chrono::high_resolution_clock::now();
@@ -170,3 +270,4 @@ queue<Command> BFS::search(Node& StartNode, Agent& agent, Task& task){
 // ################################
 // AStar
 // ################################
+*/
