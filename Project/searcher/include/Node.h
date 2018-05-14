@@ -52,6 +52,7 @@ public:
 	int hashCode () const;
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
+	Box * getBox(int x, int y);
 
 
 private:
@@ -65,7 +66,6 @@ private:
 	bool goalAt(int x, int y);
 	bool agentAt(int x, int y);
 	Goal * getGoal(int x, int y);
-	Box * getBox(int x, int y);
 
 	bool cellIsFree(int x, int y);
 	bool boxAt(int x, int y);
