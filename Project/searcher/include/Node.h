@@ -9,11 +9,11 @@
 #include "Agent.h"
 #include "Box.h"
 #include <boost/pool/object_pool.hpp>
+#include <iostream>
 
 class Goal;
 
 class Agent;
-
 
 class Node {
 

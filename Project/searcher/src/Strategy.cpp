@@ -36,7 +36,7 @@ public:
 	Frontier(){}
 	~Frontier(){}
 
-	void push(Node* n, float score){
+	void push(Node* n, double score){
 		//std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
 		valued_node vn = {};
 		vn.node = n;
@@ -71,10 +71,11 @@ double getDistance(Box b, std::pair<int, int> location){
 }
 
 double getHValue(Node * n, Agent * agent, Task * task){
-	float hval = 1000.0;
+	double hval = 1000.0;
 	//Find box.
 	//Yes, the if below is legal
 	if (MoveBoxTask * t = dynamic_cast<MoveBoxTask *>(task)){
+		//std::cerr << "Doing a heuristic thing\n";
 		Box * box;
 		//IT's a moveboxtask
 		//MoveBoxTask * t = dynamic_cast<MoveBoxTask *>( task );
@@ -83,12 +84,27 @@ double getHValue(Node * n, Agent * agent, Task * task){
 				continue;
 			//For all boxes with matching color, deduce like 3 if they're on the right place
 			if (Goal * g = n->getGoal(b.getX(), b.getY())){
-				if (g->chr == b.chr){
-					hval -= 3.0;
+				if (g->chr == tolower(b.chr)){
+					if (g->getLocation() == b.getLocation()){
+						//std::cerr << "Goal Match" << b.chr << "\n";
+						hval -= 5.0;
+						std::cerr << n->toString() << "\n";
+					} else {
+
+					}
 				}
 			}
 			if (b.chr == t->box->chr){
 				hval += getDistance(b, t->destination);
+
+				if (getDistance(b, n->agents[agent->chr - '0'].getLocation()) < 1.3){//Ensures they're next to
+					hval -= 5.0;
+					//std::cerr << "Next to box" << b.chr << " Position: " << b.getX() <<"," <<b.getY() << "\n";
+					//std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
+				} else {
+					hval += getDistance(b, n->agents[agent->chr - '0'].getLocation());
+				}
+
 				//The right box
 			}
 		}
@@ -97,13 +113,12 @@ double getHValue(Node * n, Agent * agent, Task * task){
 	}
 
 
-	return hval + (double)n->g();
+	return hval+n->g() ;
 }
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
-	//std::cerr << std::flush;
-	int interation = 0;
+	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();
 	// frontier used to select which nodes to process next.
@@ -114,31 +129,24 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
 	// search loop
 	while(true){
-		//std::cerr << "Strategy.cpp: Interation nr. " << interation << "\n";
 
-		//std::cerr << "test0\n";
 		// if frontier is empty and no solution is found, return an empty list.
 		if (frontier.empty()){
-			//std::cerr << "Strategy.cpp: No solution found." << std::flush;
 			return list<Node*>();
 		}
-		//std::cerr << "test1\n";
 		Node* leaf = frontier.pull();
-
-		//std::cerr << "test2 | leaf = " << leaf << "\n";
+		std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
-			//std::cerr << "Strategy.cpp: Task complete!\n" << std::flush;
 			return leaf->extractPlan();
 		}
-		//std::cerr << "test3\n";
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->chr);
 		for (auto& n : new_nodes){
 			if (!frontier.is_explored(&n)){
+				//std::cerr << "Pushing object\n" << n.toString()<< "\n";
 				frontier.push(Node::getopCopy(&n), getHValue(&n, agent, task));
 			}
 		}
-		//std::cerr << "test4\n";
-		interation++;
+		iteration++;
 	}
 }
 /*
@@ -163,7 +171,7 @@ int Strategy::countExplored() {
 void Strategy::searchStatus(int iterations) {
 	//This prints the status of the search
 	//Explored and frontier might be superflous later, other fields might get added
-	
+
 	//std::cerr << "#Explored: "<< this->countExplored() <<" #Frontier: "<<
 	this->countFrontier() << ", Time: "<< this->timeSpent() << ", " << Memory::stringRep() << "\n";
 }
@@ -304,4 +312,4 @@ queue<Command> BFS::search(Node& StartNode, Agent& agent, Task& task){
 // ################################
 // AStar
 // ################################
-*/
+ */

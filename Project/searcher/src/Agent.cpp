@@ -14,6 +14,10 @@ std::list<Node *> Agent::search(Node * state){
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
+	if (skipNextIte){
+		skipNextIte = false;
+		return &Command::EVERY[0];
+	}
 	if (startstate->isGoalState(this->color))
 	{
 		std::cerr << "agent: " << chr << " goal\n";
@@ -52,19 +56,29 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	}
 	//Find next step
 	Command * c = plan->getStep();
+	if (c == NULL){
+		plan->drain();
+		return &Command::EVERY[0];
+	}
 	//Find number
 	int number = (int)(chr - '0');
 
 
 
 	if (!startstate->checkState(number, c)){
-		std::cerr << "Conflict1!\n";
+		double prob = 0.3;
+		if (((double)rand())/RAND_MAX + prob > 1)
+			skipNextIte = true;
+		//std::cerr << "Conflict1!\n";
 		//Do replanning next time
 		plan->drain();
 		return &Command::EVERY[0];
 	}
 	if (!tempstate->checkAndChangeState(number, c)){
-		std::cerr << "Conflict2!\n";
+		double prob = 0.3;
+		if (((double)rand())/RAND_MAX + prob > 1)
+			skipNextIte = true;
+		//std::cerr << "Conflict2!\n";
 		//Do replanning next time
 		plan->drain();
 		return &Command::EVERY[0];

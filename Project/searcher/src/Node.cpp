@@ -90,6 +90,7 @@ int dirBox;
  */
 bool Node::checkAndChangeState(int agent, Command * c){
 	//Checks for legality
+	//if (c == )
 	if (!checkState(agent, c)){
 		return false;
 	}
@@ -313,7 +314,7 @@ int Node::hashCode() const{
 		result = prime * result + b.getX();
 		result = prime * result + b.getY();
 	}
-
+	//std::cerr << "Calling hash with val" << result << "\n";
 	return result;
 }
 
@@ -336,7 +337,7 @@ bool Node::equals(const Node * obj) const {
 			return false;
 		}
 	}
-
+	//std::cerr << "Objects are equal\n";
 	return true;
 }
 
