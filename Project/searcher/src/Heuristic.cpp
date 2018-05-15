@@ -10,7 +10,7 @@
 
   Heuristic::Heuristic(Node * initialState)
 	{
-		for(auto & box : initialState->boxes)
+	/*	for(auto & box : initialState->boxes)
 		{
 			int minDist = INTEGER_MAX;
 			for(auto & goal : Node::goals)
@@ -40,9 +40,9 @@
 						goal->agent = a;
 						minDist = dist;
 					}
-				}*/
+				}
 			}
-		}
+		}*/
 	}
 
 	int Heuristic::h(Node * n)
@@ -50,8 +50,8 @@
 		int sumDist = 0;
 		for(auto & goal : Node::goals)
 		{
-		//	sumDist += manhattan(goal->location, goal->box->location);
-		//	sumDist += manhattan(goal->agent->location, goal->box->location);
+			//sumDist += manhattan(goal->location, goal->box->location);
+			//sumDist += manhattan(goal->agent->location, goal->box->location);
 		}
 		return sumDist;
 		/**

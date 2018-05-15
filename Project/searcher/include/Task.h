@@ -17,6 +17,7 @@ public:
   int rank;
   Type type;
 
+  virtual bool seemsCompleted(Agent * a, Node * n);
   virtual bool isCompleted(Agent * a, Node * n);
   virtual int h(Agent * a, Node * n);
   int manhattan(std::pair<int, int> loc1, std::pair<int, int> loc2);
@@ -29,6 +30,7 @@ public:
   int rank;
 
   MoveAgentTask(std::pair<int, int> loc, int rank);
+  bool seemsCompleted(Agent * a, Node * n);
   bool isCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);
 };
@@ -42,6 +44,7 @@ public:
 
   MoveBoxTask(Box * box, std::pair<int, int> loc, int rank);
   bool isCompleted(Agent * a, Node * n);
+  bool seemsCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);
 };
 #endif

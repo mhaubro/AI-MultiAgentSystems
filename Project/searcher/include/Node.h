@@ -29,9 +29,10 @@ public:
 	Node * parent;
 	Command * action;
 
-	static boost::object_pool<Node> pool;
+	//static boost::object_pool<Node> pool;
 	static Node * getopCopy(Node * n);
 
+	static void resetPool();
 
 	//Methods
 	Node();
@@ -53,6 +54,7 @@ public:
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
 	Box * getBox(int x, int y);
+	Goal * getGoal(int x, int y);
 
 
 private:
@@ -65,7 +67,6 @@ private:
 	Agent * getAgent(int x, int y);
 	bool goalAt(int x, int y);
 	bool agentAt(int x, int y);
-	Goal * getGoal(int x, int y);
 
 	bool cellIsFree(int x, int y);
 	bool boxAt(int x, int y);

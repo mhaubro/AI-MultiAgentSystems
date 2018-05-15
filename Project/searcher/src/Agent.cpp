@@ -10,49 +10,7 @@
 //boost::object_pool<Agent> Agent::pool;
 
 std::list<Node *> Agent::search(Node * state){
-	int printfrequency = 10000;
-	StrategyBFS * strategy = new StrategyBFS();
-
-	char buffer[100];
-	sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
-	std::string s = std::string(buffer);
-	std::cerr << s;
-	strategy->addToFrontier(state);
-	int iterations = 0;
-
-	while (true) {
-		if (iterations % printfrequency == 0) {
-			strategy->searchStatus(iterations);
-		}
-
-		if (strategy->frontierIsEmpty()) {
-			//Empty list
-			return std::list<Node *>();
-		}
-
-		Node * leafNode = strategy->getAndRemoveLeaf();
-
-
-
-		if (leafNode->isGoalState(this->color)) {
-			//I changed something
-			//A goal is found, final state is printed
-			std::cerr << "Task completed!\n";
-			strategy->searchStatus(iterations);
-			std::cerr << leafNode->toString();
-			return leafNode->extractPlan();
-		}
-
-		strategy->addToExplored(leafNode);
-		//Gets all new nodes
-		std::vector<Node> nodes = leafNode->getExpandedNodes(this->chr);
-		for (auto & n : nodes) {
-			if (!strategy->isExplored(&n) && !strategy->inFrontier(&n)) {
-				strategy->addToFrontier(Node::getopCopy(&n));
-			}
-		}
-		iterations++;
-	}
+	return a_star_search(state, this, this->task);
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
@@ -66,12 +24,14 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		//Short-cirrcuit. We have a task, which is not completed
 		if (this->task != NULL && !this->task->isCompleted(this, startstate)){
 			//Task wasn't completed, let's replan
-			std::cerr << "Doing replanning\n";
+			std::cerr << "Doing replanning with original task\n";
 			//Do replanning
 			delete plan;
 			MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
 			std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 			plan = new Plan(search(startstate));
+			std::cerr << plan->toString() << "\n";
+			Node::resetPool();
 		}
 		//We don't have a task/have completed
 		else if(cPlanner.UnassignedTasks[this->color].size() == 0){
@@ -80,13 +40,14 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 			return &Command::EVERY[0];
 		} else {
 			//Task was completed, there's more tasks for us.
-			std::cerr << "Doing replanning\n";
+			std::cerr <<"Task was: " << task << " Doing replanning\n" ;
 			//Do replanning
 			delete plan;
 			cPlanner.AssignTask(this);
 			MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
 			std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 			plan = new Plan(search(startstate));
+			std::cerr << plan->toString() << "\n";
 		}
 	}
 	//Find next step

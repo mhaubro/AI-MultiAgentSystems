@@ -23,6 +23,8 @@ public:
 
 	bool isEmpty();
 
+	std::string toString();
+
 	Command * getStep();
 	void popFront();
 	void drain();

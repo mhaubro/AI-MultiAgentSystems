@@ -39,7 +39,7 @@ std::vector<std::string> getPlan(Node * initialState)
 
 		state = tempstate;
 		plan.push_back(s);
-		std::cerr << s << "\n";
+		std::cerr << s << "\n";// << tempstate.toString() << "\n";
 		printStep(s);
 		if (state.isGoalState())
 			return plan;

@@ -27,6 +27,15 @@ Plan::Plan(std::list<Node *> nodes) {
 
 }
 
+std::string Plan::toString(){
+	std::string s;
+	for (Command * c : actions){
+		s.append(c->toString());
+	}
+	return s;
+}
+
+
 Plan::~Plan() {
 	// TODO Auto-generated destructor stub
 }
