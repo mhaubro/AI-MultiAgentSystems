@@ -60,7 +60,7 @@ void CentralPlanner::DetectTasks(Node * n)
 			if(std::tolower(g.chr) == std::tolower(b.chr))
 			{
 				// Set rank?
-				MoveBoxTask * t = new MoveBoxTask(&b, g.getLocation(), 0);
+				handleGoalTask * t = new handleGoalTask(&b, g.getLocation(), 0);
 				this->UnassignedTasks[b.color].push(t);
 			}
 		}

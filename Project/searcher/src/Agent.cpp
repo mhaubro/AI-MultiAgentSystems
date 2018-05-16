@@ -20,27 +20,39 @@ Command * Agent::noPlan(Node * startstate){
 		std::cerr << "Doing replanning with original task\n";
 		//Do replanning
 		delete plan;
-		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
+		handleGoalTask* tmp = reinterpret_cast<handleGoalTask*>(this->task);
 		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
-		plan = new Plan(search(startstate), this->getLocation());
+		std::list<Node *> searchResult = search(startstate);
+		if (searchResult.empty()){
+			//Do something
+		}
+		plan = new Plan(searchResult, this->getLocation());
 		std::cerr << plan->toString() << "\n";
 		Node::resetPool();
 		return NULL;
 	}
 	//We don't have a task/have completed
-	else if(cPlanner.UnassignedTasks[this->color].size() == 0){
-		//We should listen in, see if other agents request something
-		//std::cerr << "No more plans\n";
+	else if(!cPlanner.hasJob(this)){
+		//Noone has requested anything.
+
+		//Maybe we should improve our positioning, by moving away from other agents??
 		return &Command::EVERY[0];
+
 	} else {
 		//Task was completed, there's more tasks for us.
 		std::cerr <<"Task was: " << task << " Doing replanning\n" ;
 		//Do replanning
 		delete plan;
-		cPlanner.AssignTask(this);
-		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
+		if (cPlanner.hasJob(this)){
+			cPlanner.AssignTask(this);
+		}
+		handleGoalTask* tmp = reinterpret_cast<handleGoalTask*>(this->task);
 		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
-		plan = new Plan(search(startstate), this->getLocation());
+		std::list<Node *> searchResult = search(startstate);
+		if (searchResult.empty()){
+			//Do something
+		}
+		plan = new Plan(searchResult, this->getLocation());
 		std::cerr << plan->toString() << "\n";
 		return NULL;
 	}
