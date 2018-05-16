@@ -13,12 +13,24 @@ Plan::Plan(){
 actions = std::list<Command *>();
 }
 
-Plan::Plan(std::list<Node *> nodes) {
+Plan::Plan(std::list<Node *> nodes, std::pair<int, int> startloc) {
 	// TODO Auto-generated constructor stub
 	actions = std::list<Command *>();
+	locations = std::list<std::pair<int, int>>();
 	while (!nodes.empty()){
 		actions.push_back(nodes.front()->action);
 		nodes.pop_front();
+	}
+
+	std::pair<int, int> newAgentloc = startloc;
+
+	//Gets locations
+	std::list<Command *>::iterator it;
+	for (it = actions.begin(); it != actions.end(); ++it){
+		startloc = newAgentloc;
+		newAgentloc = getNewLocation(*it, newAgentloc);
+		std::pair<int, int> newTakenLoc = getTakenLoc(*it, startloc);
+	    locations.push_back(newTakenLoc);
 	}
 
 	//Maybe grab and store location
@@ -26,6 +38,20 @@ Plan::Plan(std::list<Node *> nodes) {
 
 
 }
+
+std::pair<int, int> Plan::getTakenLoc(Command * c, std::pair<int, int> startloc){
+
+
+
+	return std::pair<int, int>(0, 0);
+}
+std::pair<int, int> Plan::getNewLocation(Command * c, std::pair<int, int> newloc){
+
+
+
+	return std::pair<int, int>(0, 0);
+}
+
 
 std::string Plan::toString(){
 	std::string s;

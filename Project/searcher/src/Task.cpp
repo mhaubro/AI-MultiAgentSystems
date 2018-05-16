@@ -106,3 +106,51 @@ int MoveBoxTask::h(Agent * a, Node * n)
   }
   return 0x7FFFFFFF;
 }
+
+handleGoalTask::handleGoalTask(Box * box, std::pair<int, int> loc, int rank)
+{
+  this->type = Task::Type::MoveBoxTask;
+  this->box = box;
+  this->destination = loc;
+  this->rank = rank;
+}
+
+bool handleGoalTask::isCompleted(Agent * a, Node * n)
+{
+  for(auto & b : n->boxes)
+  {
+    if(b.chr != this->box->chr)
+      continue;
+    if(b.getLocation() == this->destination)
+    {
+      a->task = nullptr;
+      return true;
+    }
+  }
+  return false;
+}
+bool handleGoalTask::seemsCompleted(Agent * a, Node * n)
+{
+  for(auto & b : n->boxes)
+  {
+    if(b.chr != this->box->chr)
+      continue;
+    if(b.getLocation() == this->destination)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
+int handleGoalTask::h(Agent * a, Node * n)
+{
+  for(auto & b : n->boxes)
+  {
+    if(b.chr == this->box->chr)
+    {
+      return manhattan(a->getLocation(), b.getLocation()) + manhattan(b.getLocation(), destination);
+    }
+  }
+  return 0x7FFFFFFF;
+}

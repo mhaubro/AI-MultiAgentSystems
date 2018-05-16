@@ -10,12 +10,65 @@
 //boost::object_pool<Agent> Agent::pool;
 
 std::list<Node *> Agent::search(Node * state){
-	return a_star_search(state, this, this->task);
+	return a_star_search(state, this, this->currenttask);
+}
+
+Command * Agent::noPlan(Node * startstate){
+	//Short-cirrcuit. We have a task, which is not completed
+	if (this->currenttask != NULL && !this->currenttask->isCompleted(this, startstate)){
+		//Task wasn't completed, let's replan
+		//std::cerr << "Doing replanning with original task\n";
+		//Do replanning
+		delete plan;
+		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->currenttask);
+		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
+		plan = new Plan(search(startstate), getLocation());
+		std::cerr << plan->toString() << "\n";
+		Node::resetPool();
+	}
+	//We don't have a task/have completed
+	else if(cPlanner.UnassignedTasks[this->color].size() == 0){
+		//We should listen in, see if other agents request something
+		//std::cerr << "No more plans\n";
+		return &Command::EVERY[0];
+	} else {
+		//Task was completed, there's more tasks for us.
+		//std::cerr <<"Task was: " << currenttask << " Doing replanning\n" ;
+		//Do replanning
+		delete plan;
+		cPlanner.AssignTask(this);
+		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->currenttask);
+		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
+		plan = new Plan(search(startstate), getLocation());
+		std::cerr << plan->toString() << "\n";
+	}
+	return NULL;
+}
+
+void Agent::handleConflict(){
+	//Currently working on a task
+	if (workingOnTask){
+		skipNextIte = 2;
+
+		//Check my next location
+
+		return;
+	}
+
+	double prob = 0.3;
+	if (((double)rand())/RAND_MAX + prob > 1)
+		skipNextIte = 2;
+	//std::cerr << "Conflict1!\n";
+	//Do replanning next time
+	//plan->drain();
+
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
+	Command * c = NULL;
+
 	if (skipNextIte){
-		skipNextIte = false;
+		skipNextIte--;
 		return &Command::EVERY[0];
 	}
 	if (startstate->isGoalState(this->color))
@@ -24,38 +77,14 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		//NoOp
 		return &Command::EVERY[0];
 	}
-	if (plan == NULL || plan->actions.size()==0){
-		//Short-cirrcuit. We have a task, which is not completed
-		if (this->task != NULL && !this->task->isCompleted(this, startstate)){
-			//Task wasn't completed, let's replan
-			std::cerr << "Doing replanning with original task\n";
-			//Do replanning
-			delete plan;
-			MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
-			std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
-			plan = new Plan(search(startstate));
-			std::cerr << plan->toString() << "\n";
-			Node::resetPool();
-		}
-		//We don't have a task/have completed
-		else if(cPlanner.UnassignedTasks[this->color].size() == 0){
-			//We should listen in, see if other agents request something
-			//std::cerr << "No more plans\n";
-			return &Command::EVERY[0];
-		} else {
-			//Task was completed, there's more tasks for us.
-			std::cerr <<"Task was: " << task << " Doing replanning\n" ;
-			//Do replanning
-			delete plan;
-			cPlanner.AssignTask(this);
-			MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
-			std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
-			plan = new Plan(search(startstate));
-			std::cerr << plan->toString() << "\n";
+	if (plan == NULL || plan->isEmpty()){
+		if (c = noPlan(startstate)){//Ugly, but fine
+			return c;
 		}
 	}
 	//Find next step
-	Command * c = plan->getStep();
+	c = plan->getStep();
+	//Sanity check
 	if (c == NULL){
 		plan->drain();
 		return &Command::EVERY[0];
@@ -64,24 +93,12 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	int number = (int)(chr - '0');
 
 
-
 	if (!startstate->checkState(number, c)){
-		double prob = 0.3;
-		if (((double)rand())/RAND_MAX + prob > 1)
-			skipNextIte = true;
-		//std::cerr << "Conflict1!\n";
-		//Do replanning next time
-		plan->drain();
+		handleConflict();
 		return &Command::EVERY[0];
 	}
 	if (!tempstate->checkAndChangeState(number, c)){
-		double prob = 0.3;
-		if (((double)rand())/RAND_MAX + prob > 1)
-			skipNextIte = true;
-		//std::cerr << "Conflict2!\n";
-		//Do replanning next time
-		plan->drain();
-		return &Command::EVERY[0];
+		handleConflict();
 	}
 	return c;
 }
@@ -89,7 +106,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 
 Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 				Entity(chr, location, color){
-	this->task = nullptr;
+	this->currenttask = nullptr;
 	this->rank = rank;
 	plan = NULL;
 }
@@ -97,7 +114,7 @@ Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
 				Entity(chr, location, color)
 {
-	this->task = nullptr;
+	this->currenttask = nullptr;
 	this->rank = 0;
 	plan = NULL;
 }
@@ -105,7 +122,7 @@ Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
 Agent::Agent(char chr, std::pair<int, int> location):
 				Entity(chr, location, Entity::BLUE)
 {
-	this->task = nullptr;
+	this->currenttask = nullptr;
 	this->rank = 0;
 	plan = NULL;
 }
@@ -113,7 +130,7 @@ Agent::Agent(char chr, std::pair<int, int> location):
 Agent::Agent(Agent * agt):
 				Entity(agt->chr, agt->location, agt->color)
 {
-	this->task = agt->task;
+	this->currenttask = agt->currenttask;
 	this->rank = agt->rank;
 	this->plan = agt->plan;
 }
