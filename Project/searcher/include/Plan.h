@@ -28,6 +28,9 @@ public:
 	Command * getStep();
 	void popFront();
 	void drain();
+	void popStep();
+	std::pair<int, int> getNextLocation();
+
 private:
 	//std::list<Node *> nodes;
 	//A pair is used here to indicate the (x,y) of a new location for each command

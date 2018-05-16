@@ -39,17 +39,32 @@ Plan::Plan(std::list<Node *> nodes, std::pair<int, int> startloc) {
 
 }
 
+//Gets the new occupied location, based on a command.
 std::pair<int, int> Plan::getTakenLoc(Command * c, std::pair<int, int> startloc){
-
-
-
-	return std::pair<int, int>(0, 0);
+	switch (c->actionType){
+		case Command::Pull:{
+			//When pulling, it is the agent that takes a new position.
+			return getNewLocation(c, startloc);
+		}
+		case Command::Push:{
+			int boxxstart = startloc.first + c->getdx(c->dirAgent);
+			int boxystart = startloc.second + c->getdy(c->dirAgent);
+			int boxx = boxxstart + c->getdx(c->dirBox);
+			int boxy = boxystart + c->getdy(c->dirBox);
+			return std::pair<int, int>(boxx, boxy);
+		}
+		case Command::Move:{
+			return getNewLocation(c, startloc);
+		}
+		default:{
+			return std::pair<int, int>(0, 0);
+		}
+	}
 }
+
+//Gets the new location of the agent, based on a command.
 std::pair<int, int> Plan::getNewLocation(Command * c, std::pair<int, int> newloc){
-
-
-
-	return std::pair<int, int>(0, 0);
+	return std::pair<int,int>(newloc.first + c->getdx(c->dirAgent), newloc.second + c->getdy(c->dirAgent));
 }
 
 
@@ -67,13 +82,21 @@ Plan::~Plan() {
 }
 
 bool Plan::isEmpty(){
-	return actions.empty();
+	return actions.size() == 0;
 }
 
 Command * Plan::getStep(){
 	Command * c = actions.front();
 	actions.pop_front();
 	return c;
+}
+
+std::pair<int, int> Plan::getNextLocation(){
+	return locations.front();
+}
+
+void Plan::popStep(){
+	locations.pop_front();
 }
 
 void Plan::popFront(){

@@ -38,6 +38,14 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 
 }
 
+//Todo
+bool CentralPlanner::hasJob(Agent * agent){
+	return cPlanner.UnassignedTasks[agent->color].size() != 0;
+}
+
+Task * CentralPlanner::getJob(Agent agent){
+	return NULL;
+}
 
 void CentralPlanner::DetectTasks(Node * n)
 {

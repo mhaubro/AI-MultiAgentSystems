@@ -10,37 +10,47 @@
 //boost::object_pool<Agent> Agent::pool;
 
 std::list<Node *> Agent::search(Node * state){
-	return a_star_search(state, this, this->currenttask);
+	return a_star_search(state, this, this->task);
 }
 
 Command * Agent::noPlan(Node * startstate){
 	//Short-cirrcuit. We have a task, which is not completed
-	if (this->currenttask != NULL && !this->currenttask->isCompleted(this, startstate)){
+	if (this->task != NULL && !this->task->isCompleted(this, startstate)){
 		//Task wasn't completed, let's replan
 		//std::cerr << "Doing replanning with original task\n";
 		//Do replanning
 		delete plan;
-		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->currenttask);
+		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
 		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
-		plan = new Plan(search(startstate), getLocation());
-		std::cerr << plan->toString() << "\n";
+		std::list<Node *> searchResult = search(startstate);
+		if (searchResult.empty()){
+			//It wasn't possible to compute a way to solve this
+		}
+		plan = new Plan(searchResult, getLocation());
+		//std::cerr << plan->toString() << "\n";
 		Node::resetPool();
 	}
 	//We don't have a task/have completed
-	else if(cPlanner.UnassignedTasks[this->color].size() == 0){
+	else if(!cPlanner.hasJob(this)){
 		//We should listen in, see if other agents request something
 		//std::cerr << "No more plans\n";
 		return &Command::EVERY[0];
 	} else {
 		//Task was completed, there's more tasks for us.
-		//std::cerr <<"Task was: " << currenttask << " Doing replanning\n" ;
+		//std::cerr <<"Task was: " << task << " Doing replanning\n" ;
 		//Do replanning
 		delete plan;
 		cPlanner.AssignTask(this);
-		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->currenttask);
+		//Grab a task
+		MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->task);
 		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
-		plan = new Plan(search(startstate), getLocation());
-		std::cerr << plan->toString() << "\n";
+		std::list<Node *> searchResult = search(startstate);
+		if (searchResult.empty()){
+			//It wasn't possible to compute a way to solve this
+		}
+		plan = new Plan(searchResult, getLocation());
+		//std::cerr << plan->toString() << "\n";
+		Node::resetPool();
 	}
 	return NULL;
 }
@@ -99,6 +109,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	}
 	if (!tempstate->checkAndChangeState(number, c)){
 		handleConflict();
+		return &Command::EVERY[0];
 	}
 	return c;
 }
@@ -106,7 +117,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 
 Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 				Entity(chr, location, color){
-	this->currenttask = nullptr;
+	this->task = nullptr;
 	this->rank = rank;
 	plan = NULL;
 }
@@ -114,7 +125,7 @@ Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
 				Entity(chr, location, color)
 {
-	this->currenttask = nullptr;
+	this->task = nullptr;
 	this->rank = 0;
 	plan = NULL;
 }
@@ -122,7 +133,7 @@ Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
 Agent::Agent(char chr, std::pair<int, int> location):
 				Entity(chr, location, Entity::BLUE)
 {
-	this->currenttask = nullptr;
+	this->task = nullptr;
 	this->rank = 0;
 	plan = NULL;
 }
@@ -130,7 +141,7 @@ Agent::Agent(char chr, std::pair<int, int> location):
 Agent::Agent(Agent * agt):
 				Entity(agt->chr, agt->location, agt->color)
 {
-	this->currenttask = agt->currenttask;
+	this->task = agt->task;
 	this->rank = agt->rank;
 	this->plan = agt->plan;
 }

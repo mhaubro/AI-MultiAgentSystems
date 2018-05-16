@@ -92,4 +92,7 @@ public:
 	}
 };
 
+//This is the running state node. Will never be deleted, and always have g = 0, and parent == NULL.
+extern Node stateNode;
+
 #endif

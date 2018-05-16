@@ -22,7 +22,7 @@ class Agent : public Entity
 
     Command * getAction(Node * startstate, Node * temptate);
 
-    Task * currenttask;
+    Task * task;
     std::list<Node *> search(Node * state);
     Agent(char chr, int rank, std::pair<int, int> location, Entity::COLOR color);
     Agent(char chr, std::pair<int, int> location, Entity::COLOR color);
