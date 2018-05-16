@@ -38,7 +38,7 @@ private:
     int skipNextIte = 0;
     Plan * plan;
     Command * noPlan(Node * startstate);
-    void handleConflict();
+    Command * handleConflict();
 
 };
 #endif
