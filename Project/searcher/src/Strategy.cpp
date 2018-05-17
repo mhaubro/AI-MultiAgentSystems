@@ -15,6 +15,8 @@
 #include "Task.h"
 #include "HandleGoalTask.h"
 
+#define MAXITE 25000
+
 using std::pair;
 using std::vector;
 using std::list;
@@ -85,7 +87,10 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
 	// search loop
 	while(true){
-
+		//We shouldn't search for too long, rather we should turn around and pick other solution
+		if (iteration > MAXITE){
+			return std::list<Node *>();
+		}
 		// if frontier is empty and no solution is found, return an empty list.
 		if (frontier.empty()){
 			return list<Node*>();

@@ -14,11 +14,12 @@ double getDistance(Box b, std::pair<int, int> location){
 }
 
 
-HandleGoalTask::HandleGoalTask(Box * box, std::pair<int, int> loc, int rank)
+HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bool> solvingColors)
 {
+  this->solvingColors = solvingColors;
   this->predecessors = NULL;
 //  this->type = Task::Type::MoveBoxTask;
-  this->box = box;
+  this->box = NULL;
   this->destination = loc;
   this->rank = rank;
 }

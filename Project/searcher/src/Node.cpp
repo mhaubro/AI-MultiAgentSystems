@@ -18,6 +18,16 @@
 
 Node stateNode;
 
+void Node::clearOtherAgents(char agent){
+	std::vector<Agent> newA = std::vector<Agent>();
+	for (Agent a : agents){
+		if (a.chr == agent){
+			newA.emplace_back(&a);
+		}
+	}
+	agents = newA;
+}
+
 void Node::resetPool(){
 	pool.clearNodes();
 }

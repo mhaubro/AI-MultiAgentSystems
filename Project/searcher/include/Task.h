@@ -1,12 +1,11 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include "Agent.h"
-#include "Box.h"
-#include "Node.h"
+#include <utility>
 
 class Agent;
 class Node;
+class Box;
 
 class Task
 {
@@ -24,5 +23,9 @@ public:
   int manhattan(std::pair<int, int> loc1, std::pair<int, int> loc2);
 };
 
+
+#include "Agent.h"
+#include "Box.h"
+#include "Node.h"
 
 #endif

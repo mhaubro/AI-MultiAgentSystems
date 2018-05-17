@@ -34,6 +34,7 @@ public:
 
 	static void resetPool();
 
+	void clearOtherAgents(char agent);
 	//Methods
 	Node();
 	Node(Node * parent);
@@ -55,7 +56,7 @@ public:
 	bool operator==(const Node * obj) const;
 	Box * getBox(int x, int y);
 	Goal * getGoal(int x, int y);
-
+	Agent * getAgent(int x, int y);
 
 private:
 	int gval;
@@ -64,7 +65,6 @@ private:
 	//static std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
 	//static std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
 
-	Agent * getAgent(int x, int y);
 	bool goalAt(int x, int y);
 	bool agentAt(int x, int y);
 

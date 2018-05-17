@@ -5,10 +5,14 @@
 
 CentralPlanner cPlanner;
 
+//TODO
+void CentralPlanner::removeTask(Task * t){
+
+}
+
+
 CentralPlanner::CentralPlanner(){
-	for(int i = 0; i < 8; i++){
-		this->UnassignedTasks.push_back(std::stack<Task*>());
-	}
+	UnassignedGoals = std::vector<HandleGoalTask *>();
 	compatibleGoals = std::vector<std::vector<bool>>(Entity::NUMCOLS);
 }
 
@@ -39,48 +43,85 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 }
 
 //Todo
-bool CentralPlanner::hasJob(Agent * agent){
-	return cPlanner.UnassignedTasks[agent->color].size() != 0;
+bool CentralPlanner::hasJob(Agent * agent, Node * state){
+	for (HandleGoalTask * h : UnassignedGoals){
+		if (h->solvingColors[agent->color])
+			return true;
+	}
+
+	for (RequestFreeSpaceTask * t : freeSpaceTasks){
+		if (!t->seemsCompleted(agent, state))
+			return true;
+	}
+
+	return false;
 }
 
-Task * CentralPlanner::getJob(Agent agent){
+Task * CentralPlanner::getJob(Agent * agent, Node * state){
+
+	//The agent will be the only one to get this task
+
+	//For all boxes and goals, find the one with lowest h-value.
+	for (int i = 0; i < UnassignedGoals.size(); i++){
+		HandleGoalTask * h = UnassignedGoals[i];
+		if (h->seemsCompleted(agent, state))
+			continue;
+		if (h->solvingColors[agent->color]){
+			//Deletes the move box thing
+			UnassignedGoals.erase(UnassignedGoals.begin()+i);
+			//Finds most fitting box, by going through all setting and calculating h-val
+			Box * bestBox;
+			for (Box b : state->boxes){
+				if (b.workInProgress)
+					continue;
+				double hval = 100000.0;
+				h->box = &b;
+				double boxh = h->h(agent, state);
+				if (boxh < hval){
+					hval = boxh;
+					bestBox = &b;
+				}
+			}
+			h->box = bestBox;
+			h->box->workInProgress = true;
+		}
+			return h;
+
+	}
+
+	for (RequestFreeSpaceTask * t : freeSpaceTasks){
+		if (!t->seemsCompleted(agent, state))
+			return t;
+	}
+
+
 	return NULL;
 }
 
 void CentralPlanner::DetectTasks(Node * n)
 {
-	for(auto & g : n->goals)
+	for(int i = 0; i < n->goals.size(); i++)
 	{
-		Box * b = n->getBox(g.getX(), g.getY());
-		//Goal is already done
-		if (b != NULL && std::tolower(b->chr) == g.chr)
-			continue;
-		for(auto & b : n->boxes)
-		{
-			if(std::tolower(g.chr) == std::tolower(b.chr))
-			{
-				// Set rank?
-				HandleGoalTask * t = new HandleGoalTask(&b, g.getLocation(), 0);
-				this->UnassignedTasks[b.color].push(t);
-			}
-		}
+		Goal g = n->goals[i];
+		HandleGoalTask * t = new HandleGoalTask(g.getLocation(), 0, compatibleGoals[i]);
+		UnassignedGoals.push_back(t);
 	}
 }
 
-
-void CentralPlanner::AssignTask(Agent * a)
+/*
+void CentralPlanner::AssignTask(Agent * a, Node * state)
 {
-	if(cPlanner.UnassignedTasks[a->color].empty())
+	if(cPlanner.UnassignedGoals[a->color].empty())
 	{
 		a->task = nullptr;
 	}
 	else
 	{
-		a->task = cPlanner.UnassignedTasks[a->color].top();
-		cPlanner.UnassignedTasks[a->color].pop();
+		a->task = cPlanner.UnassignedGoals[a->color].top();
+		cPlanner.UnassignedGoals[a->color].pop();
 	}
 }
-
+*/
 
 Task * CentralPlanner::RequestTask(){
 	return NULL;
