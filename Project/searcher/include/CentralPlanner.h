@@ -25,6 +25,9 @@ public:
   bool TaskAvailable(Agent * a);
   Task * RequestTask();
   Task * RequestHelp();
+  bool hasJob(Agent * agent);
+  Task * getJob(Agent agent);
+
 
 private:
   void getCompatibleGoals(Node * n);

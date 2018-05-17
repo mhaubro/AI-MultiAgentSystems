@@ -16,6 +16,8 @@
 //Very possibly we should do our own, considering we don't have to "destruct" node *.
 //boost::object_pool<Node> Node::pool;
 
+Node stateNode;
+
 void Node::resetPool(){
 	pool.clearNodes();
 }
