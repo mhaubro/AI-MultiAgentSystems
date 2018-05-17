@@ -1,5 +1,6 @@
 #include "Agent.h"
 #include "Task.h"
+#include "HandleGoalTask.h"
 #include <functional>
 #include <utility>
 #include <boost/pool/object_pool.hpp>
@@ -20,7 +21,7 @@ Command * Agent::noPlan(Node * startstate){
 		std::cerr << "Doing replanning with original task\n";
 		//Do replanning
 		delete plan;
-		handleGoalTask* tmp = reinterpret_cast<handleGoalTask*>(this->task);
+		HandleGoalTask* tmp = reinterpret_cast<HandleGoalTask*>(this->task);
 		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 		std::list<Node *> searchResult = search(startstate);
 		if (searchResult.empty()){
@@ -46,7 +47,7 @@ Command * Agent::noPlan(Node * startstate){
 		if (cPlanner.hasJob(this)){
 			cPlanner.AssignTask(this);
 		}
-		handleGoalTask* tmp = reinterpret_cast<handleGoalTask*>(this->task);
+		HandleGoalTask* tmp = reinterpret_cast<HandleGoalTask*>(this->task);
 		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 		std::list<Node *> searchResult = search(startstate);
 		if (searchResult.empty()){

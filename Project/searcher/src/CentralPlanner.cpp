@@ -1,7 +1,7 @@
 #include "CentralPlanner.h"
 #include <iostream>
 #include <stack>
-
+#include "HandleGoalTask.h"
 
 CentralPlanner cPlanner;
 
@@ -60,36 +60,14 @@ void CentralPlanner::DetectTasks(Node * n)
 			if(std::tolower(g.chr) == std::tolower(b.chr))
 			{
 				// Set rank?
-				handleGoalTask * t = new handleGoalTask(&b, g.getLocation(), 0);
+				HandleGoalTask * t = new HandleGoalTask(&b, g.getLocation(), 0);
 				this->UnassignedTasks[b.color].push(t);
 			}
 		}
 	}
 }
-/*
-void CentralPlanner::AssignTasks(Node * n)
-{
-  int s = this->UnassignedTasks.size();
-  for(int i = 0; i < s; i++)
-  {
-    if(this->UnassignedTasks[i]->type == Task::Type::MoveBoxTask)
-    {
-      MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
-      for(auto & a : n->agents)
-      {
-        if(a.task != nullptr)
-          continue;
 
-        if(tmp->box->color == a.color)
-        {
-          a.task = this->UnassignedTasks[i];
-          this->UnassignedTasks.erase(this->UnassignedTasks.begin());
-        }
-      }
-    }
-  }
-}
- */
+
 void CentralPlanner::AssignTask(Agent * a)
 {
 	if(cPlanner.UnassignedTasks[a->color].empty())
@@ -102,22 +80,8 @@ void CentralPlanner::AssignTask(Agent * a)
 		cPlanner.UnassignedTasks[a->color].pop();
 	}
 }
-/*
-bool CentralPlanner::TaskAvailable(Agent * a)
-{
-  int s = this->UnassignedTasks.size();
-  for(int i = 0; i < s; i++)
-  {
-    if(this->UnassignedTasks[i]->type == Task::Type::MoveBoxTask)
-    {
-      MoveBoxTask* tmp = reinterpret_cast<MoveBoxTask*>(this->UnassignedTasks[i]);
-      if(tmp->box->color == a->color)
-        return true;
-    }
-  }
-  return false;
-}
- */
+
+
 Task * CentralPlanner::RequestTask(){
 	return NULL;
 }

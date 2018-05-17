@@ -13,6 +13,7 @@
 #include "Node.h"
 #include "Agent.h"
 #include "Task.h"
+#include "HandleGoalTask.h"
 
 using std::pair;
 using std::vector;
@@ -74,7 +75,7 @@ double getHValue(Node * n, Agent * agent, Task * task){
 	double hval = 1000.0;
 	//Find box.
 	//Yes, the if below is legal
-	if (MoveBoxTask * t = dynamic_cast<MoveBoxTask *>(task)){
+	if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
 		//std::cerr << "Doing a heuristic thing\n";
 		Box * box;
 		//IT's a moveboxtask
@@ -108,7 +109,7 @@ double getHValue(Node * n, Agent * agent, Task * task){
 				//The right box
 			}
 		}
-	} else if (MoveAgentTask * t = dynamic_cast<MoveAgentTask *>(task)){
+	} else if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
 		std::cerr << "Not a movebox task, not supported yet\n";
 	}
 
