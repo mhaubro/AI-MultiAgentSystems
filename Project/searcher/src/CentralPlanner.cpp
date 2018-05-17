@@ -74,10 +74,10 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 			for (Box b : state->boxes){
 				if (b.workInProgress)
 					continue;
-				double hval = 100000.0;
+				double hval = 10000000000.0;
 				h->box = &b;
 				double boxh = h->h(agent, state);
-				if (boxh < hval){
+				if (boxh > hval){
 					hval = boxh;
 					bestBox = &b;
 				}

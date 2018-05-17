@@ -24,6 +24,7 @@ std::list<Node *> Agent::Nakedsearch(Node * state){
 }
 
 Command * Agent::noPlan(Node * startstate){
+	std::cerr<< "Doing first plan\n";
 	//Short-cirrcuit. We have a task, which is not completed
 	if (this->task != NULL && !this->task->isCompleted(this, startstate)){
 		//Task wasn't completed, let's replan
@@ -58,10 +59,11 @@ Command * Agent::noPlan(Node * startstate){
 		//Do replanning
 		delete plan;
 		if (cPlanner.hasJob(this, startstate)){
-			cPlanner.getJob(this, startstate);
+			task = cPlanner.getJob(this, startstate);
 		}
 		std::list<Node *> searchResult = search(startstate);
 		if (searchResult.empty()){
+			std::cerr << "Empty plan?\n";
 			//Do something
 		}
 		plan = new Plan(searchResult, this->getLocation());
@@ -86,7 +88,7 @@ Command * Agent::handleConflict(){
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
 	if (skipNextIte){
-		skipNextIte = false;
+		skipNextIte--;
 		return &Command::EVERY[0];
 	}
 	if (startstate->isGoalState(this->color))
@@ -125,6 +127,8 @@ Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 	this->task = nullptr;
 	this->rank = rank;
 	plan = NULL;
+	t = NULL;
+
 }
 
 Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
@@ -133,6 +137,7 @@ Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
 	this->task = nullptr;
 	this->rank = 0;
 	plan = NULL;
+	t = NULL;
 }
 //No color, for single agent levels
 Agent::Agent(char chr, std::pair<int, int> location):
@@ -141,6 +146,7 @@ Agent::Agent(char chr, std::pair<int, int> location):
 	this->task = nullptr;
 	this->rank = 0;
 	plan = NULL;
+	t = NULL;
 }
 
 Agent::Agent(Agent * agt):
@@ -149,6 +155,7 @@ Agent::Agent(Agent * agt):
 	this->task = agt->task;
 	this->rank = agt->rank;
 	this->plan = agt->plan;
+	t = NULL;
 }
 
 int Agent::hashCode()

@@ -51,7 +51,9 @@ namespace Initializer {
           Node::walls[x + y*xsize] = true;
 
         } else if (isAgent(chr)){
-          agents.emplace_back(chr, pair<int, int>(x, y), colors.find(chr)->second);
+        	Agent a = Agent(chr, pair<int, int>(x, y), colors.find(chr)->second);
+
+          agents.emplace_back(&a);
         } else if (isBox(chr)){
           boxes.emplace_back(chr, pair<int, int>(x, y), colors.find(chr)->second);
         } else if (isGoal(chr)){
