@@ -26,7 +26,6 @@ bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
   }
   return false;
 }
-
 bool RequestFreeSpaceTask::seemsCompleted(Agent * a, Node * n)
 {
   for(auto & ag : n->agents)
@@ -44,3 +43,4 @@ int RequestFreeSpaceTask::h(Agent * a, Node * n)
 {
   return manhattan(a->getLocation(), destination);
 }
+

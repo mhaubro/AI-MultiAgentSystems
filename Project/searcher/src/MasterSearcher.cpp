@@ -9,16 +9,16 @@
 namespace MasterSearcher
 {
 std::vector<std::string> getPlan(Node * initialState)
-{
+		  {
 	int agents = initialState->agents.size();
 	std::vector<std::list<Node *>> plans(agents);
 
 	int longestPlan = 0;
 	Node state = *initialState;
 	Node tempstate = state;
+
 	// We need to do this multiple times
 	cPlanner = CentralPlanner();
-  cPlanner.preAnalyse(&state);
 	cPlanner.DetectTasks(&state);
 	/*Creates a list of strings that is the actual plan*/
 	/*Keeps checking for conflicts*/
@@ -39,7 +39,7 @@ std::vector<std::string> getPlan(Node * initialState)
 
 		state = tempstate;
 		plan.push_back(s);
-		//std::cerr << s << "\n";// << tempstate.toString() << "\n";
+		std::cerr << s << "\n";// << tempstate.toString() << "\n";
 		printStep(s);
 		if (state.isGoalState())
 			return plan;
