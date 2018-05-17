@@ -1,7 +1,8 @@
 #include "CentralPlanner.h"
+#include "HandleGoalTask.h"
 #include <iostream>
 #include <stack>
-#include "HandleGoalTask.h"
+#include <list>
 
 CentralPlanner cPlanner;
 
@@ -14,6 +15,7 @@ CentralPlanner::CentralPlanner(){
 
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
+  getOrderOfGoals(n, n->goals[0], n->goals[3]);
 	//Should we check order of goals, if they are down a corridor?
 	//We should
 	//DetectTasks(n);
@@ -35,7 +37,38 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 			}
 		}
 	}
+}
 
+void CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
+{
+  std::cerr << "\n\n GET ORDER OF GOALS \n\n";
+  Node * new_state = nullptr;
+
+  new_state = FindSolution(n, g1);
+
+  if(new_state->isGoalState(g1))
+  {
+    new_state = FindSolution(new_state, g2);
+    if(new_state->isGoalState(g2))
+    {
+      std::cerr << "\n" << g1.chr << " and then " << g2.chr << "\n";
+      std::cerr << new_state->toString();
+    }
+  }
+  else
+  {
+    new_state = FindSolution(n, g2);
+
+    if(new_state->isGoalState(g2))
+    {
+      new_state = FindSolution(new_state, g1);
+      if(new_state->isGoalState(g1))
+      {
+        std::cerr << "\n" << g2.chr << " and then " << g1.chr << "\n";
+        std::cerr << new_state->toString();
+      }
+    }
+  }
 }
 
 //Todo
@@ -67,7 +100,6 @@ void CentralPlanner::DetectTasks(Node * n)
 	}
 }
 
-
 void CentralPlanner::AssignTask(Agent * a)
 {
 	if(cPlanner.UnassignedTasks[a->color].empty())
@@ -81,6 +113,28 @@ void CentralPlanner::AssignTask(Agent * a)
 	}
 }
 
+Node * CentralPlanner::FindSolution(Node * n, Goal g)
+{
+  for(auto & b : n->boxes)
+  {
+    if(std::tolower(g.chr) == std::tolower(b.chr))
+    {
+      HandleGoalTask * t = new HandleGoalTask(&b, g.getLocation(), 0);
+      // Find agent to solve task
+      for(auto & a : n->agents)
+      {
+        if(a.color == t->box->color)
+        {
+          a.task = t;
+          std::list<Node*> solution = a.search(n);
+          a.task = nullptr; // Not sure if needed
+          return solution.back();
+        }
+      }
+    }
+  }
+  return nullptr;
+}
 
 Task * CentralPlanner::RequestTask(){
 	return NULL;

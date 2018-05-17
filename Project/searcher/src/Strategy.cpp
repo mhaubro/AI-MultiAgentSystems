@@ -89,7 +89,7 @@ double getHValue(Node * n, Agent * agent, Task * task){
 					if (g->getLocation() == b.getLocation()){
 						//std::cerr << "Goal Match" << b.chr << "\n";
 						hval -= 5.0;
-						std::cerr << n->toString() << "\n";
+						//std::cerr << n->toString() << "\n";
 					} else {
 
 					}
@@ -136,7 +136,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 			return list<Node*>();
 		}
 		Node* leaf = frontier.pull();
-		std::cerr << leaf->toString() << "\n";
+		//std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
 			return leaf->extractPlan();
 		}

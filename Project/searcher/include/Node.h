@@ -45,6 +45,7 @@ public:
 	bool isInitialState();
 	bool isGoalState();
 	bool isGoalState(Entity::COLOR);
+  bool isGoalState(Goal g);
 	std::vector<Node> getExpandedNodes();
 	std::vector<Node> getExpandedNodes(char agent);
 	std::list<Node*> extractPlan();
