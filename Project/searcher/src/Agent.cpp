@@ -28,7 +28,7 @@ Command * Agent::noPlan(Node * startstate){
 			//Do something
 		}
 		plan = new Plan(searchResult, this->getLocation());
-		// std::cerr << plan->toString() << "\n";
+		std::cerr << plan->toString() << "\n";
 		Node::resetPool();
 		return NULL;
 	}
@@ -54,7 +54,7 @@ Command * Agent::noPlan(Node * startstate){
 			//Do something
 		}
 		plan = new Plan(searchResult, this->getLocation());
-		// std::cerr << plan->toString() << "\n";
+		std::cerr << plan->toString() << "\n";
 		return NULL;
 	}
 
@@ -103,6 +103,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	}
 	return c;
 }
+
 
 Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 				Entity(chr, location, color){

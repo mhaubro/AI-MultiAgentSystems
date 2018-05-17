@@ -7,6 +7,7 @@
 
 #include "HandleGoalTask.h"
 
+
 HandleGoalTask::HandleGoalTask(Box * box, std::pair<int, int> loc, int rank)
 {
 //  this->type = Task::Type::MoveBoxTask;
@@ -29,7 +30,6 @@ bool HandleGoalTask::isCompleted(Agent * a, Node * n)
   }
   return false;
 }
-
 bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 {
   for(auto & b : n->boxes)

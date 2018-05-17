@@ -166,6 +166,7 @@ std::vector<Node> Node::getExpandedNodes(){
 			int newAgentY = a.getY() + Command::getdy(c->dirAgent);
 
 			if (c->actionType == Command::Move) {
+
 				// Check if there's a wall or box on the cell to which the agent is moving
 				if (this->cellIsFree(newAgentX, newAgentY)) {
 					Node n = Node(this);
@@ -181,9 +182,12 @@ std::vector<Node> Node::getExpandedNodes(){
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxX, newBoxY)) {
 						Node n = Node(this);
+
 						n.action = c;
 						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
+
 						n.getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
+
 						expandedNodes.push_back(n);
 					}
 				}
@@ -204,6 +208,8 @@ std::vector<Node> Node::getExpandedNodes(){
 			}
 		}
 	}
+
+
 	return expandedNodes;
 }
 
@@ -268,6 +274,8 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 			}
 		}
 	}
+
+
 	return expandedNodes;
 }
 
@@ -417,17 +425,7 @@ bool Node::isGoalState(Entity::COLOR color)
 	return true;
 }
 
-bool Node::isGoalState(Goal g)
-{
-  for(auto & b : this->boxes)
-  {
-    if(g.location == b.location && g.chr == std::tolower(b.chr))
-    {
-      return true;
-    }
-  }
-	return false;
-}
+
 
 Box * Node::getBox(int x, int y)
 {
@@ -502,3 +500,4 @@ bool Node::agentAt(int x, int y)
 	}
 	return false;
 }
+
