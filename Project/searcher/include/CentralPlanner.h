@@ -5,8 +5,10 @@
 #include "Task.h"
 #include <vector>
 #include <stack>
+#include <list>
 
 class Task;
+class Goal;
 
 class CentralPlanner {
 public:
@@ -27,7 +29,8 @@ public:
   Task * RequestHelp();
   bool hasJob(Agent * agent);
   Task * getJob(Agent agent);
-
+  void getOrderOfGoals(Node * n, Goal g1, Goal g2);
+  Node * FindSolution(Node * n, Goal g);
 
 private:
   void getCompatibleGoals(Node * n);
