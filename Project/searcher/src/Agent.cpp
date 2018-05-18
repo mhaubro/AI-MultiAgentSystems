@@ -23,8 +23,8 @@ std::list<Node *> Agent::Nakedsearch(Node * state){
 	return a_star_search(state, this, this->task);
 }
 
-Command * Agent::noPlan(Node * startstate){
-	std::cerr<< "Doing first plan\n";
+Command * Agent::noPlan(Node * startstate, Node * tempstate){
+	std::cerr << "Doing first plan\n";
 	//Short-cirrcuit. We have a task, which is not completed
 	if (this->task != NULL && !this->task->isCompleted(this, startstate)){
 		//Task wasn't completed, let's replan
@@ -48,14 +48,19 @@ Command * Agent::noPlan(Node * startstate){
 	}
 	//We don't have a task/have completed
 	else if(!cPlanner.hasJob(this, startstate)){
+    if(!tempstate->isGoalState())
+      cPlanner.DetectTasks(tempstate); // Try and find new tasks?
 		//Noone has requested anything.
 
 		//Maybe we should improve our positioning, by moving away from other agents??
 		return &Command::EVERY[0];
 
 	} else {
+    if(!tempstate->isGoalState())
+      cPlanner.DetectTasks(tempstate); // Try and find new tasks?
+
 		//Task was completed, there's more tasks for us.
-		std::cerr <<"Task was: " << task << " Doing replanning\n" ;
+		std::cerr <<"Task was: " << task << " Doing reeeeplanning\n" ;
 		//Do replanning
 		delete plan;
 		if (cPlanner.hasJob(this, startstate)){
@@ -100,7 +105,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		return &Command::EVERY[0];
 	}
 	if (plan == NULL || plan->isEmpty()){
-		if (Command * c = noPlan(startstate)){
+		if (Command * c = noPlan(startstate, tempstate)){
 			return c;
 		}
 	}
