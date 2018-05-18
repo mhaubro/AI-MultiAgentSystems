@@ -50,6 +50,19 @@ bool HandleGoalTask::isCompleted(Agent * a, Node * n)
   }
   return false;
 }
+
+bool HandleGoalTask::seemsCompleted(Node * n)
+{
+  for(auto & b : n->boxes)
+  {
+    if(this->box && b.chr != this->box->chr)
+      continue;
+    if(b.getLocation() == this->destination)
+      return true;
+  }
+  return false;
+}
+
 bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 {
   for(auto & b : n->boxes)
@@ -57,9 +70,7 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
     if(this->box && b.chr != this->box->chr)
       continue;
     if(b.getLocation() == this->destination)
-    {
       return true;
-    }
   }
   return false;
 }
