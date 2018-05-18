@@ -93,6 +93,8 @@ std::vector<Goal> CentralPlanner::getOrderOfAllGoals(Node * n)
     if(tmp_state != nullptr && tmp_state->isGoalState())
       return order;
   }
+  return std::vector<Goal>();
+
 }
 
 Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
@@ -138,8 +140,8 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
     // Predecessor is not solved!
-    if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(agent, state))
-      continue;
+    //if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(agent, state))
+    //  continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
 		std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
@@ -173,6 +175,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 			//throw "BUG";
 		return h;
 	}
+	std::cerr << "Agent " << agent->chr<<  "has nothing to do\n";
 
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
 		std::cerr << "Checking for requests \n";
