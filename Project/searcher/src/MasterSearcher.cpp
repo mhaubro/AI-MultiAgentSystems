@@ -39,7 +39,7 @@ std::vector<std::string> getPlan(Node * initialState)
 
 		state = tempstate;
 		plan.push_back(s);
-		std::cerr << s << "\n";// << tempstate.toString() << "\n";
+		//std::cerr << s << "\n";// << tempstate.toString() << "\n";
 		printStep(s);
 		if (state.isGoalState())
 			return plan;
@@ -54,18 +54,18 @@ void printStep(std::string s){
 	std::cout << s;
 	std::cout << "\n";
 	std::string response;
-	//std::cerr << "Printing solution3";
+	////std::cerr << "Printing solution3";
 	std::getline(std::cin, response);
-	//std::cerr << "Printing solution4";
+	////std::cerr << "Printing solution4";
 	if (response.find(std::string("false")) != std::string::npos) {
 		ss << "Server responsed with "<< response <<"%s to the inapplicable action: "<< s <<"\n";
-		std::cerr << ss.str();
+		//std::cerr << ss.str();
 		ss.str("");
 		//Maybe we should actually be able to print the state. However, sending
 		//A plan assumes that the thing actually works, and we will never
 		//Replan out here.
 		ss << s << " was attempted in a state\n";
-		std::cerr << ss.str();
+		//std::cerr << ss.str();
 		throw ("Command Error, printing step\n");
 	}
 }

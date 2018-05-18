@@ -51,7 +51,7 @@ int main(int argc, char * argv[]){
 	char buffer[200];
 
 	Client client = Client();
-	std::cerr << "Search started\n";
+	//std::cerr << "Search started\n";
 
 	//StrategyBFS strategy = StrategyBFS();
 
@@ -60,24 +60,24 @@ int main(int argc, char * argv[]){
 	solution = MasterSearcher::getPlan(client.initialState);
 	return 0;
 	//Went over to printing on the go, makes it easier to understand errors
-/*	std::cerr << "\nSummary for " << strategy.toString() << ".\n";
-	std::cerr << "Found solution of length " << solution.size() << ".\n";
+/*	//std::cerr << "\nSummary for " << strategy.toString() << ".\n";
+	//std::cerr << "Found solution of length " << solution.size() << ".\n";
 
 	for (const auto & cmd : solution) {
 		std::cout << cmd;
 		std::cout << "\n";
 		std::string response;
-		//std::cerr << "Printing solution3";
+		////std::cerr << "Printing solution3";
 		std::getline(std::cin, response);
-		//std::cerr << "Printing solution4";
+		////std::cerr << "Printing solution4";
 		if (response.find(std::string("false")) != std::string::npos) {
 			sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, cmd);
-			std::cerr << std::string(buffer);
+			//std::cerr << std::string(buffer);
 			//Maybe we should actually be able to print the state. However, sending
 			//A plan assumes that the thing actually works, and we will never
 			//Replan out here.
 			sprintf(buffer, "%s was attempted in a state\n", cmd);
-			std::cerr << std::string(buffer);
+			//std::cerr << std::string(buffer);
 			break;
 	  }
 	}*/
@@ -93,7 +93,7 @@ int main(int argc, char * argv[]){
 		char buffer[100];
 		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
 		std::string s = std::string(buffer);
-		std::cerr << s;
+		//std::cerr << s;
 		strategy->addToFrontier(this->initialState);
 		int iterations = 0;
 
@@ -111,9 +111,9 @@ int main(int argc, char * argv[]){
 
 			if (leafNode->isGoalState()) {
 				//A goal is found, final state is printed
-				std::cerr << "Goal!\n";
+				//std::cerr << "Goal!\n";
 				strategy->searchStatus(iterations);
-				std::cerr << leafNode->toString();
+				//std::cerr << leafNode->toString();
 				return leafNode->extractPlan();
 			}
 

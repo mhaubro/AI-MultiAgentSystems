@@ -50,7 +50,7 @@ void Node::resetPool(){
 }
 
 Node * Node::getopCopy(Node * n){
-	//std::cerr << "creating Node copy\n";
+	////std::cerr << "creating Node copy\n";
 	return pool.createNodeCopy(n, n->agents, n->boxes);
 }
 
@@ -258,7 +258,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 					Node n = Node(this);
 					n.action = c;
 					n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
-					//std::cerr << n.toString();
+					////std::cerr << n.toString();
 					expandedNodes.push_back(n);
 				}
 			} else if (c->actionType == Command::Push) {
@@ -275,7 +275,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 
 						n.getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
-						//std::cerr << n.toString();
+						////std::cerr << n.toString();
 						expandedNodes.push_back(n);
 					}
 				}
@@ -290,7 +290,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 						n.action = c;
 						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 						n.getBox(boxX, boxY)->setLocation(a.getX(), a.getY());
-						//std::cerr << n.toString();
+						////std::cerr << n.toString();
 						expandedNodes.push_back(n);
 
 					}
@@ -305,7 +305,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 
 
 Node * Node::ChildNode() {
-//	//std::cerr << "Child\n";
+//	////std::cerr << "Child\n";
 //	Node * copy = Node::pool.construct(this);
 //	//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
 //	//copy->boxes = this->boxes;
@@ -337,7 +337,7 @@ int Node::hashCode() const
 		result = prime * result + b.getX();
 		result = prime * result + b.getY();
 	}
-	//std::cerr << "Calling hash with val" << result << "\n";
+	////std::cerr << "Calling hash with val" << result << "\n";
 	return result;
 }
 
@@ -360,7 +360,7 @@ bool Node::equals(const Node * obj) const {
 			return false;
 		}
 	}
-	//std::cerr << "Objects are equal\n";
+	////std::cerr << "Objects are equal\n";
 	return true;
 }
 

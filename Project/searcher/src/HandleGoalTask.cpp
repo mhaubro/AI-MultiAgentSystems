@@ -21,7 +21,7 @@ HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bo
 	this->box = NULL;
 	this->destination = loc;
 	this->rank = rank;
-	//  std::cerr << "Compatible colors for " << this->destination.first <<"," << this->destination.second <<" : " << solvingColors ;
+	//  //std::cerr << "Compatible colors for " << this->destination.first <<"," << this->destination.second <<" : " << solvingColors ;
 }
 
 HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, Box * box)
@@ -33,7 +33,7 @@ HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, Box * box)
   this->chr = box->chr;
   this->destination = loc;
   this->rank = rank;
-//  std::cerr << "Compatible colors for " << this->destination.first <<"," << this->destination.second <<" : " << solvingColors ;
+//  //std::cerr << "Compatible colors for " << this->destination.first <<"," << this->destination.second <<" : " << solvingColors ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)
@@ -67,7 +67,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 	double hval = 1000.0;
 	//Find box.
 	//Yes, the if below is legal
-	//std::cerr << "Doing a heuristic thing\n";
+	////std::cerr << "Doing a heuristic thing\n";
 	//Box * box;
 	//IT's a moveboxtask
 	//MoveBoxTask * t = dynamic_cast<MoveBoxTask *>( task );
@@ -78,9 +78,9 @@ int HandleGoalTask::h(Agent * a, Node * n)
 		if (Goal * g = n->getGoal(b.getX(), b.getY())){
 			if (g->chr == tolower(b.chr)){
 				if (g->getLocation() == b.getLocation()){
-					//std::cerr << "Goal Match" << b.chr << "\n";
+					////std::cerr << "Goal Match" << b.chr << "\n";
 					hval -= 5.0;
-					//std::cerr << n->toString() << "\n";
+					////std::cerr << n->toString() << "\n";
 				} else {
 
 				}
@@ -91,8 +91,8 @@ int HandleGoalTask::h(Agent * a, Node * n)
 
 			if (getDistance(b, n->agents[a->chr - '0'].getLocation()) < 1.3){//Ensures they're next to
 				hval -= 5.0;
-				//std::cerr << "Next to box" << b.chr << " Position: " << b.getX() <<"," <<b.getY() << "\n";
-				//std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
+				////std::cerr << "Next to box" << b.chr << " Position: " << b.getX() <<"," <<b.getY() << "\n";
+				////std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
 			} else {
 				hval += getDistance(b, n->agents[a->chr - '0'].getLocation());
 			}
@@ -100,6 +100,6 @@ int HandleGoalTask::h(Agent * a, Node * n)
 			//The right box
 		}
 	}
-	//std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
+	////std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
 	return n->g()+hval;
 }

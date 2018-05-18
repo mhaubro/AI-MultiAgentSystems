@@ -61,7 +61,7 @@ namespace Initializer {
         } else if (isBox(chr)){
           boxes.emplace_back(chr, pair<int, int>(x, y), colors.find(chr)->second);
         } else if (isGoal(chr)){
-          std::cerr << "Goal is found: " << chr << "\n";
+          //std::cerr << "Goal is found: " << chr << "\n";
           Node::goals.emplace_back(chr, pair<int, int>(x, y));
         } else if (chr == ' '){
           //Do nothing, as nothing is printed
@@ -76,14 +76,14 @@ namespace Initializer {
     Everything is stored, so we print the state as a sanity check for the user
     */
     cerr << initialState->toString();
-    //std::cerr << "Hi\n";
+    ////std::cerr << "Hi\n";
     return initialState;
   }
   
 
   Node * readSingleAgentLevel(const string level){
 
-    std::cerr << "Single agent level detected\n";
+    //std::cerr << "Single agent level detected\n";
     std::unordered_map<char, Entity::COLOR> colors;
 
     int numAgents = 0, numBoxes = 0;
@@ -117,16 +117,16 @@ namespace Initializer {
       getline(ss, line);
     } while (!ss.eof() && (line.length() != 0));
 
-    std::cerr << "Agents: " << numAgents <<
-    "\nBoxes: " << numBoxes <<
-    "\nDim: [" << cols << "," << rows.size() << "]\n";
+    //std::cerr << "Agents: " << numAgents <<
+    //"\nBoxes: " << numBoxes <<
+    //"\nDim: [" << cols << "," << rows.size() << "]\n";
 
     return storeInput(rows, cols, colors);
 
   }
 
   Node * readMultiAgentLevel(const string level){
-    std::cerr << "Mutli agent level detected\n";
+    //std::cerr << "Mutli agent level detected\n";
     std::unordered_map<char, Entity::COLOR> colors;
     std::string line;
 
@@ -139,7 +139,7 @@ namespace Initializer {
     while (getline (level_stream, line) && line != "" && std::regex_match(line, match, color_regex)) {
       matches++;
 
-      std::cerr<< line << "\n";
+      //std::cerr<< line << "\n";
       std::stringstream ss(line);
       std::string color;
       getline(ss, color, ':');
@@ -201,15 +201,15 @@ namespace Initializer {
 
 
 
-    std::cerr << "Agents: " << agentnum <<
-    "\nBoxes: " << boxnum <<
-    "\nDim: [" << cols << "," << rows.size() << "]\n";
+    //std::cerr << "Agents: " << agentnum <<
+    //"\nBoxes: " << boxnum <<
+    //"\nDim: [" << cols << "," << rows.size() << "]\n";
 
     return storeInput(rows, cols, colors);
   }
 
   Node * setupEnvironment(){
-    std::cerr << "Environment Setup\n";
+    //std::cerr << "Environment Setup\n";
 
     string line;
     stringstream ss = stringstream("");
@@ -219,7 +219,7 @@ namespace Initializer {
     }
 
     string level_string = ss.str();
-    std::cerr << level_string << "\n";
+    //std::cerr << level_string << "\n";
 
     std::regex multi_regex("[a-z]+:\\s*[0-9]");
     std::smatch match;

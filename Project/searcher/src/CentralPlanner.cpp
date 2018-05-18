@@ -102,7 +102,7 @@ Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 	Node * new_state = nullptr;
 
 	if(n == nullptr)
-		std::cerr << "WTF";
+		//std::cerr << "WTF";
 	new_state = FindSolution(n, g1);
 
 	if(new_state != nullptr && new_state->isGoalState(g1))
@@ -110,8 +110,8 @@ Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 		new_state = FindSolution(new_state, g2);
 		if(new_state != nullptr && new_state->isGoalState(g2) && new_state->isGoalState(g1))
 		{
-			// std::cerr << "\n" << g1.chr << " and then " << g2.chr << "\n";
-			// std::cerr << new_state->toString();
+			// //std::cerr << "\n" << g1.chr << " and then " << g2.chr << "\n";
+			// //std::cerr << new_state->toString();
 			return new_state;
 		}
 	}
@@ -135,7 +135,7 @@ bool CentralPlanner::hasJob(Agent * agent, Node * state){
 
 Task * CentralPlanner::getJob(Agent * agent, Node * state){
 
-	std::cerr << "Finding a job for someone\n";
+	//std::cerr << "Finding a job for someone\n";
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
@@ -144,12 +144,12 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 		//  continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
-		std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
+		//std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
 
 		if (h->seemsCompleted(agent, state))
 			continue;
 		if (h->solvingColors[agent->color]){
-			std::cerr << "There's a solvable goal\n";
+			//std::cerr << "There's a solvable goal\n";
 			//Deletes the move box thing
 			//Finds most fitting box, by going through all setting and calculating h-val
 			Box * bestBox;
@@ -160,14 +160,14 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 				h->box = &b;
 				double boxh = h->h(agent, state);
 				if (boxh < hval){
-					std::cerr << "Good box found "<< b.chr << "\n";
+					//std::cerr << "Good box found "<< b.chr << "\n";
 					hval = boxh;
 					bestBox = &b;
 				}
 			}
 			h->box = bestBox;
 			h->box->workInProgress = true;
-			std::cerr << "Task assigned with box " << h->box->chr << "\n";
+			//std::cerr << "Task assigned with box " << h->box->chr << "\n";
 		} else {
 			continue;
 		}
@@ -175,10 +175,10 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 		//throw "BUG";
 		return h;
 	}
-	std::cerr << "Agent " << agent->chr<<  "has nothing to do\n";
+	//std::cerr << "Agent " << agent->chr<<  "has nothing to do\n";
 
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
-		std::cerr << "Checking for requests \n";
+		//std::cerr << "Checking for requests \n";
 		if (!t->seemsCompleted(agent, state)){
 			return t;
 		}
@@ -188,7 +188,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 }
 
 bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
-	std::cerr << "Adding a request\n";
+	//std::cerr << "Adding a request\n";
 	if (h == NULL)
 		return false;
 	freeSpaceTasks.push_back(h);
