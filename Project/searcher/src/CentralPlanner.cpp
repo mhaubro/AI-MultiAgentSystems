@@ -85,7 +85,7 @@ std::vector<Goal> CentralPlanner::getOrderOfAllGoals(Node * n)
       // Try next box if it does not find a solution
       // Otherwise add it to the list
       if(tmp_state == nullptr)
-        continue;
+        break;
       else
         order.emplace_back(tmp_state->goals[j]);
     }
@@ -99,12 +99,14 @@ Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 {
   Node * new_state = nullptr;
 
+  if(n == nullptr)
+    std::cerr << "WTF";
   new_state = FindSolution(n, g1);
 
-  if(new_state->isGoalState(g1))
+  if(new_state != nullptr && new_state->isGoalState(g1))
   {
     new_state = FindSolution(new_state, g2);
-    if(new_state->isGoalState(g2) && new_state->isGoalState(g1))
+    if(new_state != nullptr && new_state->isGoalState(g2) && new_state->isGoalState(g1))
     {
       // std::cerr << "\n" << g1.chr << " and then " << g2.chr << "\n";
       // std::cerr << new_state->toString();
