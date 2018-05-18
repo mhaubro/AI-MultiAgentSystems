@@ -13,6 +13,20 @@
 //#define BACKUPLOOKAHEAD 5
 
 std::list<Node *> Agent::search(Node * state){
+	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+		//There's an agent on our destination
+		if (state->getAgent(tmp->destination.first, tmp->destination.second)){
+			return std::list<Node *>();
+		}
+		if (Box * b = state->getBox(tmp->destination.first, tmp->destination.second)){
+			if (b->color != color){
+				//There's a box we can't move at destination
+				return std::list<Node *>();
+			}
+		}
+	}
+
+
 	return a_star_search(state, this, this->task);
 }
 
@@ -32,6 +46,18 @@ std::list<Node *> Agent::noBoxesOrAgents(Node * state, Box * box){
 
 Command * Agent::noPlan(Node * startstate){
 	std::cerr<< "Doing first plan\n";
+
+	if (this->task != NULL && this->task->seemsCompleted(this, startstate)){
+		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+			cPlanner.returnGoalTask(tmp);
+			cPlanner.removeRequestTask(t);
+		} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
+			if (!cPlanner.stillActiveRequest(tmp)){
+				task = NULL;
+			}
+		}
+	}
+
 	//Short-cirrcuit. We have a task, which is not completed
 	if (this->task != NULL && !this->task->seemsCompleted(this, startstate)){
 		//Task wasn't completed, let's replan
@@ -42,6 +68,9 @@ Command * Agent::noPlan(Node * startstate){
 
 		if (searchResult.empty()){
 			//No agents, try path
+			if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
+				return &Command::EVERY[0];
+			}
 			if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 				//				std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 				searchResult = Nakedsearch(startstate);
@@ -68,6 +97,9 @@ Command * Agent::noPlan(Node * startstate){
 			t = new RequestFreeSpaceTask(plan->getLocations(), rank);
 			//Do something
 			cPlanner.addRequestFreeSpaceTask(t);
+			std::cerr << "NoCrash?\n";
+			Node::resetPool();
+			return NULL;
 		}
 
 		plan = new Plan(searchResult, this->getLocation());
@@ -144,18 +176,13 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		skipNextIte--;
 		return &Command::EVERY[0];
 	}
-	if (startstate->isGoalState(this->color))
-	{
-		std::cerr << "agent: " << chr << " goal\n";
-		//NoOp
-		return &Command::EVERY[0];
-	}
 	if (plan == NULL || plan->isEmpty()){
 		if (Command * c = noPlan(startstate)){
 			return c;
 		}
 	}
 	//Find next step
+	std::cerr << "Getting a step\n";
 	Command * c = plan->getStep();
 	std::cerr << "Getting a step " << c->toString() << "\n";
 	if (c == NULL){

@@ -29,6 +29,8 @@ public:
   bool isGoalCompatible(int goal, Entity::COLOR color);
   void preAnalyse(Node * n);
 
+  bool stillActiveRequest(RequestFreeSpaceTask * h);
+
   void DetectTasks(Node * n);
   void AssignTasks(Node * n);
   void AssignTask(Agent * a, Node * state);
