@@ -8,9 +8,11 @@
 #include "HandleGoalTask.h"
 #include <cmath>
 
+
 double getDistance(Box b, std::pair<int, int> location){
 	return std::sqrt(std::pow(b.getX()-location.first,2) + std::pow(b.getY()-location.second,2));
 }
+
 
 HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bool> solvingColors, char chr)
 {
@@ -22,18 +24,6 @@ HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bo
 	this->destination = loc;
 	this->rank = rank;
 	//  std::cerr << "Compatible colors for " << this->destination.first <<"," << this->destination.second <<" : " << solvingColors ;
-}
-
-HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, Box * box)
-{
-  this->solvingColors = std::vector<bool>();
-  this->predecessors = NULL;
-//  this->type = Task::Type::MoveBoxTask;
-  this->box = box;
-  this->chr = box->chr;
-  this->destination = loc;
-  this->rank = rank;
-//  std::cerr << "Compatible colors for " << this->destination.first <<"," << this->destination.second <<" : " << solvingColors ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)
@@ -49,17 +39,21 @@ bool HandleGoalTask::isCompleted(Agent * a, Node * n)
 	}
 	return false;
 }
-
 bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 {
-  for(auto & b : n->boxes)
-  {
-    if(this->box && b.chr != this->box->chr)
-      continue;
-    if(b.getLocation() == this->destination)
-      return true;
-  }
-  return false;
+	for(auto & b : n->boxes)
+	{
+		if(this->box && b.chr != this->box->chr)
+			continue;
+		if(b.getLocation() == this->destination)
+			//	Box * b = n->getBox(this->destination.first, this->destination.second);
+			//	if (b != NULL && b->chr == this->chr)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int HandleGoalTask::h(Agent * a, Node * n)

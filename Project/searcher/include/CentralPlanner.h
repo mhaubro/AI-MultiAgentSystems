@@ -4,15 +4,12 @@
 #include "Goal.h"
 #include "Task.h"
 #include "Agent.h"
-#include "RequestFreeSpaceTask.h"
-#include "HandleGoalTask.h"
 #include <vector>
 #include <stack>
-#include <list>
-#include <algorithm>
+#include "RequestFreeSpaceTask.h"
+#include "HandleGoalTask.h"
 
 class Task;
-class Goal;
 class HandleGoalTask;
 class RequestFreeSpaceTask;
 
@@ -20,7 +17,6 @@ class CentralPlanner {
 public:
   std::vector<HandleGoalTask*> UnassignedGoals;
   std::vector<RequestFreeSpaceTask *> freeSpaceTasks;
-  std::vector<Goal> order;
 
   //std::vector of goals, each containing a vector of size 8,
   std::vector<std::vector<bool>> compatibleGoals;
@@ -36,14 +32,11 @@ public:
 
   bool hasJob(Agent * agent, Node * state);
   Task * getJob(Agent * agent, Node * state);
-  Node * FindSolution(Node * n, Goal g);
-  Node * getOrderOfGoals(Node * n, Goal g1, Goal g2);
-  std::vector<Goal> getOrderOfAllGoals(Node * n);
   void removeTask(Task * t);
-  void setPredecessors(std::vector<Goal> order, std::vector<HandleGoalTask *> tasks);
   bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);
+
 
 
 private:

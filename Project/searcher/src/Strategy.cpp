@@ -72,6 +72,8 @@ public:
 //	} else if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
 //		std::cerr << "Not a movebox task, not supported yet\n";
 
+
+
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
 	int iteration = 0;

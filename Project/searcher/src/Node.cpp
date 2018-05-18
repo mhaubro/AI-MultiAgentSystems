@@ -148,6 +148,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 	return true;
 }
 
+
 //Initialize static variables:
 int Node::maxX;
 int Node::maxY;
@@ -162,6 +163,8 @@ Node::Node() {
 	this->gval = 0;
 	this->boxes = std::vector<Box>();
 }
+
+
 
 Node::Node(Node * parent) {
 	this->parent = parent;
@@ -312,10 +315,13 @@ Node * Node::ChildNode() {
 	return pool.createNodeCopy(this);
 }
 
-std::list<Node *> Node::extractPlan()
-{
-	std::list<Node*> plan = std::list<Node*>();
-	Node * n = this;
+	std::list<Node *> Node::extractPlan() {
+
+		std::cerr << "Node::extractPlan: extracting plan.\n";
+
+		std::list<Node*> plan = std::list<Node*>();
+		Node * n = this;
+
 
 	while (!(n->isInitialState())) {
 		plan.push_front(n);
@@ -324,8 +330,8 @@ std::list<Node *> Node::extractPlan()
 	return plan;
 }
 
-int Node::hashCode() const
-{
+int Node::hashCode() const{
+
 	int prime = 31;
 	int result = 1;
 	for (auto & a : agents){
@@ -446,17 +452,7 @@ bool Node::isGoalState(Entity::COLOR color)
 	return true;
 }
 
-bool Node::isGoalState(Goal g)
-{
-  for(auto & b : this->boxes)
-  {
-    if(g.location == b.location && g.chr == std::tolower(b.chr))
-    {
-      return true;
-    }
-  }
-	return false;
-}
+
 
 Box * Node::getBox(int x, int y)
 {
@@ -531,3 +527,4 @@ bool Node::agentAt(int x, int y)
 	}
 	return false;
 }
+
