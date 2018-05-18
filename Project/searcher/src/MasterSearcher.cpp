@@ -45,7 +45,7 @@ std::vector<std::string> getPlan(Node * initialState)
 			return plan;
 	}
 	return plan;
-		  }
+}
 
 
 void printStep(std::string s){
