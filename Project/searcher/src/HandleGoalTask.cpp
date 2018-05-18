@@ -14,14 +14,16 @@ double getDistance(Box b, std::pair<int, int> location){
 }
 
 
-HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bool> solvingColors)
+HandleGoalTask::HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bool> solvingColors, char chr)
 {
   this->solvingColors = solvingColors;
   this->predecessors = NULL;
+  this->chr = chr;
 //  this->type = Task::Type::MoveBoxTask;
   this->box = NULL;
   this->destination = loc;
   this->rank = rank;
+//  std::cerr << "Compatible colors for " << this->destination.first <<"," << this->destination.second <<" : " << solvingColors ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)
@@ -70,7 +72,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 					if (g->getLocation() == b.getLocation()){
 						//std::cerr << "Goal Match" << b.chr << "\n";
 						hval -= 5.0;
-						std::cerr << n->toString() << "\n";
+						//std::cerr << n->toString() << "\n";
 					} else {
 
 					}
@@ -90,5 +92,6 @@ int HandleGoalTask::h(Agent * a, Node * n)
 				//The right box
 			}
 		}
+		//std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
 	return n->g()+hval;
 }

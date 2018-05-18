@@ -25,8 +25,9 @@ public:
   Box * box;
   std::pair<int, int> destination;
   int rank;
+  char chr;
 
-  HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bool> solvingColors);
+  HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bool> solvingColors, char chr);
   bool seemsCompleted(Agent * a, Node * n);
   bool isCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);

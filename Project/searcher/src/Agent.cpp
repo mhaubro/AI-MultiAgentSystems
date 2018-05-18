@@ -31,8 +31,8 @@ Command * Agent::noPlan(Node * startstate){
 		std::cerr << "Doing replanning with original task\n";
 		//Do replanning
 		delete plan;
-		//Task* tmp = reinterpret_cast<Task*>(this->task);
-		//std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
+		HandleGoalTask* tmp = reinterpret_cast<HandleGoalTask*>(this->task);
+		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 		std::list<Node *> searchResult = search(startstate);
 
 		if (searchResult.empty()){
@@ -61,6 +61,8 @@ Command * Agent::noPlan(Node * startstate){
 		if (cPlanner.hasJob(this, startstate)){
 			task = cPlanner.getJob(this, startstate);
 		}
+		HandleGoalTask* tmp = reinterpret_cast<HandleGoalTask*>(this->task);
+		std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 		std::list<Node *> searchResult = search(startstate);
 		if (searchResult.empty()){
 			std::cerr << "Empty plan?\n";
