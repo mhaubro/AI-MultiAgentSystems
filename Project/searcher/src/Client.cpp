@@ -5,11 +5,11 @@
 #include <regex>
 #include <iostream>
 #include <iterator>
-#include "Strategy.h"
 #include "Command.h"
 #include "Memory.h"
 #include "MasterSearcher.h"
 #include "Initializer.h"
+#include "ManualNodePool.h"
 
 using std::stringstream;
 using std::istream;
@@ -42,6 +42,7 @@ int main(int argc, char * argv[]){
 	argv[2] contains how often the print should happen. This is optional, default is 1000
 	*/
 	Memory::limit = atoi(argv[1]);
+	pool.setup(Memory::limit);
 
 	int printfreq = 1000;
 	if (argc > 2){
@@ -52,7 +53,7 @@ int main(int argc, char * argv[]){
 	Client client = Client();
 	std::cerr << "Search started\n";
 
-	StrategyBFS strategy = StrategyBFS();
+	//StrategyBFS strategy = StrategyBFS();
 
 	std::vector<std::string> solution;
 
@@ -87,7 +88,7 @@ int main(int argc, char * argv[]){
 	 * Here an actual search is being done. This is so critical, it might deserve it's own class.
 	 */
 
-
+/*
 	std::list<Node *> Client::search(Strategy * strategy, int printfrequency) {
 		char buffer[100];
 		sprintf(buffer, "Search starting with strategy %s.\n", strategy->toString().c_str());
@@ -127,3 +128,4 @@ int main(int argc, char * argv[]){
 			iterations++;
 		}
 	}
+*/

@@ -10,9 +10,11 @@
 #include "Plan.h"
 #include "Entity.h"
 #include "CentralPlanner.h"
+#include "RequestFreeSpaceTask.h"
 
 class Plan;
 class Task;
+class RequestFreeSpaceTask;
 
 class Agent : public Entity
 {
@@ -20,12 +22,12 @@ class Agent : public Entity
 	//Is this the number, or an actual rank. I assume actual rank.
     int rank;
 
-    //std::list<Node *> Search();
-
     Command * getAction(Node * startstate, Node * temptate);
 
     Task * task;
     std::list<Node *> search(Node * state);
+    std::list<Node *> Nakedsearch(Node * state);
+
     Agent(char chr, int rank, std::pair<int, int> location, Entity::COLOR color);
     Agent(char chr, std::pair<int, int> location, Entity::COLOR color);
     Agent(char chr, std::pair<int, int> location);
@@ -36,7 +38,12 @@ class Agent : public Entity
     bool equals(const Agent * o) const;
 
 private:
+    RequestFreeSpaceTask * t;//Can at max request one at a time
+    bool workingOnTask = false;//Only set to true, if an agent has started carrying out a task
+    int skipNextIte = 0;
     Plan * plan;
+    Command * noPlan(Node * startstate);
+    Command * handleConflict();
 
 };
 #endif

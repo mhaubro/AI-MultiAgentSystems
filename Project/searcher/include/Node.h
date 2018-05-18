@@ -9,11 +9,11 @@
 #include "Agent.h"
 #include "Box.h"
 #include <boost/pool/object_pool.hpp>
+#include <iostream>
 
 class Goal;
 
 class Agent;
-
 
 class Node {
 
@@ -29,10 +29,12 @@ public:
 	Node * parent;
 	Command * action;
 
-	static boost::object_pool<Node> pool;
+	//static boost::object_pool<Node> pool;
 	static Node * getopCopy(Node * n);
 
+	static void resetPool();
 
+	void clearOtherAgents(char agent);
 	//Methods
 	Node();
 	Node(Node * parent);
@@ -54,7 +56,8 @@ public:
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
 	Box * getBox(int x, int y);
-
+	Goal * getGoal(int x, int y);
+	Agent * getAgent(int x, int y);
 
 private:
 	int gval;
@@ -63,10 +66,8 @@ private:
 	//static std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
 	//static std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
 
-	Agent * getAgent(int x, int y);
 	bool goalAt(int x, int y);
 	bool agentAt(int x, int y);
-	Goal * getGoal(int x, int y);
 
 	bool cellIsFree(int x, int y);
 	bool boxAt(int x, int y);
@@ -91,5 +92,8 @@ public:
 		return n1->equals(n2);
 	}
 };
+
+//This is the running state node. Will never be deleted, and always have g = 0, and parent == NULL.
+extern Node stateNode;
 
 #endif
