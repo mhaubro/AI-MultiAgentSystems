@@ -15,6 +15,8 @@ public:
     int hashCode();
     bool equals(const Box * box) const;
 
+    bool workInProgress = false;
+
   private:
 
 };

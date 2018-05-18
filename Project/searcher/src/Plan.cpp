@@ -13,6 +13,11 @@ Plan::Plan(){
 actions = std::list<Command *>();
 }
 
+std::list<std::pair<int, int>> Plan::getLocations(){
+	return locations;
+}
+
+
 Plan::Plan(std::list<Node *> nodes, std::pair<int, int> startloc) {
 	// TODO Auto-generated constructor stub
 	actions = std::list<Command *>();

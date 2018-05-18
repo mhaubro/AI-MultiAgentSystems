@@ -30,6 +30,7 @@ public:
 	void drain();
 	void popStep();
 	std::pair<int, int> getNextLocation();
+	std::list<std::pair<int, int>> getLocations();
 
 private:
 	//std::list<Node *> nodes;

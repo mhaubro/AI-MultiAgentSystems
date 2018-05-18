@@ -19,7 +19,7 @@ std::vector<std::string> getPlan(Node * initialState)
 
 	// We need to do this multiple times
 	cPlanner = CentralPlanner();
-	cPlanner.DetectTasks(&state);
+	cPlanner.preAnalyse(&state);
 	/*Creates a list of strings that is the actual plan*/
 	/*Keeps checking for conflicts*/
 	std::vector<std::string> plan = std::vector<std::string>();

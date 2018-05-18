@@ -3,14 +3,20 @@
 #include "Box.h"
 #include "Goal.h"
 #include "Task.h"
+#include "Agent.h"
 #include <vector>
 #include <stack>
+#include "RequestFreeSpaceTask.h"
+#include "HandleGoalTask.h"
 
 class Task;
+class HandleGoalTask;
+class RequestFreeSpaceTask;
 
 class CentralPlanner {
 public:
-  std::vector<std::stack<Task*>> UnassignedTasks;
+  std::vector<HandleGoalTask*> UnassignedGoals;
+  std::vector<RequestFreeSpaceTask *> freeSpaceTasks;
 
   //std::vector of goals, each containing a vector of size 8,
   std::vector<std::vector<bool>> compatibleGoals;
@@ -21,12 +27,13 @@ public:
 
   void DetectTasks(Node * n);
   void AssignTasks(Node * n);
-  void AssignTask(Agent * a);
+  void AssignTask(Agent * a, Node * state);
   bool TaskAvailable(Agent * a);
   Task * RequestTask();
   Task * RequestHelp();
-  bool hasJob(Agent * agent);
-  Task * getJob(Agent agent);
+  bool hasJob(Agent * agent, Node * state);
+  Task * getJob(Agent * agent, Node * state);
+  void removeTask(Task * t);
 
 
 private:
