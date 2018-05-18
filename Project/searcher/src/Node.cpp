@@ -18,6 +18,23 @@
 
 Node stateNode;
 
+void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
+	std::vector<Agent> newA = std::vector<Agent>();
+	std::vector<Box> newB = std::vector<Box>();
+	for (auto & a : agents){
+		if (a.chr == agent){
+			newA.emplace_back(&a);
+		}
+	}
+	for (auto & b : boxes){
+		if (b.location == box->location){
+
+		}
+	}
+	agents = newA;
+}
+
+
 void Node::clearOtherAgents(char agent){
 	std::vector<Agent> newA = std::vector<Agent>();
 	for (Agent a : agents){

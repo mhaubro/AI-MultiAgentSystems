@@ -29,11 +29,14 @@ public:
   void AssignTasks(Node * n);
   void AssignTask(Agent * a, Node * state);
   bool TaskAvailable(Agent * a);
-  Task * RequestTask();
-  Task * RequestHelp();
+
   bool hasJob(Agent * agent, Node * state);
   Task * getJob(Agent * agent, Node * state);
   void removeTask(Task * t);
+  bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
+  bool returnGoalTask(HandleGoalTask * h);
+  bool removeRequestTask(RequestFreeSpaceTask * h);
+
 
 
 private:

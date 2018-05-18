@@ -56,6 +56,7 @@ bool CentralPlanner::hasJob(Agent * agent, Node * state){
 }
 
 Task * CentralPlanner::getJob(Agent * agent, Node * state){
+
 	std::cerr << "Finding a job for someone\n";
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
@@ -93,12 +94,43 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	}
 
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
-		if (!t->seemsCompleted(agent, state))
+		std::cerr << "Checking for requests \n";
+		if (!t->seemsCompleted(agent, state)){
 			return t;
+		}
 	}
 
-
 	return NULL;
+}
+
+bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
+	std::cerr << "Adding a request\n";
+	if (h == NULL)
+		return false;
+	freeSpaceTasks.push_back(h);
+	return true;
+}
+
+//Returns a goal task from an agent to the planner
+bool CentralPlanner::returnGoalTask(HandleGoalTask * h){
+	if (h != NULL){
+		this->UnassignedGoals.push_back(h);
+		return true;
+	}
+	return false;
+}
+
+
+bool CentralPlanner::removeRequestTask(RequestFreeSpaceTask * h){
+	if (h == NULL)
+		return true;
+	for (int i = 0; i < freeSpaceTasks.size(); i++){
+		if (freeSpaceTasks[i] == h){//Yes, a pointer match
+			freeSpaceTasks.erase(freeSpaceTasks.begin()+i);
+			return true;
+		}
+	}
+	return false;
 }
 
 void CentralPlanner::DetectTasks(Node * n)
@@ -125,11 +157,3 @@ void CentralPlanner::AssignTask(Agent * a, Node * state)
 	}
 }
 */
-
-Task * CentralPlanner::RequestTask(){
-	return NULL;
-}
-
-Task * CentralPlanner::RequestHelp(){
-	return NULL;
-}

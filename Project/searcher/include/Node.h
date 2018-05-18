@@ -35,6 +35,7 @@ public:
 	static void resetPool();
 
 	void clearOtherAgents(char agent);
+	void clearOtherAgentsAndBoxes(char agent, Box * box);
 	//Methods
 	Node();
 	Node(Node * parent);

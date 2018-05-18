@@ -15,7 +15,7 @@
 #include "Task.h"
 #include "HandleGoalTask.h"
 
-#define MAXITE 250000
+#define MAXITE 20000
 
 using std::pair;
 using std::vector;

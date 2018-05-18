@@ -39,7 +39,7 @@ void RequestFreeSpaceTask::popLocation(){
 
 bool RequestFreeSpaceTask::seemsCompleted(Agent * a, Node * n)
 {
-	return locations.empty();
+	return isCompleted(a, n);
 }
 
 

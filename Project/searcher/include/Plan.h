@@ -31,11 +31,11 @@ public:
 	void popStep();
 	std::pair<int, int> getNextLocation();
 	std::list<std::pair<int, int>> getLocations();
+	std::list<std::pair<int, int>> locations;//The locations that the plan will reach.
 
 private:
 	//std::list<Node *> nodes;
 	//A pair is used here to indicate the (x,y) of a new location for each command
-	std::list<std::pair<int, int>> locations;//The locations that the plan will reach.
 	std::list<Command *> actions;
 	std::pair<int, int> getTakenLoc(Command * c, std::pair<int, int> startloc);
 	std::pair<int, int> getNewLocation(Command * c, std::pair<int, int> newloc);
