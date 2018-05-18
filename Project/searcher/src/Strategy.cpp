@@ -15,8 +15,6 @@
 #include "Task.h"
 #include "HandleGoalTask.h"
 
-#define MAXITE 20000
-
 using std::pair;
 using std::vector;
 using std::list;
@@ -73,7 +71,12 @@ public:
 //		std::cerr << "Not a movebox task, not supported yet\n";
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
-
+	if (task == NULL)
+		return std::list<Node*>();
+	int MAXITE = 20000;
+	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
+		MAXITE = 3000;
+	}
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();

@@ -14,15 +14,15 @@ void CentralPlanner::removeTask(Task * t){
 
 CentralPlanner::CentralPlanner(){
 	UnassignedGoals = std::vector<HandleGoalTask *>();
-  order = std::vector<Goal>();
+	order = std::vector<Goal>();
 	compatibleGoals = std::vector<std::vector<bool>>(Entity::NUMCOLS);
 }
 
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
 	DetectTasks(n);
-  order = getOrderOfAllGoals(n);
-  setPredecessors(order, UnassignedGoals);
+	order = getOrderOfAllGoals(n);
+	setPredecessors(order, UnassignedGoals);
 }
 
 bool CentralPlanner::isGoalCompatible(int goal, Entity::COLOR color){
@@ -45,77 +45,77 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 
 void CentralPlanner::setPredecessors(std::vector<Goal> order, std::vector<HandleGoalTask *> tasks)
 {
-  // This is really expensive, but as we have a limited amount of goals and tasks it should be quick
-  for(int i = 1; i < order.size(); i++)
-  {
-    for(int j = 0; j < tasks.size(); j++)
-    {
-      // Find matching task with current order goal
-      if(order[i].chr == tasks[j]->chr)
-      {
-        for(int k = 0; k < tasks.size(); k++)
-        {
-          // Find predecessor to that goal
-          if(order[i-1].chr == tasks[k]->chr)
-            UnassignedGoals[j]->predecessors = tasks[k];
-        }
-      }
-    }
-  }
+	// This is really expensive, but as we have a limited amount of goals and tasks it should be quick
+	for(int i = 1; i < order.size(); i++)
+	{
+		for(int j = 0; j < tasks.size(); j++)
+		{
+			// Find matching task with current order goal
+			if(order[i].chr == tasks[j]->chr)
+			{
+				for(int k = 0; k < tasks.size(); k++)
+				{
+					// Find predecessor to that goal
+					if(order[i-1].chr == tasks[k]->chr)
+						UnassignedGoals[j]->predecessors = tasks[k];
+				}
+			}
+		}
+	}
 }
 
 std::vector<Goal> CentralPlanner::getOrderOfAllGoals(Node * n)
 {
-  Node * tmp_state;
-  std::vector<Goal> order;
-  for(int i = 0; i < tmp_state->goals.size(); i++)
-  {
-    tmp_state = n;
-    order.clear();
-    order.emplace_back(tmp_state->goals[i]);
-    for(int j = 0; j < tmp_state->goals.size(); j++)
-    {
-      // Continue if we are looking at the same goal
-      if(i == j)
-        continue;
+	Node * tmp_state;
+	std::vector<Goal> order;
+	for(int i = 0; i < tmp_state->goals.size(); i++)
+	{
+		tmp_state = n;
+		order.clear();
+		order.emplace_back(tmp_state->goals[i]);
+		for(int j = 0; j < tmp_state->goals.size(); j++)
+		{
+			// Continue if we are looking at the same goal
+			if(i == j)
+				continue;
 
-      // See if this order works
-      tmp_state = getOrderOfGoals(tmp_state, tmp_state->goals[i], tmp_state->goals[j]);
+			// See if this order works
+			tmp_state = getOrderOfGoals(tmp_state, tmp_state->goals[i], tmp_state->goals[j]);
 
-      // Try next box if it does not find a solution
-      // Otherwise add it to the list
-      if(tmp_state == nullptr)
-        break;
-      else
-        order.emplace_back(tmp_state->goals[j]);
-    }
-    // We found a correct order
-    if(tmp_state != nullptr && tmp_state->isGoalState())
-      return order;
-  }
-  return std::vector<Goal>();
+			// Try next box if it does not find a solution
+			// Otherwise add it to the list
+			if(tmp_state == nullptr)
+				break;
+			else
+				order.emplace_back(tmp_state->goals[j]);
+		}
+		// We found a correct order
+		if(tmp_state != nullptr && tmp_state->isGoalState())
+			return order;
+	}
+	return std::vector<Goal>();
 
 }
 
 Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 {
-  Node * new_state = nullptr;
+	Node * new_state = nullptr;
 
-  if(n == nullptr)
-    std::cerr << "WTF";
-  new_state = FindSolution(n, g1);
+	if(n == nullptr)
+		std::cerr << "WTF";
+	new_state = FindSolution(n, g1);
 
-  if(new_state != nullptr && new_state->isGoalState(g1))
-  {
-    new_state = FindSolution(new_state, g2);
-    if(new_state != nullptr && new_state->isGoalState(g2) && new_state->isGoalState(g1))
-    {
-      // std::cerr << "\n" << g1.chr << " and then " << g2.chr << "\n";
-      // std::cerr << new_state->toString();
-      return new_state;
-    }
-  }
-  return nullptr;
+	if(new_state != nullptr && new_state->isGoalState(g1))
+	{
+		new_state = FindSolution(new_state, g2);
+		if(new_state != nullptr && new_state->isGoalState(g2) && new_state->isGoalState(g1))
+		{
+			// std::cerr << "\n" << g1.chr << " and then " << g2.chr << "\n";
+			// std::cerr << new_state->toString();
+			return new_state;
+		}
+	}
+	return nullptr;
 }
 
 //Todo
@@ -139,9 +139,9 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
-    // Predecessor is not solved!
-    //if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(agent, state))
-    //  continue;
+		// Predecessor is not solved!
+		//if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(agent, state))
+		//  continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
 		std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
@@ -172,7 +172,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 			continue;
 		}
 		UnassignedGoals.erase(UnassignedGoals.begin()+i);
-			//throw "BUG";
+		//throw "BUG";
 		return h;
 	}
 	std::cerr << "Agent " << agent->chr<<  "has nothing to do\n";
@@ -227,25 +227,37 @@ void CentralPlanner::DetectTasks(Node * n)
 	}
 }
 
+bool CentralPlanner::stillActiveRequest(RequestFreeSpaceTask * h){
+	if (h == NULL)
+		return false;
+	for (int i = 0; i < freeSpaceTasks.size(); i++){
+		if (freeSpaceTasks[i] == h){//Yes, a pointer match
+			return true;
+		}
+	}
+	return false;
+}
+
+
 Node * CentralPlanner::FindSolution(Node * n, Goal g)
 {
-  for(auto & b : n->boxes)
-  {
-    if(std::tolower(g.chr) == std::tolower(b.chr))
-    {
-      HandleGoalTask * t = new HandleGoalTask(g.getLocation(), 0, &b);
-      // Find agent to solve task
-      for(auto & a : n->agents)
-      {
-        if(a.color == t->box->color)
-        {
-          a.task = t;
-          std::list<Node*> solution = a.search(n);
-          a.task = nullptr; // Not sure if needed
-          return solution.back();
-        }
-      }
-    }
-  }
-  return nullptr;
+	for(auto & b : n->boxes)
+	{
+		if(std::tolower(g.chr) == std::tolower(b.chr))
+		{
+			HandleGoalTask * t = new HandleGoalTask(g.getLocation(), 0, &b);
+			// Find agent to solve task
+			for(auto & a : n->agents)
+			{
+				if(a.color == t->box->color)
+				{
+					a.task = t;
+					std::list<Node*> solution = a.search(n);
+					a.task = nullptr; // Not sure if needed
+					return solution.back();
+				}
+			}
+		}
+	}
+	return nullptr;
 }
