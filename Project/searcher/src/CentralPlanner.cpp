@@ -12,7 +12,6 @@ void CentralPlanner::removeTask(Task * t){
 
 }
 
-
 CentralPlanner::CentralPlanner(){
 	UnassignedGoals = std::vector<HandleGoalTask *>();
   order = std::vector<Goal>();
@@ -136,12 +135,13 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
     // Predecessor is not solved!
-    if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(state))
+    if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(agent, state))
       continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
 		std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
-		if (h->seemsCompleted(state))
+
+		if (h->seemsCompleted(agent, state))
 			continue;
 		if (h->solvingColors[agent->color]){
 			std::cerr << "There's a solvable goal\n";
