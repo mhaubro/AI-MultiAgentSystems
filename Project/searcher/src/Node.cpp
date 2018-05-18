@@ -279,9 +279,12 @@ Node * Node::ChildNode() {
 	return copy;
 }
 
-std::list<Node *> Node::extractPlan() {
-	std::list<Node*> plan = std::list<Node*>();
-	Node * n = this;
+	std::list<Node *> Node::extractPlan() {
+
+		//std::cerr << "Node::extractPlan: extracting plan.\n";
+
+		std::list<Node*> plan = std::list<Node*>();
+		Node * n = this;
 
 
 	while (!(n->isInitialState())) {
@@ -413,7 +416,17 @@ bool Node::isGoalState(Entity::COLOR color)
 	return true;
 }
 
-
+bool Node::isGoalState(Goal g)
+{
+  for(auto & b : this->boxes)
+  {
+    if(g.location == b.location && g.chr == std::tolower(b.chr))
+    {
+      return true;
+    }
+  }
+	return false;
+}
 
 Box * Node::getBox(int x, int y)
 {
@@ -488,6 +501,7 @@ bool Node::agentAt(int x, int y)
 	}
 	return false;
 }
+<<<<<<< Updated upstream
 /*
 	std::vector<Agent*> Node::DeepCloneAgents(std::vector<Agent*> agents)
 	{
@@ -509,3 +523,5 @@ bool Node::agentAt(int x, int y)
 		return clone;
 	}
  */
+=======
+>>>>>>> Stashed changes

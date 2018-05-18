@@ -5,8 +5,11 @@
 #include "Task.h"
 #include <vector>
 #include <stack>
+#include <list>
+#include <algorithm>
 
 class Task;
+class Goal;
 
 class CentralPlanner {
 public:
@@ -25,6 +28,11 @@ public:
   bool TaskAvailable(Agent * a);
   Task * RequestTask();
   Task * RequestHelp();
+  bool hasJob(Agent * agent);
+  Task * getJob(Agent agent);
+  Node * FindSolution(Node * n, Goal g);
+  Node * getOrderOfGoals(Node * n, Goal g1, Goal g2);
+  std::vector<Goal> getOrderOfAllGoals(Node * n);
 
 private:
   void getCompatibleGoals(Node * n);
