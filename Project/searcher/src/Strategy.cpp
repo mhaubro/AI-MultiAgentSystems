@@ -76,6 +76,8 @@ public:
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
+	std::cerr << "Starting Search: agent = " << agent->chr << std::endl << std::flush;
+
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();
@@ -96,6 +98,11 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 			return list<Node*>();
 		}
 		Node* leaf = frontier.pull();
+
+		if (iteration % 2500 == 0){
+			std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
+			std::cerr << leaf->toString();
+		}
 		//std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
 			return leaf->extractPlan();
