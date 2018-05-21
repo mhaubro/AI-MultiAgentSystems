@@ -10,6 +10,7 @@
 
 #include "Task.h"
 #include <utility>
+#include "Location.h"
 
 class Node;
 class Agent;
@@ -19,9 +20,9 @@ class RequestFreeSpaceTask : public Task
 public:
   int rank;
 
-  std::list<std::pair<int,int>> locations;//Locations to be freed
+  std::list<Location> locations;//Locations to be freed
 
-  RequestFreeSpaceTask(std::list<std::pair<int, int>> locations, int rank);
+  RequestFreeSpaceTask(std::list<Location> locations, int rank);
   bool seemsCompleted(Agent * a, Node * n);
   bool isCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);

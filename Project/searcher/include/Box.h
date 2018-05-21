@@ -9,8 +9,8 @@
 class Box : public Entity
 {
 public:
-    Box(char chr, std::pair<int, int> location, Entity::COLOR color);
-    Box(char chr, std::pair<int, int> location);
+    Box(char chr, Location location, Entity::COLOR color);
+    Box(char chr, Location location);
     Box(Box * box);
     int hashCode();
     bool equals(const Box * box) const;

@@ -15,7 +15,7 @@ public:
     ~Heuristic();
     Heuristic(Node * initialState);
   	int h(Node * n);
-    int manhattan(std::pair<int, int> loc1, std::pair<int, int> loc2);
+    int manhattan(Location loc1, Location loc2);
     virtual int f(Node *n);
 
 	  //int compare(Node n1, Node n2);

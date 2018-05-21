@@ -9,12 +9,13 @@
 #define PLAN_H_
 
 #include "Node.h"
+#include "Location.h"
 #include <list>
 #include <utility>
 
 class Plan {
 public:
-	Plan(std::list<Node *>, std::pair<int, int> startloc);
+	Plan(std::list<Node *>, Location startloc);
 	Plan();
 	~Plan();
 	bool checkLegality(Node * state);
@@ -29,16 +30,16 @@ public:
 	void popFront();
 	void drain();
 	void popStep();
-	std::pair<int, int> getNextLocation();
-	std::list<std::pair<int, int>> getLocations();
-	std::list<std::pair<int, int>> locations;//The locations that the plan will reach.
+	Location getNextLocation();
+	std::list<Location> getLocations();
+	std::list<Location> locations;//The locations that the plan will reach.
 
 private:
 	//std::list<Node *> nodes;
 	//A pair is used here to indicate the (x,y) of a new location for each command
 	std::list<Command *> actions;
-	std::pair<int, int> getTakenLoc(Command * c, std::pair<int, int> startloc);
-	std::pair<int, int> getNewLocation(Command * c, std::pair<int, int> newloc);
+	Location getTakenLoc(Command * c, Location startloc);
+	Location getNewLocation(Command * c, Location newloc);
 };
 
 #endif /* SEARCHER_SRC_PLAN_H_ */
