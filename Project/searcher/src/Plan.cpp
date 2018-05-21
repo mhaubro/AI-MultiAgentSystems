@@ -39,6 +39,7 @@ Plan::Plan(std::list<Node *> nodes, Location startloc) {
 	    std::cerr << newTakenLoc.toString();
 	    std::cerr << ((Command *) *it)->toString();
 	}
+	std::cerr << "\n";
 
 	//Maybe grab and store location
 	//TODO
