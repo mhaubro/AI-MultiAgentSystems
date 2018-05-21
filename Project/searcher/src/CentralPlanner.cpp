@@ -36,8 +36,8 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 		compatibleGoals[i] = std::vector<bool>(8);
 		for (int j = 0; j < n->boxes.size(); j++){
 			//Going through all boxes, storing if the color matches.
-			if (tolower(n->boxes[j].chr) == n->goals[i].chr){
-				compatibleGoals[i][n->boxes[j].color] = true;
+			if (tolower(n->boxes[j].getChar()) == n->goals[i].getChar()){
+				compatibleGoals[i][n->boxes[j].getColor()] = true;
 			}
 		}
 	}
@@ -51,12 +51,12 @@ void CentralPlanner::setPredecessors(std::vector<Goal> order, std::vector<Handle
 		for(int j = 0; j < tasks.size(); j++)
 		{
 			// Find matching task with current order goal
-			if(order[i].chr == tasks[j]->chr)
+			if(order[i].getChar() == tasks[j]->chr)
 			{
 				for(int k = 0; k < tasks.size(); k++)
 				{
 					// Find predecessor to that goal
-					if(order[i-1].chr == tasks[k]->chr)
+					if(order[i-1].getChar() == tasks[k]->chr)
 						UnassignedGoals[j]->predecessors = tasks[k];
 				}
 			}
@@ -121,7 +121,7 @@ Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 //Todo
 bool CentralPlanner::hasJob(Agent * agent, Node * state){
 	for (HandleGoalTask * h : UnassignedGoals){
-		if (h->solvingColors[agent->color])
+		if (h->solvingColors[agent->getColor()])
 			return true;
 	}
 
@@ -148,14 +148,14 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 
 		if (h->seemsCompleted(agent, state))
 			continue;
-		if (h->solvingColors[agent->color]){
+		if (h->solvingColors[agent->getColor()]){
 			//std::cerr << "There's a solvable goal\n";
 			//Deletes the move box thing
 			//Finds most fitting box, by going through all setting and calculating h-val
 			Box * bestBox;
 			double hval = 10000000000.0;
 			for (auto &b : state->boxes){
-				if ((tolower(b.chr) != h->chr) || b.workInProgress)
+				if ((tolower(b.getChar()) != h->chr) || b.workInProgress)
 					continue;
 				h->box = &b;
 				double boxh = h->h(agent, state);
@@ -222,7 +222,7 @@ void CentralPlanner::DetectTasks(Node * n)
 	for(int i = 0; i < n->goals.size(); i++)
 	{
 		Goal * g = &n->goals[i];
-		HandleGoalTask * t = new HandleGoalTask(g->getLocation(), 100, compatibleGoals[i], g->chr);
+		HandleGoalTask * t = new HandleGoalTask(g->getLocation(), 100, compatibleGoals[i], g->getChar());
 		UnassignedGoals.push_back(t);
 	}
 }
@@ -243,13 +243,13 @@ Node * CentralPlanner::FindSolution(Node * n, Goal g)
 {
 	for(auto & b : n->boxes)
 	{
-		if(std::tolower(g.chr) == std::tolower(b.chr))
+		if(std::tolower(g.getChar()) == std::tolower(b.getChar()))
 		{
 			HandleGoalTask * t = new HandleGoalTask(g.getLocation(), 0, &b);
 			// Find agent to solve task
 			for(auto & a : n->agents)
 			{
-				if(a.color == t->box->color)
+				if(a.getColor() == t->box->getColor())
 				{
 					a.task = t;
 					std::list<Node*> solution = a.search(n);

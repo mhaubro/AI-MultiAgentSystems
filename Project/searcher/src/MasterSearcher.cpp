@@ -28,9 +28,11 @@ std::vector<std::string> getPlan(Node * initialState)
 		std::string s = "[";
 		for (int i = 0; i < agents; i++)
 		{
+			//std::cerr << "Agent location: " << tempstate.agents[i].getLocation().toString() << "\n";
 			//s += "NoOp";
 			/*Checks if we're planning or if there's been a conflict, and if the next move is okay*/
 			s += (tempstate.agents[i].getAction(&state, &tempstate)->toString());
+			//std::cerr << "Agent location: " << tempstate.agents[i].getLocation().toString() << "\n";
 			if (i == agents-1)
 				s += ']';
 			else

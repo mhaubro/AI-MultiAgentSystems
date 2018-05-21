@@ -15,11 +15,11 @@
 std::list<Node *> Agent::search(Node * state){
 	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 		//There's an agent on our destination
-		if (state->getAgent(tmp->destination.first, tmp->destination.second)){
+		if (state->getAgent(tmp->destination)){
 			return std::list<Node *>();
 		}
-		if (Box * b = state->getBox(tmp->destination.first, tmp->destination.second)){
-			if (b->color != color){
+		if (Box * b = state->getBox(tmp->destination)){
+			if (b->getColor() != color){
 				//There's a box we can't move at destination
 				return std::list<Node *>();
 			}
@@ -33,14 +33,14 @@ std::list<Node *> Agent::search(Node * state){
 //Commits a search where all things are gone, and asks for the locations.
 std::list<Node *> Agent::Nakedsearch(Node * state){
 	Node nakedstate = *state;
-	nakedstate.clearOtherAgents(this->chr);
+	nakedstate.clearOtherAgents(chr);
 	return a_star_search(state, this, this->task);
 }
 
 //Commits a search where all things are gone, and asks for the locations.
 std::list<Node *> Agent::noBoxesOrAgents(Node * state, Box * box){
 	Node nakedstate = *state;
-	nakedstate.clearOtherAgentsAndBoxes(this->chr, box);
+	nakedstate.clearOtherAgentsAndBoxes(chr, box);
 	return a_star_search(state, this, this->task);
 }
 
@@ -204,7 +204,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 }
 
 
-Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
+Agent::Agent(char chr, int rank, Location location, COLOR color):
 																Entity(chr, location, color){
 	this->task = nullptr;
 	this->rank = rank;
@@ -213,7 +213,7 @@ Agent::Agent(char chr, int rank, std::pair<int, int> location, COLOR color):
 
 }
 
-Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
+Agent::Agent(char chr, Location location, COLOR color):
 																Entity(chr, location, color)
 {
 	this->task = nullptr;
@@ -222,7 +222,7 @@ Agent::Agent(char chr, std::pair<int, int> location, COLOR color):
 	t = NULL;
 }
 //No color, for single agent levels
-Agent::Agent(char chr, std::pair<int, int> location):
+Agent::Agent(char chr, Location location):
 																Entity(chr, location, Entity::BLUE)
 {
 	this->task = nullptr;
@@ -231,8 +231,8 @@ Agent::Agent(char chr, std::pair<int, int> location):
 	t = NULL;
 }
 
-Agent::Agent(Agent * agt):
-																Entity(agt->chr, agt->location, agt->color)
+Agent::Agent(const Agent * agt):
+																Entity(agt->getChar(), agt->getLocation(), agt->getColor())
 {
 	this->task = agt->task;
 	this->rank = agt->rank;
@@ -245,8 +245,8 @@ int Agent::hashCode()
 	int result = 17;
 	result = 31 * result + (int) chr;
 	result = 31 * result + rank;
-	result = 31 * result + getX();
-	result = 31 * result + getY();
+	result = 31 * result + location.getX();
+	result = 31 * result + location.getY();
 	result = 31 * result + color;
 	return result;
 }
@@ -254,5 +254,5 @@ int Agent::hashCode()
 bool Agent::equals(const Agent * agent) const
 {
 	if (agent == this) return true;
-	return agent->chr == chr && agent->rank == rank && agent->color == color && agent->location == location;
+	return agent->getChar() == chr && agent->rank == rank && agent->getColor() == color && agent->getLocation() == location;
 }

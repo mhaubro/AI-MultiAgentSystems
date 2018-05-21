@@ -2,30 +2,34 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 #include <utility>
-
+#include "Location.h"
 /*
 Base class for goals, agents and boxes
-*/
+ */
 class Entity {
 
 public:
-  enum COLOR {BLUE, RED, GREEN, CYAN, MAGENTA, ORANGE, PINK, YELLOW, NUMCOLS};
+	enum COLOR {BLUE, RED, GREEN, CYAN, MAGENTA, ORANGE, PINK, YELLOW, NUMCOLS};
 
-  COLOR color;
 
-  Entity(char chr, std::pair<int, int> location, COLOR color);
-  //The chr is
-  char chr;
+	Entity(char chr, Location location, COLOR color);
+	//The chr is
 
-  std::pair<int, int> location;
+	Entity::COLOR getColor() const;
+	char getChar() const;
 
-  void setLocation(std::pair<int, int> loc);
-  void setDLocation(std::pair<int, int> loc);
-  void setLocation(int x, int y);
-  void setDLocation(int dx, int dy);
-  int getX() const;
-  int getY() const;
-  std::pair<int, int> getLocation();
+	double getDistance(Entity e) const;
+	int getManhattan(Entity e) const;
+
+	void setLocation(Location loc);
+	void setDLocation(Location loc);
+	Location getLocation() const;
+
+protected:
+	Location location;
+	COLOR color;
+	char chr;
+
 
 };
 

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 #include "Task.h"
+#include "Location.h"
 
 class Box;
 class Agent;
@@ -23,12 +24,12 @@ public:
   HandleGoalTask * predecessors;//Goal that must be completed before this.
 
   Box * box;
-  std::pair<int, int> destination;
+  Location destination;
   int rank;
   char chr;
 
-  HandleGoalTask(std::pair<int, int> loc, int rank, std::vector<bool> solvingColors, char chr);
-  HandleGoalTask(std::pair<int, int> loc, int rank, Box * b);
+  HandleGoalTask(Location loc, int rank, std::vector<bool> solvingColors, char chr);
+  HandleGoalTask(Location loc, int rank, Box * b);
   bool seemsCompleted(Agent * a, Node * n);
   bool isCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);
