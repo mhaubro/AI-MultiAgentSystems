@@ -4,6 +4,7 @@
 #include <sstream>
 #include <list>
 #include <unordered_map>
+#include <map>
 #include <regex>
 #include <iostream>
 #include <iterator>
@@ -55,17 +56,34 @@ std::ostream &operator<< (std::ostream &os, Location const& location){
   return os;
 }
 
+
 namespace Initializer {
-  bool isAgent(char c) {
+
+  const char char_free = ' ';
+  const char char_wall = '+';
+
+  char char_agent(const int agent_num){
+    return agent_num + '0';
+  }
+
+  bool isAgent(const char c) {
   	return ('0' <= c && c <= '9');
   }
 
-  bool isBox(char c) {
+  bool isBox(const char c) {
   	return ('A' <= c && c <= 'Z');
   }
 
-  bool isGoal(char c) {
+  bool isGoal(const char c) {
   	return ('a' <= c && c <= 'z');
+  }
+
+  bool isWall(const char c){
+    return c == char_wall;
+  }
+
+  bool isFree(const char c){
+    return c == char_free;
   }
 
   Node * storeInput(std::list<std::string> rows, int cols, std::unordered_map<char, Entity::COLOR> colors){
@@ -91,7 +109,7 @@ namespace Initializer {
 
         char chr = row[x];
 
-        if (chr == '+'){
+        if (chr == char_wall){
           Node::walls[x + y*xsize] = true;
 
         } else if (isAgent(chr)){
@@ -120,22 +138,19 @@ namespace Initializer {
     return initialState;
   }
 
-  Location find_char(const char chr, const string level){
-    stringstream ss(level);
+  string get_info_string(const string level){
 
-    int y = 0;
-    while(true){
-      string line;
-      getline(ss, line);
+  }
 
-      for (int x = 0; x < line.length(); x++){
-        if (line[x] == chr)
+  Location find_char(const char chr, const vector<string> rows){
+
+    for (int y = 0; y < rows.size(); y++){
+      for (int x = 0; x < rows[y].length(); x++){
+        if (rows[y][x] == chr)
           return Location(x,y);
       }
-      if (ss.eof())
-        return Location(-1,-1);
-      y++;
     }
+    return Location(-1,-1);
 
   }
 
@@ -166,30 +181,21 @@ namespace Initializer {
 
   
 
-  vector<string> split_regions(string level){
-    const string region_test_string = "+++++++++++++++++++++++++++++\n+B b                       A+\n+                           +\n+   a   0                   +\n+++++++++++++++++++++++++++++\n+   A                   a  B+\n+                           +\n+                           +\n+       1                  b+\n+++++++++++++++++++++++++++++";
-    // remove when testing done
-    level = region_test_string;
-    std::cerr << "region_test_string = \n" << region_test_string << std::endl;
-
-
+  vector<vector<string>> split_regions(const vector<string> rows){
+    
     bool agent_missing[10];
     for (int i = 0; i < 10; i++){
       agent_missing[i] = true;
     }
 
-    std::cerr << "splitting regions\n" << std::flush;
-    vector<string> rows = split_lines(level);
     int height = rows.size();
     int width = 0;
-    std::cerr << "width: " << width << " height: " << height << std::endl << std::flush;
     for (string s : rows){
       int length = s.length();
       if (length > width)
         width = length;
     }
 
-    std::cerr << "Creating Map:\n" << std::flush;
     vector<char> map(width*height);
     for (int y = 0; y < height; y++){
       for (int x = 0; x < width; x++){
@@ -207,23 +213,24 @@ namespace Initializer {
       }
     }
 
-    std::cerr << map_to_string(map, width, height) << std::endl;
-
-    std::cerr << "splitting regions\n" << std::flush;
     const vector<Location> neighbors = {Location(1,0),Location(0,1),Location(-1,0),Location(0,-1)};
 
-    
     for (int agent = 0; agent < 10; agent++){
       std::queue<Location> frontier;
-      Location agent_pos = find_char(agent + '0', level);
+      Location agent_pos = find_char(agent + '0', rows);
       if (agent_pos.x == -1 && agent_pos.y == -1){
         continue;
       }
-      std::cerr << "Found agents at: " << agent_pos << std::endl;
+
+      // agent already mapped
+      if (!isFree(map[agent_pos.x + agent_pos.y*width])){
+        continue;
+      }
+
       map[agent_pos.x + agent_pos.y * width] = '0' + agent;
       frontier.push(agent_pos);
 
-      // bredde først
+      // BFS
       while (!frontier.empty()){
         Location pos = frontier.front();
         frontier.pop();
@@ -241,15 +248,14 @@ namespace Initializer {
       }
     }
 
-    std::cerr << map_to_string(map, width, height) << std::endl << std::flush;
-
-    vector<string> regions = vector<string>();
+    vector<vector<string>> regions;
 
     for (int a = 0; a < 10; a++){
-      stringstream ss("");
+      vector<string> region;
       int region_size = 0;
 
       for (int y = 0; y < height; y++){
+        stringstream ss("");
         for (int x = 0; x < width; x++){
           int index = x + y*width;
           if (map[index] == '0' + a && x < rows[y].size()){
@@ -259,19 +265,12 @@ namespace Initializer {
             ss << '+';
           }
         }
-        ss << std::endl;
+        region.push_back(ss.str());
       }
-
       if (region_size > 0){
-        regions.push_back(ss.str());
+        regions.push_back(region);
       }
-     
     }
-    
-    for (int i = 0; i < regions.size(); i++){
-       std::cerr << "Region: " << i << std::endl << regions[i];
-    }
-
     return regions;
   }
   
@@ -401,19 +400,192 @@ namespace Initializer {
     return storeInput(rows, cols, colors);
   }
 
-  Node * setupEnvironment(){
+  bool is_info_string(const string input){
+    std::regex multi_regex("[a-z]+:");
+    std::smatch match;
+
+    return std::regex_search(input, match, multi_regex);
+  }
+
+  pair<string,string> split_level_string(const string input){
+    stringstream info("");
+    stringstream level("");
+
+    stringstream ss(input);
+
+    std::regex infe_regex("[a-z]+:");
+    std::smatch match;
+
+    bool end_found = false;
+    while(true){
+      if (ss.eof()){
+        end_found = true;
+        break;
+      }
+      string line;
+      getline(ss,line);
+      if (std::regex_match(line, match, infe_regex)){
+        info << line << std::endl;
+      }else{
+        break;
+      }
+    }
+
+    while(!end_found){
+      if (ss.eof()){
+        end_found = true;
+        break;
+      }
+      string line;
+      getline(ss,line);
+      level << line;
+    }
+
+    return pair<string,string>(info.str(), level.str());
+  }
+
+  string remove_space(const string in){
+    string out = in;
+    out.erase(remove(out.begin(), out.end(), ' '), out.end());
+    return out;
+  }
+
+  Entity::COLOR parse_color(const string color){
+    if (color == (std::string("blue"))){
+      return Entity::BLUE;
+    } else if (color == (std::string("red"))){
+      return Entity::RED;
+    } else if (color == (std::string("green"))){
+      return Entity::GREEN;
+    } else if (color == (std::string("cyan"))){
+      return Entity::CYAN;
+    } else if (color == (std::string("magenta"))){
+      return Entity::MAGENTA;
+    } else if (color == (std::string("orange"))){
+      return Entity::ORANGE;
+    } else if (color == (std::string("pink"))){
+      return Entity::PINK;
+    } else if (color == (std::string("yellow"))){
+      return Entity::YELLOW;
+    }
+    return Entity::BLUE;
+  }
+
+  std::map<char, string> map_colors(const vector<string> input){
+    std::map<char, string> map;
+
+    for (string line : input){
+      stringstream ss(remove_space(line));
+      string color; 
+      getline(ss,color,':');
+
+      string c;
+      while(!ss.eof()){
+        getline(ss, c, ',');
+        map[c[0]] = color;
+      }
+    }
+    return map;
+  }
+
+  Node* parse_region(const vector<string> rows, std::map<char, string> color_map){
+
+    int ysize = rows.size();
+    int xsize = 0;
+    for (auto s : rows)
+      if(s.size() > xsize)
+        xsize = s.size();
+    Node::maxX = xsize;
+    Node::maxY = ysize;
+
+    Node::walls.resize(xsize*ysize, false);
+
+    vector<Box> boxes;
+    vector<Agent> agents;
+
+    Node * initialState = new Node();
+
+    for (int y = 0; y < rows.size(); y++){
+      for (int x = 0; x < rows[y].size(); x++){
+        char c = rows[y][x];
+        if (isWall(c)){
+          Node::walls[x + y*xsize] = true;
+
+        } else if (isAgent(c)){
+          agents.emplace_back(c, pair<int, int>(x, y), parse_color(color_map[c]));
+        } else if (isBox(c)){
+          boxes.emplace_back(c, pair<int, int>(x, y), parse_color(color_map[c]));
+        } else if (isGoal(c)){
+          //std::cerr << "Goal is found: " << chr << "\n";
+          Node::goals.emplace_back(c, pair<int, int>(x, y));
+        }
+      }
+    }
+
+    std::sort (agents.begin(), agents.end(), compAgents);
+    initialState->boxes = boxes;
+    initialState->agents = agents;
+    /*
+    Everything is stored, so we print the state as a sanity check for the user
+    */
+    std::cerr << initialState->toString();
+
+    return initialState;
+  }
+
+  vector<Node*> read_level_string(const vector<string> lines){
+
+    vector<string> info_strings;
+    int i = 0;
+    for(;i < lines.size();i++){
+      if (!is_info_string(lines[i]))
+        break;
+      info_strings.push_back(lines[i]);
+    }
+
+    auto color_map = map_colors(info_strings);
+
+    for (auto& c : color_map){
+      std::cerr << c.first << ": " << c.second << std::endl;
+    }
+
+    // The rest must be level lines
+    vector<string> level_string;
+    for (;i<lines.size();i++){
+      level_string.push_back(lines[i]);
+    }
+
+    // Splitting level into regions
+    vector<vector<string>> regions = split_regions(level_string);
+
+    vector<Node*> nodes;
+    for (int i = 0; i < regions.size(); i++){
+      std::cerr << "Region: " << i << std::endl;
+      for (auto line : regions[i])
+        std::cerr << " " << line << std::endl;
+      std::cerr << std::endl;
+      nodes.push_back(parse_region(regions[0], color_map));
+    }
+
+    return nodes;
+
+  }
+
+  vector<Node *> setupEnvironment(){
     //std::cerr << "Environment Setup\n";
 
     string line;
     stringstream ss = stringstream("");
 
+    vector<string> lines;
+
     while(!std::cin.eof() && getline(std::cin, line) && line != ""){
-      ss << line << "\n";
+      lines.push_back(line);
     }
 
-    string level_string = ss.str();
-    //std::cerr << level_string << "\n";
+    return read_level_string(lines);
 
+    /*
     std::regex multi_regex("[a-z]+:\\s*[0-9]");
     std::smatch match;
 
@@ -424,5 +596,6 @@ namespace Initializer {
     }else{
       return readSingleAgentLevel(level_string);
     }
+    */
   }
 }

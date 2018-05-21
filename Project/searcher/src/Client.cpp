@@ -21,7 +21,7 @@ using std::list;
 
 Client::Client()
 {
-   initialState = Initializer::setupEnvironment();
+   initialState = Initializer::setupEnvironment()[0];
 	/*
 	 * This is a constructor that reads input from std::cin, from the server about the map
 	 * This should not be necessary to edit, and if need be, most likely only in main method
