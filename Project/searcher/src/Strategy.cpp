@@ -15,8 +15,6 @@
 #include "Task.h"
 #include "HandleGoalTask.h"
 
-#define MAXITE 20000
-
 using std::pair;
 using std::vector;
 using std::list;
@@ -40,7 +38,7 @@ public:
 	~Frontier(){}
 
 	void push(Node* n, double score){
-		//std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
+		////std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
 		valued_node vn = {};
 		vn.node = n;
 		vn.value = score;
@@ -51,7 +49,7 @@ public:
 	Node* pull(){
 		valued_node vn = queue.top();
 		queue.pop();
-		//std::cerr << "Pulling best node: value = " << vn.value << " node: " << vn.node << "\n" << std::flush;
+		////std::cerr << "Pulling best node: value = " << vn.value << " node: " << vn.node << "\n" << std::flush;
 		return vn.node;
 	}
 
@@ -70,14 +68,15 @@ public:
 };
 
 //	} else if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
-//		std::cerr << "Not a movebox task, not supported yet\n";
-
-
+//		//std::cerr << "Not a movebox task, not supported yet\n";
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
-
-	std::cerr << "Starting Search: agent = " << agent->chr << std::endl << std::flush;
-
+	if (task == NULL)
+		return std::list<Node*>();
+	int MAXITE = 40000;
+	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
+		MAXITE = 3000;
+	}
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();
@@ -110,7 +109,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->chr);
 		for (auto& n : new_nodes){
 			if (!frontier.is_explored(&n)){
-				//std::cerr << "Pushing object\n" << n.toString()<< "\n";
+				////std::cerr << "Pushing object\n" << n.toString()<< "\n";
 				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
 			}
 		}

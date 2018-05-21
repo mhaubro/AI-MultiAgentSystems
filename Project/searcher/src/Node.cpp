@@ -50,7 +50,7 @@ void Node::resetPool(){
 }
 
 Node * Node::getopCopy(Node * n){
-	//std::cerr << "creating Node copy\n";
+	////std::cerr << "creating Node copy\n";
 	return pool.createNodeCopy(n, n->agents, n->boxes);
 }
 
@@ -148,7 +148,6 @@ bool Node::checkAndChangeState(int agent, Command * c){
 	return true;
 }
 
-
 //Initialize static variables:
 int Node::maxX;
 int Node::maxY;
@@ -163,8 +162,6 @@ Node::Node() {
 	this->gval = 0;
 	this->boxes = std::vector<Box>();
 }
-
-
 
 Node::Node(Node * parent) {
 	this->parent = parent;
@@ -261,7 +258,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 					Node n = Node(this);
 					n.action = c;
 					n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
-					//std::cerr << n.toString();
+					////std::cerr << n.toString();
 					expandedNodes.push_back(n);
 				}
 			} else if (c->actionType == Command::Push) {
@@ -278,7 +275,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 
 						n.getBox(newAgentX, newAgentY)->setLocation(newBoxX, newBoxY);
-						//std::cerr << n.toString();
+						////std::cerr << n.toString();
 						expandedNodes.push_back(n);
 					}
 				}
@@ -293,7 +290,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 						n.action = c;
 						n.getAgent(a.getX(), a.getY())->setLocation(newAgentX, newAgentY);
 						n.getBox(boxX, boxY)->setLocation(a.getX(), a.getY());
-						//std::cerr << n.toString();
+						////std::cerr << n.toString();
 						expandedNodes.push_back(n);
 
 					}
@@ -308,20 +305,17 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 
 
 Node * Node::ChildNode() {
-//	//std::cerr << "Child\n";
+//	////std::cerr << "Child\n";
 //	Node * copy = Node::pool.construct(this);
 //	//This works because std::vector. Copies full 1D-array. Thank god for 1D :)
 //	//copy->boxes = this->boxes;
 	return pool.createNodeCopy(this);
 }
 
-	std::list<Node *> Node::extractPlan() {
-
-		std::cerr << "Node::extractPlan: extracting plan.\n";
-
-		std::list<Node*> plan = std::list<Node*>();
-		Node * n = this;
-
+std::list<Node *> Node::extractPlan()
+{
+	std::list<Node*> plan = std::list<Node*>();
+	Node * n = this;
 
 	while (!(n->isInitialState())) {
 		plan.push_front(n);
@@ -330,8 +324,8 @@ Node * Node::ChildNode() {
 	return plan;
 }
 
-int Node::hashCode() const{
-
+int Node::hashCode() const
+{
 	int prime = 31;
 	int result = 1;
 	for (auto & a : agents){
@@ -343,7 +337,7 @@ int Node::hashCode() const{
 		result = prime * result + b.getX();
 		result = prime * result + b.getY();
 	}
-	//std::cerr << "Calling hash with val" << result << "\n";
+	////std::cerr << "Calling hash with val" << result << "\n";
 	return result;
 }
 
@@ -366,7 +360,7 @@ bool Node::equals(const Node * obj) const {
 			return false;
 		}
 	}
-	//std::cerr << "Objects are equal\n";
+	////std::cerr << "Objects are equal\n";
 	return true;
 }
 
@@ -452,7 +446,17 @@ bool Node::isGoalState(Entity::COLOR color)
 	return true;
 }
 
-
+bool Node::isGoalState(Goal g)
+{
+  for(auto & b : this->boxes)
+  {
+    if(g.location == b.location && g.chr == std::tolower(b.chr))
+    {
+      return true;
+    }
+  }
+	return false;
+}
 
 Box * Node::getBox(int x, int y)
 {
@@ -527,4 +531,3 @@ bool Node::agentAt(int x, int y)
 	}
 	return false;
 }
-
