@@ -4,12 +4,12 @@
 #include <utility>
 #include <boost/pool/object_pool.hpp>
 
-Box::Box(char chr, std::pair<int, int> location, Entity::COLOR color) :
+Box::Box(char chr, Location location, Entity::COLOR color) :
 Entity(chr, location, color)
 {
 }
 
-Box::Box(char chr, std::pair<int, int> location) :
+Box::Box(char chr, Location location) :
 Entity(chr, location, Entity::BLUE)
 {
 }
@@ -23,8 +23,8 @@ int Box::hashCode()
 {
     int result = 17;
     result = 31 * result + (int) (chr);
-    result = 31 * result + std::get<0>(location);
-    result = 31 * result + std::get<1>(location);
+    result = 31 * result + location.getX();
+    result = 31 * result + location.getY();
     result = 31 * result + color;
     return result;
 }

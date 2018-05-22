@@ -1,6 +1,6 @@
 #include "Goal.h"
 
-Goal::Goal(char chr, std::pair<int, int> location) :
+Goal::Goal(char chr, Location location) :
 Entity(chr, location, Entity::BLUE)
 {
     this->goalState = false;

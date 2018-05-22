@@ -29,12 +29,13 @@ public:
   bool isGoalCompatible(int goal, Entity::COLOR color);
   void preAnalyse(Node * n);
 
+  bool stillActiveRequest(RequestFreeSpaceTask * h);
+
   void DetectTasks(Node * n);
   void AssignTasks(Node * n);
   void AssignTask(Agent * a, Node * state);
   bool TaskAvailable(Agent * a);
-  Task * RequestTask();
-  Task * RequestHelp();
+
   bool hasJob(Agent * agent, Node * state);
   Task * getJob(Agent * agent, Node * state);
   Node * FindSolution(Node * n, Goal g);
@@ -42,6 +43,10 @@ public:
   std::vector<Goal> getOrderOfAllGoals(Node * n);
   void removeTask(Task * t);
   void setPredecessors(std::vector<Goal> order, std::vector<HandleGoalTask *> tasks);
+  bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
+  bool returnGoalTask(HandleGoalTask * h);
+  bool removeRequestTask(RequestFreeSpaceTask * h);
+
 
 private:
   void getCompatibleGoals(Node * n);

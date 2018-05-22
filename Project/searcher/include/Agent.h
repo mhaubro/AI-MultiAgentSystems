@@ -27,11 +27,12 @@ class Agent : public Entity
     Task * task;
     std::list<Node *> search(Node * state);
     std::list<Node *> Nakedsearch(Node * state);
+    std::list<Node *> noBoxesOrAgents(Node * state, Box * box);
 
-    Agent(char chr, int rank, std::pair<int, int> location, Entity::COLOR color);
-    Agent(char chr, std::pair<int, int> location, Entity::COLOR color);
-    Agent(char chr, std::pair<int, int> location);
-    Agent(Agent * agt);
+    Agent(char chr, int rank, Location location, Entity::COLOR color);
+    Agent(char chr, Location location, Entity::COLOR color);
+    Agent(char chr, Location location);
+    Agent(const Agent * agt);
 
     int hashCode();
 

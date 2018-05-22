@@ -22,7 +22,6 @@ public:
 	ManualNodePool();
 	virtual ~ManualNodePool();
 	void setup(int memInMB);
-	Node * createNodeCopy(Node * n);
 	Node * createNodeCopy(Node * n, std::vector<Agent> agents, std::vector<Box> boxes);
 	void clearNodes();
 	int getUsedNodes();

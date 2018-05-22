@@ -12,7 +12,7 @@ public:
 
     bool goalState;
 
-    Goal(char chr, std::pair<int, int> location);
-    Goal(char chr, std::pair<int, int> location, Box * box);
+    Goal(char chr, Location location);
+    Goal(char chr, Location location, Box * box);
 };
 #endif

@@ -8,7 +8,7 @@
 #include "RequestFreeSpaceTask.h"
 #include <vector>
 
-RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<std::pair<int, int>> locations, int rank)
+RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank)
 {
 	//this->type = Task::Type::MoveAgentTask;
 	this->locations = locations;
@@ -17,14 +17,14 @@ RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<std::pair<int, int>> locati
 
 bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
 {
-	std::list<std::pair<int, int>>::iterator it;
+	std::list<Location>::iterator it;
 	for(it = locations.begin(); it != locations.end(); ++it){
-		if (Agent * agent = n->getAgent((*it).first, (*it).second)){
-			if (a->chr == agent->chr){
+		if (Agent * agent = n->getAgent(*it)){
+			if (a->getChar() == agent->getChar()){
 				return false;
 			}
-		} else if (Box * b = n->getBox((*it).first, (*it).second)){
-			if (b->color == a->color){
+		} else if (Box * b = n->getBox(*it)){
+			if (b->getColor() == a->getColor()){
 				return false;
 			}
 		}
@@ -39,7 +39,7 @@ void RequestFreeSpaceTask::popLocation(){
 
 bool RequestFreeSpaceTask::seemsCompleted(Agent * a, Node * n)
 {
-	return locations.empty();
+	return isCompleted(a, n);
 }
 
 
@@ -47,20 +47,20 @@ int RequestFreeSpaceTask::h(Agent * a, Node * n)
 {
 	int hval = 1000.0;
 	//Iterates over locations
-	std::list<std::pair<int, int>>::iterator it;
+	std::list<Location>::iterator it;
 	for(it = locations.begin(); it != locations.end(); ++it){
-		if (Agent * agent = n->getAgent((*it).first, (*it).second)){
-			if (a->chr == agent->chr){
+		if (Agent * agent = n->getAgent(*it)){
+			if (a->getChar() == agent->getChar()){
 				hval = hval - .9;
 			}
-		} else if (Box * b = n->getBox((*it).first, (*it).second)){
-			if (b->color == a->color){
+		} else if (Box * b = n->getBox(*it)){
+			if (b->getColor() == a->getColor()){
 				hval = hval - .9;
 			}
 		}
 	}
 
 
-	return 0.0;
+	return hval;
 }
 
