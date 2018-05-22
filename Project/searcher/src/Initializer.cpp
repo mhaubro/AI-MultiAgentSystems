@@ -86,61 +86,6 @@ namespace Initializer {
     return c == char_free;
   }
 
-  Node * storeInput(std::list<std::string> rows, int cols, std::unordered_map<char, Entity::COLOR> colors){
-    using namespace std;
-
-    std::vector<Box> boxes = std::vector<Box>();
-    std::vector<Agent> agents = std::vector<Agent>();
-    //std::vector<Goal> goals = std::vector<Goal>();
-
-    int ysize = rows.size();
-    int xsize = cols;
-    Node::maxX = xsize;
-    Node::maxY = ysize;
-
-    Node::walls.resize(xsize*ysize, false);
-
-    Node * initialState = new Node();
-
-    for (int y = 0; y < ysize; y++){
-      string row = rows.front();
-      rows.pop_front();
-      for (int x = 0; x < row.length(); x++){
-
-        char chr = row[x];
-
-        if (chr == char_wall){
-          Node::walls[x + y*xsize] = true;
-
-        } else if (isAgent(chr)){
-        	Agent a = Agent(chr, pair<int, int>(x, y), colors.find(chr)->second);
-
-          agents.emplace_back(&a);
-        } else if (isBox(chr)){
-          boxes.emplace_back(chr, pair<int, int>(x, y), colors.find(chr)->second);
-        } else if (isGoal(chr)){
-          //std::cerr << "Goal is found: " << chr << "\n";
-          Node::goals.emplace_back(chr, pair<int, int>(x, y));
-        } else if (chr == ' '){
-          //Do nothing, as nothing is printed
-        }
-      }
-    }
-//    Node::goals = goals;
-    std::sort (agents.begin(), agents.end(), compAgents);
-    initialState->boxes = boxes;
-    initialState->agents = agents;
-    /*
-    Everything is stored, so we print the state as a sanity check for the user
-    */
-    cerr << initialState->toString();
-    ////std::cerr << "Hi\n";
-    return initialState;
-  }
-
-  string get_info_string(const string level){
-
-  }
 
   Location find_char(const char chr, const vector<string> rows){
 
@@ -273,132 +218,6 @@ namespace Initializer {
     }
     return regions;
   }
-  
-
-  Node * readSingleAgentLevel(const string level){
-
-    //std::cerr << "Single agent level detected\n";
-    std::unordered_map<char, Entity::COLOR> colors;
-
-    int numAgents = 0, numBoxes = 0;
-    
-    for (int i = 0; i < level.length(); i++){
-      char c = level[i];
-      if (c <= '9' && c >= '0'){
-        colors.insert(std::pair<char,Entity::COLOR>(c, Entity::BLUE));
-        numAgents++;
-      }else if (c <= 'Z' && c >= 'A'){
-        colors.insert(std::pair<char,Entity::COLOR>(c, Entity::BLUE));
-        numBoxes++ ;
-      }
-    }
-
-    std::list<std::string> rows;
-    string line;
-    stringstream ss(level);
-    getline(ss, line);
-
-
-    int cols = 0;
-    do
-    {
-
-      if (line.length() > cols) {
-        cols = line.length();
-      }
-
-      rows.push_back(line);
-      getline(ss, line);
-    } while (!ss.eof() && (line.length() != 0));
-
-    //std::cerr << "Agents: " << numAgents <<
-    //"\nBoxes: " << numBoxes <<
-    //"\nDim: [" << cols << "," << rows.size() << "]\n";
-
-    return storeInput(rows, cols, colors);
-
-  }
-
-  Node * readMultiAgentLevel(const string level){
-    //std::cerr << "Mutli agent level detected\n";
-    std::unordered_map<char, Entity::COLOR> colors;
-    std::string line;
-
-    stringstream level_stream(level);
-
-    std::regex color_regex("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$");
-    std::smatch match;
-
-    int matches = 0;
-    while (getline (level_stream, line) && line != "" && std::regex_match(line, match, color_regex)) {
-      matches++;
-
-      //std::cerr<< line << "\n";
-      std::stringstream ss(line);
-      std::string color;
-      getline(ss, color, ':');
-
-      std::string c;
-      while (getline(ss, c, ',')) {
-        c.erase(remove(c.begin(), c.end(), ' '), c.end());
-
-        //Transform color to lower case
-        //std::transform(color.begin(), color.end(), color.begin(), ::tolower);
-
-        if (color == (std::string("blue"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::BLUE));
-        } else if (color == (std::string("red"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::RED));
-        } else if (color == (std::string("green"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::GREEN));
-        } else if (color == (std::string("cyan"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::CYAN));
-        } else if (color == (std::string("magenta"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::MAGENTA));
-        } else if (color == (std::string("orange"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::ORANGE));
-        } else if (color == (std::string("pink"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::PINK));
-        } else if (color == (std::string("yellow"))){
-          colors.insert(std::pair<char,Entity::COLOR>(c[0], Entity::YELLOW));
-        }
-      }
-    }
-
-    
-    int agentnum = 0;
-    int boxnum = 0;
-    for (auto it = colors.begin(); it != colors.end(); ++it) {
-      if (isAgent(it->first)) {
-        agentnum++;
-      }
-
-      if (isBox(it->first)) {
-        boxnum++;
-      }
-
-    }
-
-    std::list<std::string> rows;
-
-    int cols = 0;
-    do
-    {
-
-      if (line.length() > cols) {
-        cols = line.length();
-      }
-
-      rows.push_back(line);
-      getline(level_stream, line);
-    } while (!level_stream.eof() && (line.length() != 0));
-
-    std::cerr << "Agents: " << agentnum <<
-    "\nBoxes: " << boxnum <<
-    "\nDim: [" << cols << "," << rows.size() << "]\n";
-
-    return storeInput(rows, cols, colors);
-  }
 
   bool is_info_string(const string input){
     std::regex multi_regex("[a-z]+:");
@@ -525,10 +344,6 @@ namespace Initializer {
     std::sort (agents.begin(), agents.end(), compAgents);
     initialState->boxes = boxes;
     initialState->agents = agents;
-    /*
-    Everything is stored, so we print the state as a sanity check for the user
-    */
-    std::cerr << initialState->toString();
 
     return initialState;
   }
@@ -543,6 +358,7 @@ namespace Initializer {
       info_strings.push_back(lines[i]);
     }
 
+    // create map of defined colors
     auto color_map = map_colors(info_strings);
 
     for (auto& c : color_map){
@@ -555,8 +371,12 @@ namespace Initializer {
       level_string.push_back(lines[i]);
     }
 
+    // check for unmoveable objects
+
     // Splitting level into regions
     vector<vector<string>> regions = split_regions(level_string);
+
+    // check each region for unmoveable objects
 
     vector<Node*> nodes;
     for (int i = 0; i < regions.size(); i++){
@@ -571,7 +391,7 @@ namespace Initializer {
 
   }
 
-  vector<Node *> setupEnvironment(){
+  Node * setupEnvironment(){
     //std::cerr << "Environment Setup\n";
 
     string line;
@@ -583,19 +403,7 @@ namespace Initializer {
       lines.push_back(line);
     }
 
-    return read_level_string(lines);
+    return read_level_string(lines)[0];
 
-    /*
-    std::regex multi_regex("[a-z]+:\\s*[0-9]");
-    std::smatch match;
-
-    split_regions(level_string);
-
-    if (std::regex_search(level_string, match, multi_regex)){
-      return readMultiAgentLevel(level_string);
-    }else{
-      return readSingleAgentLevel(level_string);
-    }
-    */
   }
 }

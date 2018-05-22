@@ -7,5 +7,5 @@ namespace Initializer{
 
   std::list<std::string> readInput();
   Node * storeInput();
-  std::vector<Node *> setupEnvironment();
+  Node * setupEnvironment();
 }
