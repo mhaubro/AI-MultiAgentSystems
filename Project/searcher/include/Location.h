@@ -10,6 +10,7 @@
 
 #include <utility>
 #include <string>
+#include <iostream>
 
 class Location {
 public:
@@ -47,5 +48,8 @@ private:
 	int y;
 
 };
+
+// output stream function for easier printing: kind regards Mathias :)
+std::ostream &operator<< (std::ostream &os, Location const& location);
 
 #endif /* SEARCHER_SRC_LOCATION_H_ */

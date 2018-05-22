@@ -204,8 +204,9 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 }
 
 
-Agent::Agent(char chr, int rank, Location location, COLOR color):
-																Entity(chr, location, color){
+Agent::Agent(char chr, int rank, Location location, COLOR color, int region):
+Entity(chr, location, color, region)
+{
 	this->task = nullptr;
 	this->rank = rank;
 	plan = NULL;
@@ -213,8 +214,8 @@ Agent::Agent(char chr, int rank, Location location, COLOR color):
 
 }
 
-Agent::Agent(char chr, Location location, COLOR color):
-																Entity(chr, location, color)
+Agent::Agent(char chr, Location location, COLOR color, int region):
+Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -222,8 +223,8 @@ Agent::Agent(char chr, Location location, COLOR color):
 	t = NULL;
 }
 //No color, for single agent levels
-Agent::Agent(char chr, Location location):
-																Entity(chr, location, Entity::BLUE)
+Agent::Agent(char chr, Location location, int region):
+Entity(chr, location, Entity::BLUE, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -232,7 +233,7 @@ Agent::Agent(char chr, Location location):
 }
 
 Agent::Agent(const Agent * agt):
-																Entity(agt->getChar(), agt->getLocation(), agt->getColor())
+Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
 {
 	this->task = agt->task;
 	this->rank = agt->rank;

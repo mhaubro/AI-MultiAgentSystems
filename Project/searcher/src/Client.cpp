@@ -35,7 +35,6 @@ Client::~Client()
 {
 }
 
-
 int main(int argc, char * argv[]){
 	/*
 	argv[1] contains memory limit in MB. This is the FIRST input, as argv[0] is program name

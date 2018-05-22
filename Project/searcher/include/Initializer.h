@@ -1,6 +1,7 @@
 #include <list>
 #include <string>
 #include "Node.h"
+#include <vector>
 
 namespace Initializer{
 

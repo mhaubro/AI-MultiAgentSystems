@@ -2,8 +2,8 @@
 #include <iostream>
 #include <string>
 
-Entity::Entity(char chr, Location location, COLOR color) :
-chr(chr), location(location), color(color) {
+Entity::Entity(char chr, Location location, COLOR color, int region) :
+chr(chr), location(location), color(color), region(region) {
 
 }
 
@@ -12,6 +12,10 @@ Entity::COLOR Entity::getColor() const{
 }
 char Entity::getChar() const{
 	return chr;
+}
+
+int Entity::getRegion() const{
+	return region;
 }
 
 double Entity::getDistance(Entity e) const{
