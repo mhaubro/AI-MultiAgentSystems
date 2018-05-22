@@ -39,10 +39,9 @@ public:
   bool hasJob(Agent * agent, Node * state);
   Task * getJob(Agent * agent, Node * state);
   Node * FindSolution(Node * n, Goal g);
-  Node * getOrderOfGoals(Node * n, Goal g1, Goal g2);
-  std::vector<Goal> getOrderOfAllGoals(Node * n);
+  bool getOrderOfGoals(Node * n, Goal g1, Goal g2);
   void removeTask(Task * t);
-  void setPredecessors(std::vector<Goal> order, std::vector<HandleGoalTask *> tasks);
+  void setPredecessors(Node * n);
   bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);

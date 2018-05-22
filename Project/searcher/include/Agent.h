@@ -22,7 +22,7 @@ class Agent : public Entity
 	//Is this the number, or an actual rank. I assume actual rank.
     int rank;
 
-    Command * getAction(Node * startstate, Node * temptate);
+    Command * getAction(Node * startstate, Node * tempstate);
 
     Task * task;
     std::list<Node *> search(Node * state);
@@ -43,7 +43,7 @@ private:
     bool workingOnTask = false;//Only set to true, if an agent has started carrying out a task
     int skipNextIte = 0;
     Plan * plan;
-    Command * noPlan(Node * startstate, Node * tempstate);
+    Command * noPlan(Node * startstate);
     Command * handleConflict();
 
 };

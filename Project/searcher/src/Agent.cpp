@@ -109,17 +109,11 @@ Command * Agent::noPlan(Node * startstate){
 	}
 	//We don't have a task/have completed
 	else if(!cPlanner.hasJob(this, startstate)){
-    if(!tempstate->isGoalState())
-      cPlanner.DetectTasks(tempstate); // Try and find new tasks?
 		//Noone has requested anything.
-
 		//Maybe we should improve our positioning, by moving away from other agents??
 		return &Command::EVERY[0];
 
 	} else {
-    if(!tempstate->isGoalState())
-      cPlanner.DetectTasks(tempstate); // Try and find new tasks?
-
 		//Task was completed, there's more tasks for us.
 		//std::cerr <<"Task was: " << task << " Doing replanning\n" ;
 
@@ -127,8 +121,6 @@ Command * Agent::noPlan(Node * startstate){
 		cPlanner.removeRequestTask(t);
 		//delete t;
 		t = NULL;
-
-
 		task = NULL;
 
 		//Do replanning
@@ -182,7 +174,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		return &Command::EVERY[0];
 	}
 	if (plan == NULL || plan->isEmpty()){
-		if (Command * c = noPlan(startstate, tempstate)){
+		if (Command * c = noPlan(startstate)){
 			return c;
 		}
 	}
