@@ -49,10 +49,10 @@ Command * Agent::noPlan(Node * startstate){
 
 	if (this->task != NULL && this->task->seemsCompleted(this, startstate)){
 		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-			cPlanner.returnGoalTask(tmp);
-			cPlanner.removeRequestTask(t);
+			myPlanner->returnGoalTask(tmp);
+			myPlanner->removeRequestTask(t);
 		} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
-			if (!cPlanner.stillActiveRequest(tmp)){
+			if (!myPlanner->stillActiveRequest(tmp)){
 				task = NULL;
 			}
 		}
@@ -80,10 +80,10 @@ Command * Agent::noPlan(Node * startstate){
 					searchResult = noBoxesOrAgents(startstate, tmp->box);
 					if (searchResult.empty()){
 						//We return the task to the centralplanner, and see if it has a helpjob
-						cPlanner.removeRequestTask(t);
+						myPlanner->removeRequestTask(t);
 						//delete t;
 						t = NULL;
-						cPlanner.returnGoalTask((HandleGoalTask *)task);
+						myPlanner->returnGoalTask((HandleGoalTask *)task);
 						this->task = NULL;
 						return &Command::EVERY[0];
 					}
@@ -96,7 +96,7 @@ Command * Agent::noPlan(Node * startstate){
 			plan = new Plan(searchResult, this->getLocation());
 			t = new RequestFreeSpaceTask(plan->getLocations(), rank);
 			//Do something
-			cPlanner.addRequestFreeSpaceTask(t);
+			myPlanner->addRequestFreeSpaceTask(t);
 			//std::cerr << "NoCrash?\n";
 			Node::resetPool();
 			return NULL;
@@ -108,7 +108,7 @@ Command * Agent::noPlan(Node * startstate){
 		return NULL;
 	}
 	//We don't have a task/have completed
-	else if(!cPlanner.hasJob(this, startstate)){
+	else if(!myPlanner->hasJob(this, startstate)){
 		//Noone has requested anything.
 
 		//Maybe we should improve our positioning, by moving away from other agents??
@@ -119,7 +119,7 @@ Command * Agent::noPlan(Node * startstate){
 		//std::cerr <<"Task was: " << task << " Doing replanning\n" ;
 
 		//Remove any requests for more space. If it's null, doesn't matter.
-		cPlanner.removeRequestTask(t);
+		myPlanner->removeRequestTask(t);
 		//delete t;
 		t = NULL;
 
@@ -129,8 +129,8 @@ Command * Agent::noPlan(Node * startstate){
 		//Do replanning
 		//delete plan;
 
-		if (cPlanner.hasJob(this, startstate)){
-			task = cPlanner.getJob(this, startstate);
+		if (myPlanner->hasJob(this, startstate)){
+			task = myPlanner->getJob(this, startstate);
 			if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 				//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.first <<"," << tmp->destination.second << " box: " << tmp->box->chr << "\n";
 			}
@@ -153,11 +153,11 @@ Command * Agent::noPlan(Node * startstate){
 
 Command * Agent::handleConflict(){
 	if (t){//RequestFreeSpaceTask
-		//cPlanner.removeTask(t);
+		//myPlanner->removeTask(t);
 		skipNextIte = 2;
 	} else {
 		if (plan != NULL && !(plan->locations.empty())){
-			cPlanner.removeRequestTask(t);
+			myPlanner->removeRequestTask(t);
 			//delete t;
 			t = new RequestFreeSpaceTask(plan->locations, rank);
 		}
@@ -209,6 +209,7 @@ Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = rank;
+	this->number = chr - '0';
 	plan = NULL;
 	t = NULL;
 
@@ -219,6 +220,7 @@ Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
+	this->number = chr - '0';
 	plan = NULL;
 	t = NULL;
 }
@@ -228,6 +230,7 @@ Entity(chr, location, Entity::BLUE, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
+	this->number = chr - '0';
 	plan = NULL;
 	t = NULL;
 }
@@ -238,6 +241,7 @@ Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
 	this->task = agt->task;
 	this->rank = agt->rank;
 	this->plan = agt->plan;
+	this->number = chr - '0';
 	t = NULL;
 }
 
@@ -251,6 +255,11 @@ int Agent::hashCode()
 	result = 31 * result + color;
 	return result;
 }
+
+void Agent::setMyPlanner(CentralPlanner * planner){
+	myPlanner = planner;
+}
+
 
 bool Agent::equals(const Agent * agent) const
 {
