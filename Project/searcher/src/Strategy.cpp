@@ -106,7 +106,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 		if (task->seemsCompleted(agent, leaf)){
 			return leaf->extractPlan();
 		}
-		vector<Node> new_nodes = leaf->getExpandedNodes(agent->chr);
+		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar());
 		for (auto& n : new_nodes){
 			if (!frontier.is_explored(&n)){
 				////std::cerr << "Pushing object\n" << n.toString()<< "\n";

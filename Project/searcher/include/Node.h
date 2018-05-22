@@ -10,6 +10,7 @@
 #include "Box.h"
 #include <boost/pool/object_pool.hpp>
 #include <iostream>
+#include "Location.h"
 
 class Goal;
 
@@ -26,8 +27,6 @@ public:
 	static std::vector<Goal> goals;//Goals are read once, and order will NEVER change.
 	std::vector<Box> boxes;
 	std::vector<Agent> agents;
-	Node * parent;
-	Command * action;
 
 	//static boost::object_pool<Node> pool;
 	static Node * getopCopy(Node * n);
@@ -38,9 +37,9 @@ public:
 	void clearOtherAgentsAndBoxes(char agent, Box * box);
 	//Methods
 	Node();
-	Node(Node * parent);
+	Node(Node * parent, Command * action);
 	Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes);
-	int g();
+	int g() const;
 
 	bool checkState(int agent, Command * c);
 	bool checkAndChangeState(int agent, Command * c);
@@ -56,23 +55,25 @@ public:
 	int hashCode () const;
 	bool equals (const Node * obj) const;
 	bool operator==(const Node * obj) const;
-	Box * getBox(int x, int y);
-	Goal * getGoal(int x, int y);
-	Agent * getAgent(int x, int y);
+	Box * getBox(Location location);
+	Goal * getGoal(Location location);
+	Agent * getAgent(Location location);
+
+	Node * getParent() const;
+	Command * getAction() const;
 
 private:
+
+	Location getBoxLocation(Agent * agent, Command * c);
 	int gval;
+	const Node * parent;
+	const Command * action;
 
+	bool goalAt(Location location);
+	bool agentAt(Location location);
 
-	//static std::vector<Agent *> DeepCloneAgents(std::vector<Agent *> agents);
-	//static std::vector<Box *> DeepCloneBoxes(std::vector<Box *> boxes);
-
-	bool goalAt(int x, int y);
-	bool agentAt(int x, int y);
-
-	bool cellIsFree(int x, int y);
-	bool boxAt(int x, int y);
-	Node * ChildNode();
+	bool cellIsFree(Location location);
+	bool boxAt(Location location);
 };
 /*
 * Necessary for hashing using the std::unordered set

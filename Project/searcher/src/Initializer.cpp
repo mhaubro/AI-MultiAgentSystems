@@ -18,7 +18,7 @@ using std::pair;
 using std::vector;
 
 //Used for sorting agent array, cause I'm lazy /Martin
-bool compAgents (Agent & i,Agent & j) { return (i.chr<j.chr); }
+bool compAgents (Agent & i,Agent & j) { return (i.getChar() < j.getChar()); }
 
 class Location{
 public:
@@ -391,11 +391,12 @@ namespace Initializer {
 
   }
 
-  Node * setupEnvironment(){
-    //std::cerr << "Environment Setup\n";
+	//std::cerr << "Agents: " << agentnum <<
+			//"\nBoxes: " << boxnum <<
+	//"\nDim: [" << cols << "," << rows.size() << "]\n";
 
-    string line;
-    stringstream ss = stringstream("");
+	return storeInput(rows, cols, colors);
+}
 
     vector<string> lines;
 
@@ -406,4 +407,5 @@ namespace Initializer {
     return read_level_string(lines)[0];
 
   }
+}
 }
