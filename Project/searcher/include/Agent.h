@@ -29,9 +29,9 @@ class Agent : public Entity
     std::list<Node *> Nakedsearch(Node * state);
     std::list<Node *> noBoxesOrAgents(Node * state, Box * box);
 
-    Agent(char chr, int rank, Location location, Entity::COLOR color);
-    Agent(char chr, Location location, Entity::COLOR color);
-    Agent(char chr, Location location);
+    Agent(char chr, int rank, Location location, Entity::COLOR color, int region);
+    Agent(char chr, Location location, Entity::COLOR color, int region);
+    Agent(char chr, Location location, int region);
     Agent(const Agent * agt);
 
     int hashCode();

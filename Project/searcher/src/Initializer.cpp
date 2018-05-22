@@ -59,29 +59,36 @@ namespace Initializer {
   const char char_wall = '+';
   const char char_static = '-';
 
+
   char char_agent(const int agent_num){
     return agent_num + '0';
   }
+
 
   bool isAgent(const char c) {
   	return ('0' <= c && c <= '9');
   }
 
+
   bool isBox(const char c) {
   	return ('A' <= c && c <= 'Z');
   }
+
 
   bool isGoal(const char c) {
   	return ('a' <= c && c <= 'z');
   }
 
+
   bool isWall(const char c){
     return c == char_wall;
   }
 
+
   bool isFree(const char c){
     return c == char_free;
   }
+
 
   void check_unmoveable(vector<string>& rows, std::map<char, string> color_map){
     std::set<string> agent_colors;
@@ -108,19 +115,8 @@ namespace Initializer {
     return Location(-1,-1);
 
   }
-  /*
-  vector<string> split_lines(const string s){
-    vector<string> lines;
-    stringstream ss(s);
 
-    while(!ss.eof()){
-      string line;
-      getline(ss, line);
-      lines.push_back(line);
-    }
-    return lines;
-  }
-  */
+
   string map_to_string(vector<char> map, int width, int height){
     stringstream ss("");
 
@@ -133,6 +129,7 @@ namespace Initializer {
     }
     return ss.str();
   }
+
 
   vector<vector<string>> split_regions(vector<string> rows, std::map<char, string> color_map){
     
@@ -242,55 +239,21 @@ namespace Initializer {
     return regions;
   }
 
+
   bool is_info_string(const string input){
     std::regex multi_regex("[a-z]+:");
     std::smatch match;
 
     return std::regex_search(input, match, multi_regex);
   }
-  /*
-  pair<string,string> split_level_string(const string input){
-    stringstream info("");
-    stringstream level("");
+  
 
-    stringstream ss(input);
-
-    std::regex infe_regex("[a-z]+:");
-    std::smatch match;
-
-    bool end_found = false;
-    while(true){
-      if (ss.eof()){
-        end_found = true;
-        break;
-      }
-      string line;
-      getline(ss,line);
-      if (std::regex_match(line, match, infe_regex)){
-        info << line << std::endl;
-      }else{
-        break;
-      }
-    }
-
-    while(!end_found){
-      if (ss.eof()){
-        end_found = true;
-        break;
-      }
-      string line;
-      getline(ss,line);
-      level << line;
-    }
-
-    return pair<string,string>(info.str(), level.str());
-  }
-  */
   string remove_space(const string in){
     string out = in;
     out.erase(remove(out.begin(), out.end(), ' '), out.end());
     return out;
   }
+
 
   Entity::COLOR parse_color(const string color){
     if (color == (std::string("blue"))){
@@ -313,6 +276,7 @@ namespace Initializer {
     return Entity::BLUE;
   }
 
+
   std::map<char, string> map_colors(const vector<string> input){
     std::map<char, string> map;
 
@@ -330,50 +294,58 @@ namespace Initializer {
     return map;
   }
 
-  Node* parse_region(const vector<string> rows, std::map<char, string> color_map){
 
-    int ysize = rows.size();
-    int xsize = 0;
-    for (auto s : rows)
-      if(s.size() > xsize)
-        xsize = s.size();
-    Node::maxX = xsize;
-    Node::maxY = ysize;
+  Node* parse_regions(const vector<vector<string>> regions, std::map<char, string> color_map){
 
-    Node::walls.resize(xsize*ysize, false);
+    int width = 0;
+    int height = 0;
+    // find the maximum line width and height
+    for (auto& region : regions){
+      for (auto& line : region)
+        if (line.size() > width)
+          width = line.size();
+      if (region.size() > height)
+        height = region.size();
+    }
 
-    vector<Box> boxes;
+    Node::maxX = width;
+    Node::maxY = height;
+
+    Node::walls.resize(width*height, false);
+
     vector<Agent> agents;
+    vector<Box> boxes;
 
-    Node * initialState = new Node();
-
-    for (int y = 0; y < rows.size(); y++){
-      for (int x = 0; x < rows[y].size(); x++){
-        char c = rows[y][x];
-        if (isWall(c)){
-          Node::walls[x + y*xsize] = true;
-
-        } else if (isAgent(c)){
-          agents.emplace_back(c, Location(x, y), parse_color(color_map[c]));
-        } else if (isBox(c)){
-          boxes.emplace_back(c, Location(x, y), parse_color(color_map[c]));
-        } else if (isGoal(c)){
-          //std::cerr << "Goal is found: " << chr << "\n";
-          Node::goals.emplace_back(c, Location(x, y));
+    for (int r = 0; r < regions.size(); r++){
+      auto& region = regions[r];
+      for (int y = 0; y < region.size(); y++){
+        auto& line = region[y];
+        for (int x = 0; x < line.size(); x++){
+          char c = line[x];
+          if (isWall(c)){
+            Node::walls[x + y * width] = true;
+          }else if (isAgent(c)){
+            agents.emplace_back(c, Location(x, y), parse_color(color_map[c]),r);
+          } else if (isBox(c)){
+            boxes.emplace_back(c, Location(x, y), parse_color(color_map[c]),r);
+          } else if (isGoal(c)){
+            Node::goals.emplace_back(c, Location(x, y),r);
+          }
         }
       }
     }
 
     std::sort (agents.begin(), agents.end(), compAgents);
+    
+    Node * initialState = new Node();
     initialState->boxes = boxes;
     initialState->agents = agents;
 
     return initialState;
   }
 
-  
 
-  vector<Node*> read_level_string(const vector<string> lines){
+  Node* read_level_string(const vector<string> lines){
 
     vector<string> info_strings;
     int i = 0;
@@ -398,22 +370,18 @@ namespace Initializer {
 
     // Splitting level into regions
     vector<vector<string>> regions = split_regions(level_string, color_map);
-
-    // parse all regions to a single node
-
-    vector<Node*> nodes;
-    for (int i = 0; i < regions.size(); i++){
-      std::cerr << "Region: " << i << std::endl;
-      for (auto line : regions[i])
+    for (auto& region : regions){
+      std::cerr << "Region:\n";
+      for (auto& line : region)
         std::cerr << " " << line << std::endl;
-      std::cerr << std::endl;
-      nodes.push_back(parse_region(regions[0], color_map));
     }
 
     std::cerr << std::flush;
-    return nodes;
 
+    // parse all regions to a single node
+    return parse_regions(regions, color_map);
   }
+  
 
   Node* setupEnvironment(){
 	
@@ -424,7 +392,7 @@ namespace Initializer {
       lines.push_back(line);
     }
 
-    return read_level_string(lines)[0];
+    return read_level_string(lines);
 
   }
 }
