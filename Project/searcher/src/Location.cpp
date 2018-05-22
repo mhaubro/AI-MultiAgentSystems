@@ -99,3 +99,9 @@ std::string Location::toString() const{
 	return s.str();
 }
 
+// output stream function for easier printing: kind regards Mathias :)
+std::ostream &operator<< (std::ostream &os, Location const& location){
+  os << "[" << location.getX() << "," << location.getY() << "]";
+  return os;
+}
+

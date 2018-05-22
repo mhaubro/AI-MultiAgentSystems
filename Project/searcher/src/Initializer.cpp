@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <set>
 
 using std::string;
 using std::stringstream;
@@ -19,7 +20,7 @@ using std::vector;
 
 //Used for sorting agent array, cause I'm lazy /Martin
 bool compAgents (Agent & i,Agent & j) { return (i.getChar() < j.getChar()); }
-
+/*
 class Location{
 public:
 
@@ -50,17 +51,13 @@ public:
   }
 
 }; 
-
-std::ostream &operator<< (std::ostream &os, Location const& location){
-  os << "[" << location.x << "," << location.y << "]";
-  return os;
-}
-
+*/
 
 namespace Initializer {
 
   const char char_free = ' ';
   const char char_wall = '+';
+  const char char_static = '-';
 
   char char_agent(const int agent_num){
     return agent_num + '0';
@@ -86,6 +83,19 @@ namespace Initializer {
     return c == char_free;
   }
 
+  void check_unmoveable(vector<string>& rows, std::map<char, string> color_map){
+    std::set<string> agent_colors;
+    for (auto s : rows)
+      for (auto c : s)
+        if (isAgent(c))
+          agent_colors.insert(color_map[c]);
+
+    for (auto& s : rows)
+      for (auto& c : s)
+        if (isBox(c) && agent_colors.find(color_map[c])==agent_colors.end())
+          c = char_wall;
+  }
+
 
   Location find_char(const char chr, const vector<string> rows){
 
@@ -98,7 +108,7 @@ namespace Initializer {
     return Location(-1,-1);
 
   }
-
+  /*
   vector<string> split_lines(const string s){
     vector<string> lines;
     stringstream ss(s);
@@ -110,7 +120,7 @@ namespace Initializer {
     }
     return lines;
   }
-
+  */
   string map_to_string(vector<char> map, int width, int height){
     stringstream ss("");
 
@@ -124,14 +134,15 @@ namespace Initializer {
     return ss.str();
   }
 
-  
-
-  vector<vector<string>> split_regions(const vector<string> rows){
+  vector<vector<string>> split_regions(vector<string> rows, std::map<char, string> color_map){
     
     bool agent_missing[10];
     for (int i = 0; i < 10; i++){
       agent_missing[i] = true;
     }
+
+    // check for unmoveable objects
+    check_unmoveable(rows, color_map);
 
     int height = rows.size();
     int width = 0;
@@ -146,13 +157,13 @@ namespace Initializer {
       for (int x = 0; x < width; x++){
         int i = x + y*width;
         if (x >= rows[y].size()){
-          map[i] = '+';
+          map[i] = char_static;
           continue;
         }
-        if (rows[y][x]=='+'){
-          map[i] = '+';
+        if (rows[y][x]==char_wall){
+          map[i] = char_wall;
         }else{
-          map[i] = ' ';
+          map[i] = char_free;
         }
 
       }
@@ -162,31 +173,31 @@ namespace Initializer {
 
     for (int agent = 0; agent < 10; agent++){
       std::queue<Location> frontier;
-      Location agent_pos = find_char(agent + '0', rows);
-      if (agent_pos.x == -1 && agent_pos.y == -1){
+      Location agent_pos = find_char(char_agent(agent), rows);
+      if (agent_pos.getX() == -1 && agent_pos.getY() == -1){
         continue;
       }
 
       // agent already mapped
-      if (!isFree(map[agent_pos.x + agent_pos.y*width])){
+      if (!isFree(map[agent_pos.getX() + agent_pos.getY()*width])){
         continue;
       }
 
-      map[agent_pos.x + agent_pos.y * width] = '0' + agent;
+      map[agent_pos.getX() + agent_pos.getY() * width] = char_agent(agent);
       frontier.push(agent_pos);
 
-      // BFS
+      // BFS for each agent to find active regions
       while (!frontier.empty()){
         Location pos = frontier.front();
         frontier.pop();
         
         for (Location n : neighbors){
           auto tmp = pos+n;
-          if (tmp.x < 0 || tmp.x > width || tmp.y < 0 || tmp.y > height)
+          if (tmp.getX() < 0 || tmp.getX() > width || tmp.getY() < 0 || tmp.getY() > height)
             continue;
-          int index = tmp.x + tmp.y * width;
-          if (map[index]==' '){
-            map[index] = '0'+agent;
+          int index = tmp.getX() + tmp.getY() * width;
+          if (map[index]==char_free){
+            map[index] = char_agent(agent);
             frontier.push(Location(tmp));
           }
         }
@@ -202,12 +213,19 @@ namespace Initializer {
       for (int y = 0; y < height; y++){
         stringstream ss("");
         for (int x = 0; x < width; x++){
+          if (x > rows[y].size()){
+            ss << char_static;
+            continue;
+          }
           int index = x + y*width;
-          if (map[index] == '0' + a && x < rows[y].size()){
+          char c = map[index];
+          if (c == char_agent(a)){
             region_size++;
             ss << rows[y][x];
-          }else {
-            ss << '+';
+          }else if (c == char_wall){
+            ss << char_wall;
+          }else{
+            ss << char_free;
           }
         }
         region.push_back(ss.str());
@@ -216,6 +234,11 @@ namespace Initializer {
         regions.push_back(region);
       }
     }
+
+    // check each region for unmoveable objects
+    for (auto& region : regions)
+      check_unmoveable(region, color_map);
+
     return regions;
   }
 
@@ -225,7 +248,7 @@ namespace Initializer {
 
     return std::regex_search(input, match, multi_regex);
   }
-
+  /*
   pair<string,string> split_level_string(const string input){
     stringstream info("");
     stringstream level("");
@@ -262,7 +285,7 @@ namespace Initializer {
 
     return pair<string,string>(info.str(), level.str());
   }
-
+  */
   string remove_space(const string in){
     string out = in;
     out.erase(remove(out.begin(), out.end(), ' '), out.end());
@@ -331,12 +354,12 @@ namespace Initializer {
           Node::walls[x + y*xsize] = true;
 
         } else if (isAgent(c)){
-          agents.emplace_back(c, pair<int, int>(x, y), parse_color(color_map[c]));
+          agents.emplace_back(c, Location(x, y), parse_color(color_map[c]));
         } else if (isBox(c)){
-          boxes.emplace_back(c, pair<int, int>(x, y), parse_color(color_map[c]));
+          boxes.emplace_back(c, Location(x, y), parse_color(color_map[c]));
         } else if (isGoal(c)){
           //std::cerr << "Goal is found: " << chr << "\n";
-          Node::goals.emplace_back(c, pair<int, int>(x, y));
+          Node::goals.emplace_back(c, Location(x, y));
         }
       }
     }
@@ -347,6 +370,8 @@ namespace Initializer {
 
     return initialState;
   }
+
+  
 
   vector<Node*> read_level_string(const vector<string> lines){
 
@@ -371,12 +396,10 @@ namespace Initializer {
       level_string.push_back(lines[i]);
     }
 
-    // check for unmoveable objects
-
     // Splitting level into regions
-    vector<vector<string>> regions = split_regions(level_string);
+    vector<vector<string>> regions = split_regions(level_string, color_map);
 
-    // check each region for unmoveable objects
+    // parse all regions to a single node
 
     vector<Node*> nodes;
     for (int i = 0; i < regions.size(); i++){
@@ -387,19 +410,16 @@ namespace Initializer {
       nodes.push_back(parse_region(regions[0], color_map));
     }
 
+    std::cerr << std::flush;
     return nodes;
 
   }
 
-	//std::cerr << "Agents: " << agentnum <<
-			//"\nBoxes: " << boxnum <<
-	//"\nDim: [" << cols << "," << rows.size() << "]\n";
-
-	return storeInput(rows, cols, colors);
-}
-
+  Node* setupEnvironment(){
+	
     vector<string> lines;
 
+    string line;
     while(!std::cin.eof() && getline(std::cin, line) && line != ""){
       lines.push_back(line);
     }
@@ -408,4 +428,4 @@ namespace Initializer {
 
   }
 }
-}
+
