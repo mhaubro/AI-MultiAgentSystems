@@ -210,6 +210,7 @@ Entity(chr, location, color, region)
 	this->task = nullptr;
 	this->rank = rank;
 	this->number = (int)(chr - '0');
+	this->myPlanner = nullptr;
 	plan = NULL;
 	t = NULL;
 
@@ -221,6 +222,7 @@ Entity(chr, location, color, region)
 	this->task = nullptr;
 	this->rank = 0;
 	this->number = chr - '0';
+	this->myPlanner = nullptr;
 	plan = NULL;
 	t = NULL;
 }
@@ -231,6 +233,7 @@ Entity(chr, location, Entity::BLUE, region)
 	this->task = nullptr;
 	this->rank = 0;
 	this->number = chr - '0';
+	this->myPlanner = nullptr;
 	plan = NULL;
 	t = NULL;
 }
@@ -242,6 +245,8 @@ Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
 	this->rank = agt->rank;
 	this->plan = agt->plan;
 	this->number = chr - '0';
+	this->myPlanner = agt->getPlanner();
+	std::cerr << "centralplanner from " << myPlanner->region << "\n";
 	t = NULL;
 }
 
@@ -259,6 +264,11 @@ int Agent::hashCode()
 void Agent::setMyPlanner(CentralPlanner * planner){
 	myPlanner = planner;
 }
+
+CentralPlanner * Agent::getPlanner() const{
+	return myPlanner;
+}
+
 
 
 bool Agent::equals(const Agent * agent) const

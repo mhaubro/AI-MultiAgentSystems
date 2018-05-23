@@ -46,6 +46,7 @@ void getPlan(Node * initialState)
 
 		states[i] = state;
 		tempstates[i] = tempstate;
+
 	}
 
 	//Making a vector of agent pointers to getactions from.

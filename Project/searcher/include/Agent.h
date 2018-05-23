@@ -41,6 +41,7 @@ class Agent : public Entity
     bool equals(const Agent * o) const;
 
     void setMyPlanner(CentralPlanner * planner);
+    CentralPlanner * getPlanner() const;
 
 private:
     CentralPlanner * myPlanner;
