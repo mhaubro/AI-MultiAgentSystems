@@ -18,6 +18,30 @@
 
 Node stateNode;
 
+/*
+ * Removes boxes & agents for all other regions, so the node only contains that regions stuff
+ * Maybe goals should be removed here as well, but currently it only matters for preanalysis,
+ * where this is being handled by not making HandleGoalTasks when the goal is of a different
+ * region.
+ */
+void Node::clearOtherRegions(int region){
+	std::vector<Agent> newA = std::vector<Agent>();
+	std::vector<Box> newB = std::vector<Box>();
+	for (const auto & a : agents){
+		if (a.getRegion() == region){
+			newA.emplace_back(&a);
+		}
+	}
+	for (const auto & b : boxes){
+		if (b.getRegion() == region){
+			newB.push_back(b);
+		}
+	}
+	agents = newA;
+	boxes = newB;
+}
+
+
 void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
 	std::vector<Agent> newA = std::vector<Agent>();
 	std::vector<Box> newB = std::vector<Box>();

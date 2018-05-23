@@ -190,7 +190,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		return &Command::EVERY[0];
 	}
 	//Find number
-	int number = (int)(chr - '0');
+	//int number = (int)(chr - '0');
 
 	if (!startstate->checkState(number, c)){
 
@@ -209,7 +209,7 @@ Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = rank;
-	this->number = chr - '0';
+	this->number = (int)(chr - '0');
 	plan = NULL;
 	t = NULL;
 

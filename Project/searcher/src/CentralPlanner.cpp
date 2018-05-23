@@ -13,6 +13,8 @@ void CentralPlanner::removeTask(Task * t){
 CentralPlanner::CentralPlanner(int region){
 	this->region = region;
 	UnassignedGoals = std::vector<HandleGoalTask *>();
+	std::cerr << "Unassigned Goals Created\n";
+
 	order = std::vector<Goal>();
 	compatibleGoals = std::vector<std::vector<bool>>(Entity::NUMCOLS);
 }
@@ -228,6 +230,7 @@ void CentralPlanner::DetectTasks(Node * n)
 		HandleGoalTask * t = new HandleGoalTask(g->getLocation(), 100, compatibleGoals[i], g->getChar());
 		UnassignedGoals.push_back(t);
 	}
+	//throw "Crash\n"
 }
 
 bool CentralPlanner::stillActiveRequest(RequestFreeSpaceTask * h){
