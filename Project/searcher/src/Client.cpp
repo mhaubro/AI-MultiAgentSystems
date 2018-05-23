@@ -35,7 +35,6 @@ Client::~Client()
 {
 }
 
-
 int main(int argc, char * argv[]){
 	/*
 	argv[1] contains memory limit in MB. This is the FIRST input, as argv[0] is program name
@@ -57,30 +56,7 @@ int main(int argc, char * argv[]){
 
 	std::vector<std::string> solution;
 
-	solution = MasterSearcher::getPlan(client.initialState);
-	return 0;
-	//Went over to printing on the go, makes it easier to understand errors
-/*	//std::cerr << "\nSummary for " << strategy.toString() << ".\n";
-	//std::cerr << "Found solution of length " << solution.size() << ".\n";
-
-	for (const auto & cmd : solution) {
-		std::cout << cmd;
-		std::cout << "\n";
-		std::string response;
-		////std::cerr << "Printing solution3";
-		std::getline(std::cin, response);
-		////std::cerr << "Printing solution4";
-		if (response.find(std::string("false")) != std::string::npos) {
-			sprintf(buffer, "Server responsed with %s to the inapplicable action: %s\n", response, cmd);
-			//std::cerr << std::string(buffer);
-			//Maybe we should actually be able to print the state. However, sending
-			//A plan assumes that the thing actually works, and we will never
-			//Replan out here.
-			sprintf(buffer, "%s was attempted in a state\n", cmd);
-			//std::cerr << std::string(buffer);
-			break;
-	  }
-	}*/
+	MasterSearcher::getPlan(client.initialState);
 	return 0;
 }
 

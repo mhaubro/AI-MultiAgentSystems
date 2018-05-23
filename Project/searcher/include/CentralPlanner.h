@@ -25,7 +25,7 @@ public:
   //std::vector of goals, each containing a vector of size 8,
   std::vector<std::vector<bool>> compatibleGoals;
 
-  CentralPlanner();
+  CentralPlanner(int region);
   bool isGoalCompatible(int goal, Entity::COLOR color);
   void preAnalyse(Node * n);
 
@@ -49,6 +49,7 @@ public:
 
 private:
   void getCompatibleGoals(Node * n);
+  int region;
 };
 
 extern CentralPlanner cPlanner;

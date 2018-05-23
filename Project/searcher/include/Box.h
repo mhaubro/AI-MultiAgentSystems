@@ -9,8 +9,8 @@
 class Box : public Entity
 {
 public:
-    Box(char chr, Location location, Entity::COLOR color);
-    Box(char chr, Location location);
+    Box(char chr, Location location, Entity::COLOR color, int region);
+    Box(char chr, Location location, int region);
     Box(Box * box);
     int hashCode();
     bool equals(const Box * box) const;

@@ -15,12 +15,14 @@
 class Plan;
 class Task;
 class RequestFreeSpaceTask;
+class CentralPlanner;
 
 class Agent : public Entity
 {
   public:
 	//Is this the number, or an actual rank. I assume actual rank.
     int rank;
+    int number;
 
     Command * getAction(Node * startstate, Node * tempstate);
 
@@ -29,16 +31,19 @@ class Agent : public Entity
     std::list<Node *> Nakedsearch(Node * state);
     std::list<Node *> noBoxesOrAgents(Node * state, Box * box);
 
-    Agent(char chr, int rank, Location location, Entity::COLOR color);
-    Agent(char chr, Location location, Entity::COLOR color);
-    Agent(char chr, Location location);
+    Agent(char chr, int rank, Location location, Entity::COLOR color, int region);
+    Agent(char chr, Location location, Entity::COLOR color, int region);
+    Agent(char chr, Location location, int region);
     Agent(const Agent * agt);
 
     int hashCode();
 
     bool equals(const Agent * o) const;
 
+    void setMyPlanner(CentralPlanner * planner);
+
 private:
+    CentralPlanner * myPlanner;
     RequestFreeSpaceTask * t;//Can at max request one at a time
     bool workingOnTask = false;//Only set to true, if an agent has started carrying out a task
     int skipNextIte = 0;

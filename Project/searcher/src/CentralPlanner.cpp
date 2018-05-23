@@ -5,14 +5,13 @@
 #include <list>
 #include <algorithm>
 
-CentralPlanner cPlanner;
-
 //TODO
 void CentralPlanner::removeTask(Task * t){
 
 }
 
-CentralPlanner::CentralPlanner(){
+CentralPlanner::CentralPlanner(int region){
+	this->region = region;
 	UnassignedGoals = std::vector<HandleGoalTask *>();
 	compatibleGoals = std::vector<std::vector<bool>>(Entity::NUMCOLS);
 }
@@ -28,6 +27,8 @@ bool CentralPlanner::isGoalCompatible(int goal, Entity::COLOR color){
 }
 
 void CentralPlanner::getCompatibleGoals(Node * n){
+	//This function should preferably just calculate all goals, as we don't care about overhead, and accessing the
+	//Goals number in here seems to be pretty convenient.
 	//Colors assumed to be the same as in entity. Enums are KNOWN to start at zero.
 	compatibleGoals.resize(n->goals.size());
 	for (int i = 0; i < n->goals.size(); i++){
@@ -187,6 +188,8 @@ void CentralPlanner::DetectTasks(Node * n)
 	for(int i = 0; i < n->goals.size(); i++)
 	{
 		Goal * g = &n->goals[i];
+		if (g->getRegion() != region)
+			continue;
 		HandleGoalTask * t = new HandleGoalTask(g->getLocation(), 100, compatibleGoals[i], g->getChar());
 		UnassignedGoals.push_back(t);
 	}

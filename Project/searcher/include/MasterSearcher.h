@@ -4,8 +4,6 @@
 #include <string>
 
 namespace MasterSearcher{
-  std::vector<std::string> getPlan(Node * initialState);
-  bool checkConflicts();
-  std::vector<Node *> Search(int i, Node * state);
+  void getPlan(Node * initialState);
   void printStep(std::string s);
 }

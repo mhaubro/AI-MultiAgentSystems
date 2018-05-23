@@ -12,11 +12,12 @@ public:
 	enum COLOR {BLUE, RED, GREEN, CYAN, MAGENTA, ORANGE, PINK, YELLOW, NUMCOLS};
 
 
-	Entity(char chr, Location location, COLOR color);
+	Entity(char chr, Location location, COLOR color, int region);
 	//The chr is
 
 	Entity::COLOR getColor() const;
 	char getChar() const;
+	int getRegion() const;
 
 	double getDistance(Entity e) const;
 	int getManhattan(Entity e) const;
@@ -30,6 +31,7 @@ protected:
 	COLOR color;
 	char chr;
 
+	int region;
 
 };
 
