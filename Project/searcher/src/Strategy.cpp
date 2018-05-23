@@ -99,8 +99,8 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 		Node* leaf = frontier.pull();
 
 		if (iteration % 2500 == 0){
-			std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
-			std::cerr << leaf->toString();
+			//std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
+			//std::cerr << leaf->toString();
 		}
 		//std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){

@@ -19,7 +19,7 @@ CentralPlanner::CentralPlanner(int region){
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
 	DetectTasks(n);
-	setPredecessors(n);
+	//setPredecessors(n);
 }
 
 bool CentralPlanner::isGoalCompatible(int goal, Entity::COLOR color){
@@ -44,6 +44,7 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 
 void CentralPlanner::setPredecessors(Node * n)
 {
+  std::cerr << "Setting predecessors!\n";
 	for(int i = 0; i < n->goals.size(); i++)
 	{
 		for(int j = 0; j < n->goals.size(); j++)
@@ -53,7 +54,20 @@ void CentralPlanner::setPredecessors(Node * n)
 
       if(getOrderOfGoals(n, n->goals[i], n->goals[j]))
       {
-        std::cerr << "Goal " << n->goals[i].getChar() << " should be done before " << n->goals[j].getChar() << "\n";
+        // Find its task and set it
+        for(int k = 0; k < UnassignedGoals.size(); k++)
+        {
+          if(UnassignedGoals[k]->chr != n->goals[i].getChar())
+            continue;
+          for(int l = 0; l < UnassignedGoals.size(); l++)
+          {
+            if(k == l || UnassignedGoals[l]->chr != n->goals[j].getChar())
+              continue;
+
+            UnassignedGoals[k]->predecessors.push_back(UnassignedGoals[l]);
+            std::cerr << "Goal " << UnassignedGoals[k]->chr << " should be done before " << UnassignedGoals[l]->chr << "\n";
+          }
+        }
       }
 		}
 	}
@@ -100,13 +114,22 @@ bool CentralPlanner::hasJob(Agent * agent, Node * state){
 }
 
 Task * CentralPlanner::getJob(Agent * agent, Node * state){
-
 	//std::cerr << "Finding a job for someone\n";
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
 		// Predecessor is not solved!
-		//if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(agent, state))
+		if(UnassignedGoals[i]->predecessors.size() != 0)
+    {
+      bool skip = false;
+      for(int j = 0; j < UnassignedGoals[i]->predecessors.size(); j++)
+      {
+        if(!UnassignedGoals[i]->predecessors[j]->seemsCompleted(agent, state))
+          skip = true;
+      }
+      if(skip)
+        continue;
+    }
 		//  continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];

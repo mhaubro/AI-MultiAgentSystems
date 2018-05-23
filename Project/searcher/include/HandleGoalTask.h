@@ -21,7 +21,7 @@ class HandleGoalTask : public Task
 {
 public:
   std::vector<bool> solvingColors;
-  HandleGoalTask * predecessors;//Goal that must be completed before this.
+  std::vector<HandleGoalTask *> predecessors;//Goal that must be completed before this.
 
   Box * box;
   Location destination;
