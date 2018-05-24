@@ -103,7 +103,7 @@ Location Node::getBoxLocation(Agent * agent, Command * c){
 	if (c->getActionType() == Command::Pull){
 		return agent->getLocation() - c->boxdloc();
 	} else if (c->getActionType() == Command::Push){
-		return agent->getLocation() + c->boxdloc();
+		return agent->getLocation() + c->agentdloc();
 	} else {
 		throw "getBoxCalled Wrongly\n";
 		return Location(-5, -5);
@@ -238,7 +238,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 			} else if (c->getActionType() == Command::Push) {
 				// Make sure that there's actually a box to move
 				if (this->boxAt(newAgentLoc) && this->getBox(newAgentLoc)->getColor() == a.getColor()) {
-					Location newBoxLoc = newAgentLoc + c->agentdloc();
+					Location newBoxLoc = newAgentLoc + c->boxdloc();
 					//std::cerr << newBoxLoc.toString() << "\n";
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxLoc)) {

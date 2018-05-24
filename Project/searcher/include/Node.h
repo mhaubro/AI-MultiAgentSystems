@@ -8,7 +8,6 @@
 #include "Goal.h"
 #include "Agent.h"
 #include "Box.h"
-#include <boost/pool/object_pool.hpp>
 #include <iostream>
 #include "Location.h"
 

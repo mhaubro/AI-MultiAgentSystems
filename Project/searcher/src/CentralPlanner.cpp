@@ -13,8 +13,6 @@ void CentralPlanner::removeTask(Task * t){
 CentralPlanner::CentralPlanner(int region){
 	this->region = region;
 	UnassignedGoals = std::vector<HandleGoalTask *>();
-	std::cerr << "Unassigned Goals Created\n";
-
 	order = std::vector<Goal>();
 	compatibleGoals = std::vector<std::vector<bool>>(Entity::NUMCOLS);
 }
@@ -123,8 +121,6 @@ Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 
 //Todo
 bool CentralPlanner::hasJob(Agent * agent, Node * state){
-	std::cerr << "CentralPlanner from region: " << region << " Says hi\n";
-
 	for (HandleGoalTask * h : UnassignedGoals){
 		if (h->solvingColors[agent->getColor()])
 			return true;
