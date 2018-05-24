@@ -51,7 +51,6 @@ Command * Agent::noPlan(Node * startstate){
 		//Task was completed, there's more tasks for us.
 		std::cerr <<"Task was: " << task << " Doing replanning\n" ;
 		std::cerr << "Being returned from agent "<< chr<< "\n";
-		throw "Hi";
 
 		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 			myPlanner->returnGoalTask(tmp);

@@ -121,8 +121,8 @@ bool Node::checkState(int agent, Command * c){
 		Location newL = activeAgent->getLocation() + c->agentdloc();
 		return this->cellIsFree(newL);
 	} else if (c->getActionType() == Command::Pull){
-		Location boxL = getBoxLocation(activeAgent, c);
-		Box * box = getBox(boxL);
+		Location boxloc = getBoxLocation(activeAgent, c);
+		Box * box = getBox(boxloc);
 		if (box == NULL || box->getColor() != activeAgent->getColor())
 			return false;
 		Location agentL = activeAgent->getLocation() + c->agentdloc();
