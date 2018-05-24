@@ -18,6 +18,30 @@
 
 Node stateNode;
 
+/*
+ * Removes boxes & agents for all other regions, so the node only contains that regions stuff
+ * Maybe goals should be removed here as well, but currently it only matters for preanalysis,
+ * where this is being handled by not making HandleGoalTasks when the goal is of a different
+ * region.
+ */
+void Node::clearOtherRegions(int region){
+	std::vector<Agent> newA = std::vector<Agent>();
+	std::vector<Box> newB = std::vector<Box>();
+	for (const auto & a : agents){
+		if (a.getRegion() == region){
+			newA.emplace_back(&a);
+		}
+	}
+	for (const auto & b : boxes){
+		if (b.getRegion() == region){
+			newB.push_back(b);
+		}
+	}
+	agents = newA;
+	boxes = newB;
+}
+
+
 void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
 	std::vector<Agent> newA = std::vector<Agent>();
 	std::vector<Box> newB = std::vector<Box>();
@@ -31,6 +55,24 @@ void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
 	boxes = newB;
 }
 
+void Node::removeBox(Location loc){
+	std::vector<Box>::iterator it = boxes.begin();
+	for (int i = 0; i < boxes.size(); i++){
+		if (boxes[i].getLocation() == loc){
+			boxes.erase(it+i);
+			return;
+		}
+	}
+}
+void Node::removeAgent(Location loc){
+	std::vector<Agent>::iterator it = agents.begin();
+	for (int i = 0; i < agents.size(); i++){
+		if (agents[i].getLocation() == loc){
+			agents.erase(it+i);
+			return;
+		}
+	}
+}
 
 void Node::clearOtherAgents(char agent){
 	std::vector<Agent> newA = std::vector<Agent>();
@@ -40,6 +82,23 @@ void Node::clearOtherAgents(char agent){
 		}
 	}
 	agents = newA;
+}
+
+std::vector<Location> Node::recordAgentLocations()
+{
+  std::vector<Location> locations = std::vector<Location>();
+  for (const auto & a : this->agents)
+    locations.push_back(a.getLocation());
+  return locations;
+}
+
+void Node::resetAgent(std::vector<Location> locations)
+{
+  if(this->agents.size() == locations.size())
+  {
+    for(int i = 0; i < this->agents.size(); i++)
+      this->agents[i].setLocation(locations[i]);
+  }
 }
 
 void Node::resetPool(){
@@ -79,7 +138,7 @@ Location Node::getBoxLocation(Agent * agent, Command * c){
 	if (c->getActionType() == Command::Pull){
 		return agent->getLocation() - c->boxdloc();
 	} else if (c->getActionType() == Command::Push){
-		return agent->getLocation() + c->boxdloc();
+		return agent->getLocation() + c->agentdloc();
 	} else {
 		throw "getBoxCalled Wrongly\n";
 		return Location(-5, -5);
@@ -97,13 +156,14 @@ bool Node::checkState(int agent, Command * c){
 		Location newL = activeAgent->getLocation() + c->agentdloc();
 		return this->cellIsFree(newL);
 	} else if (c->getActionType() == Command::Pull){
-		Location boxL = getBoxLocation(activeAgent, c);
-		Box * box = getBox(boxL);
+		Location boxloc = getBoxLocation(activeAgent, c);
+		Box * box = getBox(boxloc);
 		if (box == NULL || box->getColor() != activeAgent->getColor())
 			return false;
 		Location agentL = activeAgent->getLocation() + c->agentdloc();
 
 		return this->cellIsFree(agentL);
+
 	} else if (c->getActionType() == Command::Push){
 		Location boxloc = getBoxLocation(activeAgent, c);
 		Box * box = getBox(boxloc);
@@ -214,7 +274,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 			} else if (c->getActionType() == Command::Push) {
 				// Make sure that there's actually a box to move
 				if (this->boxAt(newAgentLoc) && this->getBox(newAgentLoc)->getColor() == a.getColor()) {
-					Location newBoxLoc = newAgentLoc + c->agentdloc();
+					Location newBoxLoc = newAgentLoc + c->boxdloc();
 					//std::cerr << newBoxLoc.toString() << "\n";
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxLoc)) {
@@ -245,7 +305,6 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 	return expandedNodes;
 }
 
-
 std::list<Node *> Node::extractPlan()
 {
 	std::list<Node*> plan = std::list<Node*>();
@@ -264,8 +323,6 @@ Node * Node::getParent() const {
 Command * Node::getAction() const {
 	return (Command *) action;
 }
-
-
 
 int Node::hashCode() const
 {
@@ -350,9 +407,9 @@ bool Node::isGoalState()
 	{
 		bool goalState = false;
 		for(auto & box : this->boxes)
-    {
+		{
 			if(goal.getLocation() == box.getLocation() && goal.getChar() == std::tolower(box.getChar()))
-      {
+			{
 				goalState = true;
 				break;
 			}
@@ -392,13 +449,13 @@ bool Node::isGoalState(Entity::COLOR color)
 
 bool Node::isGoalState(Goal g)
 {
-  for(auto & b : this->boxes)
-  {
-    if(g.getLocation() == b.getLocation() && g.getChar() == std::tolower(b.getChar()))
-    {
-      return true;
-    }
-  }
+	for(auto & b : this->boxes)
+	{
+		if(g.getLocation() == b.getLocation() && g.getChar() == std::tolower(b.getChar()))
+		{
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -422,7 +479,6 @@ Goal * Node::getGoal(Location loc)
 	//throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 	return NULL;
 }
-
 
 Agent * Node::getAgent(Location loc)
 {

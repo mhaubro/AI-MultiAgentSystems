@@ -25,7 +25,7 @@ public:
   //std::vector of goals, each containing a vector of size 8,
   std::vector<std::vector<bool>> compatibleGoals;
 
-  CentralPlanner();
+  CentralPlanner(int region);
   bool isGoalCompatible(int goal, Entity::COLOR color);
   void preAnalyse(Node * n);
 
@@ -39,13 +39,14 @@ public:
   bool hasJob(Agent * agent, Node * state);
   Task * getJob(Agent * agent, Node * state);
   Node * FindSolution(Node * n, Goal g);
-  Node * getOrderOfGoals(Node * n, Goal g1, Goal g2);
-  std::vector<Goal> getOrderOfAllGoals(Node * n);
+  bool getOrderOfGoals(Node * n, Goal g1, Goal g2);
   void removeTask(Task * t);
-  void setPredecessors(std::vector<Goal> order, std::vector<HandleGoalTask *> tasks);
+  void setPredecessors(Node * n);
+  void setPredecessor(char g1, char g2);
   bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);
+  int region;
 
 
 private:

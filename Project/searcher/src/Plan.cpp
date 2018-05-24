@@ -17,7 +17,6 @@ std::list<Location> Plan::getLocations(){
 	return locations;
 }
 
-
 Plan::Plan(std::list<Node *> nodes, Location startloc) {
 	// TODO Auto-generated constructor stub
 	actions = std::list<Command *>();
@@ -35,16 +34,14 @@ Plan::Plan(std::list<Node *> nodes, Location startloc) {
 		startloc = newAgentloc;
 		newAgentloc = getNewLocation(*it, newAgentloc);
 		newTakenLoc = getTakenLoc(*it, startloc);
-	    locations.push_back(newTakenLoc);
-	    std::cerr << newTakenLoc.toString();
-	    std::cerr << ((Command *) *it)->toString();
+    locations.push_back(newTakenLoc);
+    std::cerr << newTakenLoc.toString();
+    std::cerr << ((Command *) *it)->toString();
 	}
 	std::cerr << "\n";
 
 	//Maybe grab and store location
 	//TODO
-
-
 }
 
 //Gets the new occupied location, based on a command.
@@ -78,6 +75,11 @@ std::string Plan::toString(){
 	for (Command * c : actions){
 		s.append(c->toString());
 	}
+	s.append("\n");
+	for (Location loc : locations){
+		s.append(loc.toString());
+	}
+	s.append("\n");
 	return s;
 }
 
@@ -127,6 +129,3 @@ bool Plan::checkLegality(Node * state, Node * tempState){
 		return (checkLegality(state) && checkLegality(tempState));
 	}
 }
-
-
-

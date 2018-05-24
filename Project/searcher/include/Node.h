@@ -8,7 +8,6 @@
 #include "Goal.h"
 #include "Agent.h"
 #include "Box.h"
-#include <boost/pool/object_pool.hpp>
 #include <iostream>
 #include "Location.h"
 
@@ -20,6 +19,9 @@ class Node {
 
 public:
 	Node & operator =( const Node &first );
+
+	void removeBox(Location loc);
+	void removeAgent(Location loc);
 	//Fields
 	static int maxX;
 	static int maxY;
@@ -46,10 +48,12 @@ public:
 	bool isInitialState();
 	bool isGoalState();
 	bool isGoalState(Entity::COLOR);
-  bool isGoalState(Goal g);
+    bool isGoalState(Goal g);
 	std::vector<Node> getExpandedNodes();
 	std::vector<Node> getExpandedNodes(char agent);
 	std::list<Node*> extractPlan();
+
+	void clearOtherRegions(int regionToRemain);
 
 	std::string toString();
 	int hashCode () const;
@@ -61,6 +65,9 @@ public:
 
 	Node * getParent() const;
 	Command * getAction() const;
+
+  std::vector<Location> recordAgentLocations();
+  void resetAgent(std::vector<Location> locations);
 
 private:
 
