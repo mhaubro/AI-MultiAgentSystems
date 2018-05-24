@@ -6,7 +6,9 @@
 class Node;
 class Agent;
 class Task;
+class Goal;
 
 std::list<Node *> a_star_search(Node * state, Agent* agent, Task* task);
+std::list<Node *> a_star_search(Node * state, Agent* agent, Task* task, Goal g);
 
 #endif

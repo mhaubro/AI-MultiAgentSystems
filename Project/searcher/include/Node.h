@@ -51,6 +51,7 @@ public:
     bool isGoalState(Goal g);
 	std::vector<Node> getExpandedNodes();
 	std::vector<Node> getExpandedNodes(char agent);
+  std::vector<Node> getExpandedNodes(char agent, Goal g);
 	std::list<Node*> extractPlan();
 
 	void clearOtherRegions(int regionToRemain);
@@ -68,6 +69,7 @@ public:
 
   std::vector<Location> recordAgentLocations();
   void resetAgent(std::vector<Location> locations);
+  void solveGoal(Goal g);
 
 private:
 

@@ -4,6 +4,7 @@
 #include "Goal.h"
 #include "Task.h"
 #include "Agent.h"
+#include "Strategy.h"
 #include "RequestFreeSpaceTask.h"
 #include "HandleGoalTask.h"
 #include <vector>
@@ -38,7 +39,7 @@ public:
 
   bool hasJob(Agent * agent, Node * state);
   Task * getJob(Agent * agent, Node * state);
-  Node * FindSolution(Node * n, Goal g);
+  Node * FindSolution(Node * n, Goal g1, Goal g2);
   bool getOrderOfGoals(Node * n, Goal g1, Goal g2);
   void removeTask(Task * t);
   void setPredecessors(Node * n);

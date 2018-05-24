@@ -250,7 +250,7 @@ Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
 	this->plan = agt->plan;
 	this->number = chr - '0';
 	this->myPlanner = agt->getPlanner();
-	std::cerr << "centralplanner from " << myPlanner->region << "\n";
+	//std::cerr << "centralplanner from " << myPlanner->region << "\n";
 	t = NULL;
 }
 

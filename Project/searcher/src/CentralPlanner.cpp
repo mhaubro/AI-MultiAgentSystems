@@ -73,6 +73,7 @@ void CentralPlanner::setPredecessor(char g1, char g2)
       if(k == l || UnassignedGoals[l]->chr != g2)
         continue;
 
+      std::cerr << "Goal " << UnassignedGoals[k]->chr << " should be done before " << UnassignedGoals[l]->chr << "\n";
       UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
     }
   }
@@ -81,21 +82,17 @@ void CentralPlanner::setPredecessor(char g1, char g2)
 // Checks if g1 needs to be solved before g2
 bool CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 {
-	Node * state = nullptr;
-  std::vector<Location> locations = n->recordAgentLocations();
+  Node * state = Node::getopCopy(n);
 
-  state = FindSolution(n, g1);
+  state->solveGoal(g2);
 
   if(state == nullptr)
     return false;
 
-  state = FindSolution(n, g2);
-
   // Can g2 be solved?
   if(state->isGoalState(g2))
   {
-    state->resetAgent(locations);
-    state = FindSolution(state, g1);
+    state = FindSolution(state, g1, g2);
 
     // If we cannot solve g1 after having solved g2,
     // then that means g1 needs to be solved first
@@ -227,20 +224,20 @@ bool CentralPlanner::stillActiveRequest(RequestFreeSpaceTask * h){
 }
 
 
-Node * CentralPlanner::FindSolution(Node * n, Goal g)
+Node * CentralPlanner::FindSolution(Node * n, Goal g1, Goal g2)
 {
 	for(auto & b : n->boxes)
 	{
-		if(std::tolower(g.getChar()) == std::tolower(b.getChar()))
+		if(std::tolower(g1.getChar()) == std::tolower(b.getChar()))
 		{
-			HandleGoalTask * t = new HandleGoalTask(g.getLocation(), 0, &b);
+			HandleGoalTask * t = new HandleGoalTask(g1.getLocation(), 0, &b);
 			// Find agent to solve task
 			for(auto & a : n->agents)
 			{
 				if(a.getColor() == t->box->getColor())
 				{
 					a.task = t;
-					std::list<Node*> solution = a.search(n);
+					std::list<Node*> solution = a_star_search(n, &a, a.task, g2);
 					a.task = nullptr;
 					return solution.back();
 				}
