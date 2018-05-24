@@ -9,7 +9,7 @@
 namespace MasterSearcher
 {
 void getPlan(Node * initialState)
-				  {
+{
 	int agents = initialState->agents.size();
 
 	//Get number of regions
@@ -25,8 +25,9 @@ void getPlan(Node * initialState)
 	std::vector<CentralPlanner> planners = std::vector<CentralPlanner>();
 	for (int i = 0; i < regions; i++){
 		//Create a planner with a region
-		planners.emplace_back(i);
+		planners.push_back(CentralPlanner(i));
 		planners[i].preAnalyse(initialState);
+		//std::cerr << "CentralPlanner created\n";
 	}
 
 	//Give each agent a pointer to its planner
@@ -35,32 +36,57 @@ void getPlan(Node * initialState)
 		agent->setMyPlanner(&planners[agent->getRegion()]);
 	}
 
-	Node state = *initialState;
-	Node tempstate = state;
+	//Lazy hack to ensure that centralPlanners are completely decoupled
+	std::vector<Node> states = std::vector<Node>(regions);
+	std::vector<Node> tempstates = std::vector<Node>(regions);
+	for (int i = 0; i < regions; i++){
+		Node state = *initialState;
+		state.clearOtherRegions(i);
+		Node tempstate = state;
 
+		states[i] = state;
+		tempstates[i] = tempstate;
+
+	}
+
+	//Making a vector of agent pointers to getactions from.
+	std::vector<Agent *> agentptrs = std::vector<Agent *> (agents);
+	for (int j = 0; j < regions; j++){
+		Node * state = &tempstates[j];
+		for (int k = 0; k < state->agents.size(); k++){
+			int num = state->agents[k].number;
+			agentptrs[num] = &state->agents[k];
+		}
+	}
 
 	while (true)
 	{
 		std::string s = "[";
 		for (int i = 0; i < agents; i++)
 		{
+			int region = agentptrs[i]->getRegion();
 			//s += "NoOp";
 			/*Checks if we're planning or if there's been a conflict, and if the next move is okay*/
-			s += (tempstate.agents[i].getAction(&state, &tempstate)->toString());
+			s += (agentptrs[i]->getAction(&states[region], &tempstates[region])->toString());
 			if (i == agents-1)
 				s += ']';
 			else
 				s += ", ";
 		}
 
-		state = tempstate;
-		//std::cerr << s << "\n";// << tempstate.toString() << "\n";
+		bool isGoal= false;
+
+		for (int i = 0; i < regions; i++){
+			states[i] = tempstates[i];
+			isGoal &= states[i].isGoalState();
+		}
 		printStep(s);
-		if (state.isGoalState())
+
+
+		if (isGoal)
 			return;
 	}
-	return;
-				  }
+}
 
 
 void printStep(std::string s){

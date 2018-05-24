@@ -78,6 +78,11 @@ std::string Plan::toString(){
 	for (Command * c : actions){
 		s.append(c->toString());
 	}
+	s.append("\n");
+	for (Location loc : locations){
+		s.append(loc.toString());
+	}
+	s.append("\n");
 	return s;
 }
 

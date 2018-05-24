@@ -46,11 +46,11 @@ public:
   bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);
+  int region;
 
 
 private:
   void getCompatibleGoals(Node * n);
-  int region;
 };
 
 extern CentralPlanner cPlanner;

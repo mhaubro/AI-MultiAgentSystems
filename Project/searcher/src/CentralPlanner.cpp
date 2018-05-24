@@ -228,6 +228,7 @@ void CentralPlanner::DetectTasks(Node * n)
 		HandleGoalTask * t = new HandleGoalTask(g->getLocation(), 100, compatibleGoals[i], g->getChar());
 		UnassignedGoals.push_back(t);
 	}
+	//throw "Crash\n"
 }
 
 bool CentralPlanner::stillActiveRequest(RequestFreeSpaceTask * h){

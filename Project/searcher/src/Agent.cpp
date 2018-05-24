@@ -16,12 +16,16 @@ std::list<Node *> Agent::search(Node * state){
 	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 		//There's an agent on our destination
 		if (state->getAgent(tmp->destination)){
-			return std::list<Node *>();
+			Node stateWithoutAgent = *state;
+			stateWithoutAgent.removeAgent(tmp->destination);
+			return a_star_search(&stateWithoutAgent, this, this->task);
 		}
 		if (Box * b = state->getBox(tmp->destination)){
 			if (b->getColor() != color){
+				Node stateWithoutBox = *state;
+				stateWithoutBox.removeBox(tmp->destination);
+				return a_star_search(&stateWithoutBox, this, this->task);
 				//There's a box we can't move at destination
-				return std::list<Node *>();
 			}
 		}
 	}
@@ -45,9 +49,13 @@ std::list<Node *> Agent::noBoxesOrAgents(Node * state, Box * box){
 }
 
 Command * Agent::noPlan(Node * startstate){
-	//std::cerr<< "Doing first plan\n";
+	std::cerr<< "Doing NoPlan from agent" <<  chr << "\n";
 
 	if (this->task != NULL && this->task->seemsCompleted(this, startstate)){
+		//Task was completed, there's more tasks for us.
+		std::cerr <<"Task was: " << task << " Doing replanning\n" ;
+		std::cerr << "Being returned from agent "<< chr<< "\n";
+
 		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 			myPlanner->returnGoalTask(tmp);
 			myPlanner->removeRequestTask(t);
@@ -61,12 +69,13 @@ Command * Agent::noPlan(Node * startstate){
 	//Short-cirrcuit. We have a task, which is not completed
 	if (this->task != NULL && !this->task->seemsCompleted(this, startstate)){
 		//Task wasn't completed, let's replan
-		//std::cerr << "Doing replanning with original task\n";
+		std::cerr << "Doing replanning with original task\n";
 		//Do replanning
 		//delete plan;
 		std::list<Node *> searchResult = search(startstate);
 
 		if (searchResult.empty()){
+			std::cerr << "Search Result was empty\n";
 			//No agents, try path
 			if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
 				return &Command::EVERY[0];
@@ -103,7 +112,8 @@ Command * Agent::noPlan(Node * startstate){
 		}
 
 		plan = new Plan(searchResult, this->getLocation());
-		//std::cerr << plan->toString() << "\n";
+		std::cerr << "Following Plan found\n";
+		std::cerr << plan->toString() << "\n";
 		Node::resetPool();
 		return NULL;
 	}
@@ -115,9 +125,6 @@ Command * Agent::noPlan(Node * startstate){
 		return &Command::EVERY[0];
 
 	} else {
-		//Task was completed, there's more tasks for us.
-		//std::cerr <<"Task was: " << task << " Doing replanning\n" ;
-
 		//Remove any requests for more space. If it's null, doesn't matter.
 		myPlanner->removeRequestTask(t);
 		//delete t;
@@ -178,28 +185,32 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	}
 	if (plan == NULL || plan->isEmpty()){
 		if (Command * c = noPlan(startstate)){
+			std::cerr << "C is being returned from agent "<< chr<< "\n";
 			return c;
 		}
 	}
 	//Find next step
 	//std::cerr << "Getting a step\n";
 	Command * c = plan->getStep();
-	//std::cerr << "Getting a step " << c->toString() << "\n";
+	std::cerr << "Getting a step from agent " << chr << " cmd: " << c->toString() << "\n";
 	if (c == NULL){
 		plan->drain();
 		return &Command::EVERY[0];
 	}
 	//Find number
-	int number = (int)(chr - '0');
+	//int number = (int)(chr - '0');
 
 	if (!startstate->checkState(number, c)){
+		std::cerr << "CheckState failed for " << c->toString() << " is being returned from agent "<< chr<< "\n";
 
 		return handleConflict();
 	}
 	if (!tempstate->checkAndChangeState(number, c)){
+		std::cerr << "CheckandchangeState failed for " << c->toString() << " is being returned from agent "<< chr<< "\n";
 		return handleConflict();
 	}
 	plan->popStep();
+	std::cerr << c->toString() << " is being returned from agent "<< chr<< "\n";
 	return c;
 }
 
@@ -209,7 +220,8 @@ Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = rank;
-	this->number = chr - '0';
+	this->number = (int)(chr - '0');
+	this->myPlanner = nullptr;
 	plan = NULL;
 	t = NULL;
 
@@ -221,6 +233,7 @@ Entity(chr, location, color, region)
 	this->task = nullptr;
 	this->rank = 0;
 	this->number = chr - '0';
+	this->myPlanner = nullptr;
 	plan = NULL;
 	t = NULL;
 }
@@ -231,6 +244,7 @@ Entity(chr, location, Entity::BLUE, region)
 	this->task = nullptr;
 	this->rank = 0;
 	this->number = chr - '0';
+	this->myPlanner = nullptr;
 	plan = NULL;
 	t = NULL;
 }
@@ -242,6 +256,8 @@ Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
 	this->rank = agt->rank;
 	this->plan = agt->plan;
 	this->number = chr - '0';
+	this->myPlanner = agt->getPlanner();
+	std::cerr << "centralplanner from " << myPlanner->region << "\n";
 	t = NULL;
 }
 
@@ -259,6 +275,11 @@ int Agent::hashCode()
 void Agent::setMyPlanner(CentralPlanner * planner){
 	myPlanner = planner;
 }
+
+CentralPlanner * Agent::getPlanner() const{
+	return myPlanner;
+}
+
 
 
 bool Agent::equals(const Agent * agent) const
