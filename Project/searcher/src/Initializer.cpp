@@ -18,8 +18,6 @@ using std::stringstream;
 using std::pair;
 using std::vector;
 
-//Used for sorting agent array, cause I'm lazy /Martin
-bool compAgents (Agent & i,Agent & j) { return (i.getChar() < j.getChar()); }
 /*
 class Location{
 public:
@@ -113,17 +111,37 @@ namespace Initializer {
     return Location(-1,-1);
   }
 
-  string map_to_string(vector<char> map, int width, int height){
+  const uint16_t wall_code = 1 << 11;
+  const uint16_t box_code = 1 << 10;
+  const uint16_t free_code = 0;
+
+  string map_to_string(vector<uint16_t> map, int width, int height){
     stringstream ss("");
 
     for (int y = 0; y < height; y++){
       for (int x = 0; x < width; x++){
-        char c = map[x + y*width];
-        ss << c;
+        uint16_t code = map[x + y*width];
+        if (code == wall_code){
+          ss << '+';
+        } else if (code == box_code){
+          ss << '-';
+        } else {
+          ss << ' ';
+        }
       }
       ss << std::endl;
     }
     return ss.str();
+  }
+
+  bool match_color(const uint16_t code, const string color, std::map<char, string> color_map){
+    for (int i = 0; i < 10; i++){
+      if (code & (1<<i)){
+        if (color_map[char_agent(i)] == color)
+          return true;
+      }
+    }
+    return false;
   }
 
   vector<vector<string>> split_regions(vector<string> rows, std::map<char, string> color_map){
@@ -143,18 +161,23 @@ namespace Initializer {
         width = length;
     }
 
-    vector<int> map(width*height);
+    
+
+    vector<uint16_t> map(width*height);
     for (int y = 0; y < height; y++){
       for (int x = 0; x < width; x++){
         int i = x + y*width;
         if (x >= rows[y].size()){
-          map[i] = char_static;
+          map[i] = free_code;
           continue;
         }
-        if (rows[y][x]==char_wall){
-          map[i] = char_wall;
+        char c = rows[y][x];
+        if (c == char_wall){
+          map[i] = wall_code;
+        }else if (isBox(c)){
+          map[i] = box_code;
         }else{
-          map[i] = char_free;
+          map[i] = free_code;
         }
 
       }
@@ -164,36 +187,54 @@ namespace Initializer {
 
     for (int agent = 0; agent < 10; agent++){
       std::queue<Location> frontier;
+
+      // find the location of the agent
       Location agent_pos = find_char(char_agent(agent), rows);
+      // if location is negative, the agent is not present
       if (agent_pos.getX() == -1 && agent_pos.getY() == -1){
         continue;
       }
 
-      // agent already mapped
-      if (!isFree(map[agent_pos.getX() + agent_pos.getY()*width])){
-        continue;
-      }
-
-      map[agent_pos.getX() + agent_pos.getY() * width] = char_agent(agent);
+      // push the agents location to begin the BFS
       frontier.push(agent_pos);
 
-      // BFS for each agent to find active regions
+      // define initial search code
+      uint16_t search_code = 1 << agent;
+
+      // search as long as there are new locations being pushed
       while (!frontier.empty()){
+        // get a location from the queue
         Location pos = frontier.front();
         frontier.pop();
+        int index = pos.getX() + pos.getY() * width;
+        uint16_t map_code = map[index];
 
+        if (map_code == wall_code || map_code == search_code){
+          // continue if the location is a wall or have already been visited
+          continue;
+        }else if (map_code == box_code){
+          // if the location is a box, check if it's moveable 
+          const string b_color = color_map[rows[pos.getY()][pos.getX()]];
+          if (!match_color(search_code, b_color, color_map))
+            continue;
+        }else if (map_code < box_code){ 
+          // if lower than box code, its moveable space
+          search_code |= map_code;
+        }
+
+        map[index] = search_code;
+
+        // push neighbors for searchs
         for (Location n : neighbors){
           auto tmp = pos+n;
           if (tmp.getX() < 0 || tmp.getX() > width || tmp.getY() < 0 || tmp.getY() > height)
             continue;
-          int index = tmp.getX() + tmp.getY() * width;
-          if (map[index]==char_free){
-            map[index] = char_agent(agent);
-            frontier.push(Location(tmp));
-          }
+          frontier.push(Location(tmp));
         }
       }
     }
+
+    std::cerr << map_to_string(map, width, height) << std::endl;
 
     vector<vector<string>> regions;
 
@@ -228,7 +269,10 @@ namespace Initializer {
 
     // check each region for unmoveable objects
     for (auto& region : regions)
-      check_unmoveable(region, color_map);
+      for (auto& line : region)
+        std::cerr << " " << line << std::endl;
+
+      std::cerr << std::flush;
 
     return regions;
   }
@@ -265,6 +309,8 @@ namespace Initializer {
     }
     return Entity::BLUE;
   }
+
+
 
   std::map<char, string> map_colors(const vector<string> input){
     std::map<char, string> map;
@@ -323,7 +369,7 @@ namespace Initializer {
       }
     }
 
-    std::sort (agents.begin(), agents.end(), compAgents);
+    std::sort (agents.begin(), agents.end(), [](Agent& x, Agent& y)->bool{return x.getChar() < y.getChar();});
 
     Node * initialState = new Node();
     initialState->boxes = boxes;
