@@ -42,6 +42,7 @@ public:
   bool getOrderOfGoals(Node * n, Goal g1, Goal g2);
   void removeTask(Task * t);
   void setPredecessors(Node * n);
+  void setPredecessor(char g1, char g2);
   bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);

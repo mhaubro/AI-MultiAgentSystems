@@ -111,6 +111,5 @@ bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)
         return false;
     }
   }
-  std::cerr << "I can take this task " << this->chr << "\n";
   return true;
 }

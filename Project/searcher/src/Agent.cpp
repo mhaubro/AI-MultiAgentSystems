@@ -25,8 +25,6 @@ std::list<Node *> Agent::search(Node * state){
 			}
 		}
 	}
-
-
 	return a_star_search(state, this, this->task);
 }
 
@@ -46,15 +44,17 @@ std::list<Node *> Agent::noBoxesOrAgents(Node * state, Box * box){
 
 Command * Agent::noPlan(Node * startstate){
 	//std::cerr<< "Doing first plan\n";
-
-	if (this->task != NULL && this->task->seemsCompleted(this, startstate)){
-		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+	if (this->task != NULL && this->task->seemsCompleted(this, startstate))
+  {
+		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task))
+    {
 			myPlanner->returnGoalTask(tmp);
 			myPlanner->removeRequestTask(t);
-		} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
-			if (!myPlanner->stillActiveRequest(tmp)){
+		}
+    else if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task))
+    {
+			if (!myPlanner->stillActiveRequest(tmp))
 				task = NULL;
-			}
 		}
 	}
 
@@ -108,11 +108,10 @@ Command * Agent::noPlan(Node * startstate){
 		return NULL;
 	}
 	//We don't have a task/have completed
-	else if(!myPlanner->hasJob(this, startstate)){
+	else if (!myPlanner->hasJob(this, startstate)){
 		//Noone has requested anything.
 		//Maybe we should improve our positioning, by moving away from other agents??
 		return &Command::EVERY[0];
-
 	} else {
 		//Task was completed, there's more tasks for us.
 		//std::cerr <<"Task was: " << task << " Doing replanning\n" ;
@@ -145,7 +144,6 @@ Command * Agent::noPlan(Node * startstate){
 
 		return &Command::EVERY[0];;
 	}
-
 }
 
 Command * Agent::handleConflict(){
@@ -190,7 +188,6 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	int number = (int)(chr - '0');
 
 	if (!startstate->checkState(number, c)){
-
 		return handleConflict();
 	}
 	if (!tempstate->checkAndChangeState(number, c)){

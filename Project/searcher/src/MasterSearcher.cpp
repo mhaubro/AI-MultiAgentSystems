@@ -9,7 +9,7 @@
 namespace MasterSearcher
 {
 void getPlan(Node * initialState)
-				  {
+{
 	int agents = initialState->agents.size();
 
 	//Get number of regions
@@ -38,7 +38,6 @@ void getPlan(Node * initialState)
 	Node state = *initialState;
 	Node tempstate = state;
 
-
 	while (true)
 	{
 		std::string s = "[";
@@ -60,7 +59,7 @@ void getPlan(Node * initialState)
 			return;
 	}
 	return;
-				  }
+}
 
 
 void printStep(std::string s){

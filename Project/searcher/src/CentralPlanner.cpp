@@ -44,7 +44,6 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 
 void CentralPlanner::setPredecessors(Node * n)
 {
-  std::cerr << "Setting predecessors!\n";
 	for(int i = 0; i < n->goals.size(); i++)
 	{
 		for(int j = 0; j < n->goals.size(); j++)
@@ -54,27 +53,29 @@ void CentralPlanner::setPredecessors(Node * n)
 
       // There is a dependency
       if(getOrderOfGoals(n, n->goals[i], n->goals[j]))
-      {
-        // Find its task and set it
-        for(int k = 0; k < UnassignedGoals.size(); k++)
-        {
-          // Only need to look at the task fitting the goal
-          if(UnassignedGoals[k]->chr != n->goals[i].getChar())
-            continue;
-
-          for(int l = 0; l < UnassignedGoals.size(); l++)
-          {
-            // Only need to look at the task fitting the goal
-            if(k == l || UnassignedGoals[l]->chr != n->goals[j].getChar())
-              continue;
-
-            UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
-            std::cerr << "Goal " << UnassignedGoals[k]->chr << " should be done before " << UnassignedGoals[l]->chr << "\n";
-          }
-        }
-      }
+        setPredecessor(n->goals[i].getChar(), n->goals[j].getChar());
 		}
 	}
+}
+
+void CentralPlanner::setPredecessor(char g1, char g2)
+{
+  // Find its task and set it
+  for(int k = 0; k < UnassignedGoals.size(); k++)
+  {
+    // Only need to look at the task fitting the goal
+    if(UnassignedGoals[k]->chr != g1)
+      continue;
+
+    for(int l = 0; l < UnassignedGoals.size(); l++)
+    {
+      // Only need to look at the task fitting the goal
+      if(k == l || UnassignedGoals[l]->chr != g2)
+        continue;
+
+      UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
+    }
+  }
 }
 
 // Checks if g1 needs to be solved before g2
