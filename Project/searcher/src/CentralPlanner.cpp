@@ -122,7 +122,7 @@ Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 //Todo
 bool CentralPlanner::hasJob(Agent * agent, Node * state){
 	for (HandleGoalTask * h : UnassignedGoals){
-		if (h->solvingColors[agent->getColor()])
+		if (h->solvingColors[agent->getColor()] && !h->seemsCompleted(agent, state));
 			return true;
 	}
 

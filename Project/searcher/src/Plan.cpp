@@ -36,14 +36,10 @@ Plan::Plan(std::list<Node *> nodes, Location startloc) {
 		newAgentloc = getNewLocation(*it, newAgentloc);
 		newTakenLoc = getTakenLoc(*it, startloc);
 	    locations.push_back(newTakenLoc);
-	    std::cerr << newTakenLoc.toString();
-	    std::cerr << ((Command *) *it)->toString();
+	    //std::cerr << newTakenLoc.toString();
+	    //std::cerr << ((Command *) *it)->toString();
 	}
-	std::cerr << "\n";
-
-	//Maybe grab and store location
-	//TODO
-
+	//std::cerr << "\n";
 
 }
 
@@ -132,6 +128,3 @@ bool Plan::checkLegality(Node * state, Node * tempState){
 		return (checkLegality(state) && checkLegality(tempState));
 	}
 }
-
-
-
