@@ -19,6 +19,9 @@ class Node {
 
 public:
 	Node & operator =( const Node &first );
+
+	void removeBox(Location loc);
+	void removeAgent(Location loc);
 	//Fields
 	static int maxX;
 	static int maxY;

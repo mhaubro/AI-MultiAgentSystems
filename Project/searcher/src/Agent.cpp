@@ -16,12 +16,16 @@ std::list<Node *> Agent::search(Node * state){
 	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 		//There's an agent on our destination
 		if (state->getAgent(tmp->destination)){
-			return std::list<Node *>();
+			Node stateWithoutAgent = *state;
+			stateWithoutAgent.removeAgent(tmp->destination);
+			return a_star_search(&stateWithoutAgent, this, this->task);
 		}
 		if (Box * b = state->getBox(tmp->destination)){
 			if (b->getColor() != color){
+				Node stateWithoutBox = *state;
+				stateWithoutBox.removeBox(tmp->destination);
+				return a_star_search(&stateWithoutBox, this, this->task);
 				//There's a box we can't move at destination
-				return std::list<Node *>();
 			}
 		}
 	}
