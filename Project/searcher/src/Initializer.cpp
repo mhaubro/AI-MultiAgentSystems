@@ -90,17 +90,23 @@ namespace Initializer {
   }
 
 
-  void check_unmoveable(vector<string>& rows, std::map<char, string> color_map){
+  bool check_unmoveable(vector<string>& rows, std::map<char, string> color_map){
     std::set<string> agent_colors;
     for (auto s : rows)
       for (auto c : s)
         if (isAgent(c))
           agent_colors.insert(color_map[c]);
 
+    bool changes = false;
+
     for (auto& s : rows)
       for (auto& c : s)
-        if (isBox(c) && agent_colors.find(color_map[c])==agent_colors.end())
+        if (isBox(c) && agent_colors.find(color_map[c])==agent_colors.end()){
           c = char_wall;
+          changes = true;
+        }
+
+    return changes;
   }
 
 
@@ -149,7 +155,7 @@ namespace Initializer {
         width = length;
     }
 
-    vector<char> map(width*height);
+    vector<int> map(width*height);
     for (int y = 0; y < height; y++){
       for (int x = 0; x < width; x++){
         int i = x + y*width;
