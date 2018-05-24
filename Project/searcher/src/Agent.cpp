@@ -62,11 +62,12 @@ Command * Agent::noPlan(Node * startstate){
 		} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
 			if (!myPlanner->stillActiveRequest(tmp)){
 				task = NULL;
+
 			}
 		}
 	}
 
-	//Short-cirrcuit. We have a task, which is not completed
+	//Short-circuit. We have a task, which is not completed
 	if (this->task != NULL && !this->task->seemsCompleted(this, startstate)){
 		//Task wasn't completed, let's replan
 		std::cerr << "Doing replanning with original task\n";
@@ -78,9 +79,9 @@ Command * Agent::noPlan(Node * startstate){
 			std::cerr << "Search Result was empty\n";
 			//No agents, try path
 			if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
+				this->task = NULL;
 				return &Command::EVERY[0];
-			}
-			if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+			} else if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 				//				//std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
 				searchResult = Nakedsearch(startstate);
 
@@ -99,16 +100,16 @@ Command * Agent::noPlan(Node * startstate){
 					//We have a path without agents and boxes, we proceed
 				}
 				//We have a path without agents, we proceed
-			}
 
-			//std::cerr << "Wanting to add a request\n";
-			plan = new Plan(searchResult, this->getLocation());
-			t = new RequestFreeSpaceTask(plan->getLocations(), rank);
-			//Do something
-			myPlanner->addRequestFreeSpaceTask(t);
-			//std::cerr << "NoCrash?\n";
-			Node::resetPool();
-			return NULL;
+
+				plan = new Plan(searchResult, this->getLocation());
+				t = new RequestFreeSpaceTask(plan->getLocations(), rank, tmp->box);
+				//Do something
+				myPlanner->addRequestFreeSpaceTask(t);
+				//std::cerr << "NoCrash?\n";
+				Node::resetPool();
+				return NULL;
+			}
 		}
 
 		plan = new Plan(searchResult, this->getLocation());
@@ -216,7 +217,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 
 
 Agent::Agent(char chr, int rank, Location location, COLOR color, int region):
-Entity(chr, location, color, region)
+		Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = rank;
@@ -228,7 +229,7 @@ Entity(chr, location, color, region)
 }
 
 Agent::Agent(char chr, Location location, COLOR color, int region):
-Entity(chr, location, color, region)
+		Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -239,7 +240,7 @@ Entity(chr, location, color, region)
 }
 //No color, for single agent levels
 Agent::Agent(char chr, Location location, int region):
-Entity(chr, location, Entity::BLUE, region)
+		Entity(chr, location, Entity::BLUE, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -250,7 +251,7 @@ Entity(chr, location, Entity::BLUE, region)
 }
 
 Agent::Agent(const Agent * agt):
-Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
+		Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
 {
 	this->task = agt->task;
 	this->rank = agt->rank;

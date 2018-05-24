@@ -8,11 +8,19 @@
 #include "RequestFreeSpaceTask.h"
 #include <vector>
 
+RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank, Box * serviceBox)
+{
+	//this->type = Task::Type::MoveAgentTask;
+	this->locations = locations;
+	this->rank = rank;
+	this->serviceBox = serviceBox;
+}
 RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank)
 {
 	//this->type = Task::Type::MoveAgentTask;
 	this->locations = locations;
 	this->rank = rank;
+	this->serviceBox = NULL;
 }
 
 bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
@@ -24,7 +32,7 @@ bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
 				return false;
 			}
 		} else if (Box * b = n->getBox(*it)){
-			if (b->getColor() == a->getColor()){
+			if (b->getColor() == a->getColor() && (b != serviceBox)){
 				return false;
 			}
 		}
