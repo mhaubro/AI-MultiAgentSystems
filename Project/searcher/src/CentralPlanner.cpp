@@ -19,7 +19,7 @@ CentralPlanner::CentralPlanner(int region){
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
 	DetectTasks(n);
-	//setPredecessors(n);
+	setPredecessors(n);
 }
 
 bool CentralPlanner::isGoalCompatible(int goal, Entity::COLOR color){
@@ -52,19 +52,23 @@ void CentralPlanner::setPredecessors(Node * n)
 			if(i == j)
         continue;
 
+      // There is a dependency
       if(getOrderOfGoals(n, n->goals[i], n->goals[j]))
       {
         // Find its task and set it
         for(int k = 0; k < UnassignedGoals.size(); k++)
         {
+          // Only need to look at the task fitting the goal
           if(UnassignedGoals[k]->chr != n->goals[i].getChar())
             continue;
+
           for(int l = 0; l < UnassignedGoals.size(); l++)
           {
+            // Only need to look at the task fitting the goal
             if(k == l || UnassignedGoals[l]->chr != n->goals[j].getChar())
               continue;
 
-            UnassignedGoals[k]->predecessors.push_back(UnassignedGoals[l]);
+            UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
             std::cerr << "Goal " << UnassignedGoals[k]->chr << " should be done before " << UnassignedGoals[l]->chr << "\n";
           }
         }
@@ -77,6 +81,7 @@ void CentralPlanner::setPredecessors(Node * n)
 bool CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 {
 	Node * state = nullptr;
+  std::vector<Location> locations = n->recordAgentLocations();
 
   state = FindSolution(n, g1);
 
@@ -88,6 +93,7 @@ bool CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
   // Can g2 be solved?
   if(state->isGoalState(g2))
   {
+    state->resetAgent(locations);
     state = FindSolution(state, g1);
 
     // If we cannot solve g1 after having solved g2,
@@ -118,19 +124,8 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
-		// Predecessor is not solved!
-		if(UnassignedGoals[i]->predecessors.size() != 0)
-    {
-      bool skip = false;
-      for(int j = 0; j < UnassignedGoals[i]->predecessors.size(); j++)
-      {
-        if(!UnassignedGoals[i]->predecessors[j]->seemsCompleted(agent, state))
-          skip = true;
-      }
-      if(skip)
-        continue;
-    }
-		//  continue;
+		if(!UnassignedGoals[i]->predecessorsComplete(agent, state))
+      continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
 		//std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
@@ -244,7 +239,7 @@ Node * CentralPlanner::FindSolution(Node * n, Goal g)
 				{
 					a.task = t;
 					std::list<Node*> solution = a.search(n);
-					a.task = nullptr; // Not sure if needed
+					a.task = nullptr;
 					return solution.back();
 				}
 			}

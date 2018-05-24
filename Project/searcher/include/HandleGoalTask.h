@@ -33,6 +33,7 @@ public:
   bool seemsCompleted(Agent * a, Node * n);
   bool isCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);
+  bool predecessorsComplete(Agent * a, Node * n);
 };
 
 #include "Agent.h"

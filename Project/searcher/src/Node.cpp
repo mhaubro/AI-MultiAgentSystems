@@ -31,7 +31,6 @@ void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
 	boxes = newB;
 }
 
-
 void Node::clearOtherAgents(char agent){
 	std::vector<Agent> newA = std::vector<Agent>();
 	for (const  auto & a : agents){
@@ -40,6 +39,23 @@ void Node::clearOtherAgents(char agent){
 		}
 	}
 	agents = newA;
+}
+
+std::vector<Location> Node::recordAgentLocations()
+{
+  std::vector<Location> locations = std::vector<Location>();
+  for (const auto & a : this->agents)
+    locations.push_back(a.getLocation());
+  return locations;
+}
+
+void Node::resetAgent(std::vector<Location> locations)
+{
+  if(this->agents.size() == locations.size())
+  {
+    for(int i = 0; i < this->agents.size(); i++)
+      this->agents[i].setLocation(locations[i]);
+  }
 }
 
 void Node::resetPool(){

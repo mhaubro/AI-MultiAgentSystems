@@ -100,3 +100,17 @@ int HandleGoalTask::h(Agent * a, Node * n)
 	////std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
 	return n->g()+hval;
 }
+
+bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)
+{
+  if(this->predecessors.size() != 0)
+  {
+    for(int j = 0; j < this->predecessors.size(); j++)
+    {
+      if(!this->predecessors[j]->seemsCompleted(a, n))
+        return false;
+    }
+  }
+  std::cerr << "I can take this task " << this->chr << "\n";
+  return true;
+}
