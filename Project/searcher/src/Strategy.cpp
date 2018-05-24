@@ -74,7 +74,11 @@ public:
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	if (task == NULL)
 		return std::list<Node*>();
-	int MAXITE = 40000;
+
+  int MAXITE = 40000;
+  if(start_state->agents.size() == 0)
+    MAXITE = 200000;
+
 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
 		MAXITE = 3000;
 	}
@@ -121,7 +125,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, Goal g){
 	if (task == NULL)
 		return std::list<Node*>();
-	int MAXITE = 4000;
+	int MAXITE = 40000;
 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
 		MAXITE = 3000;
 	}
