@@ -33,9 +33,6 @@ protected:
 	char chr;
 	int id;
 	int region;
-
-	static int idCounter;
-
 };
 
 

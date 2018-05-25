@@ -5,7 +5,7 @@
 
 Entity::Entity(char chr, Location location, COLOR color, int region) :
 chr(chr), location(location), color(color), region(region) {
-	static int idCounter;
+	static int idCounter = 0;
 	id = idCounter;
 	idCounter++;
 }
