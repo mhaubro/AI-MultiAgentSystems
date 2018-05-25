@@ -61,7 +61,7 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 
 int HandleGoalTask::h(Agent * a, Node * n)
 {
-	double hval = 1000.0;
+  double hval = 1000.0;
 
 	for (Box b : n->boxes)
   {
@@ -73,7 +73,12 @@ int HandleGoalTask::h(Agent * a, Node * n)
 			if (g->getChar() == tolower(b.getChar()))
       {
 				if (g->getLocation() == b.getLocation())
-          hval -= 35;
+        {
+          if(a->getPlanner()->isFree(n, b.getLocation()))
+            hval += 35;
+          else
+            hval -= 35;
+        }
         else
           hval += 5;
 			}

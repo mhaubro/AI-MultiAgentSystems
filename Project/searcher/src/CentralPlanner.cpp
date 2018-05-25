@@ -39,6 +39,16 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 	}
 }
 
+bool CentralPlanner::isFree(Node * n, Location gLoc)
+{
+		int west = (int) n->walls[gLoc.getX()-1 + gLoc.getY()*n->maxX];
+		int north = (int) n->walls[gLoc.getX() + (gLoc.getY()-1)*n->maxX];
+		int east = (int) n->walls[gLoc.getX()+1 + gLoc.getY()*n->maxX];
+		int south = (int) n->walls[gLoc.getX()+(gLoc.getY()+1)*n->maxX];
+		int noWalls = west+north+east+south;
+		return noWalls < 2;
+}
+
 std::vector<Goal*> CentralPlanner::potentialConflictingGoals(Node * n)
 {
 	// This function finds the goals that might create locks.
@@ -153,10 +163,12 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
       continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
-	  std::cerr << "Trying with goal " << state->getGoal(h->destination)->getChar() << "\n";
 
 		if (h->seemsCompleted(agent, state))
 			continue;
+
+    std::cerr << "Trying with goal " << state->getGoal(h->destination)->getChar() << "\n";
+
 		if (h->solvingColors[agent->getColor()]){
 			//std::cerr << "There's a solvable goal\n";
 			//Deletes the move box thing

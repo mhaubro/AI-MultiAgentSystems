@@ -72,6 +72,7 @@ public:
   std::vector<Location> recordAgentLocations();
   void resetAgent(std::vector<Location> locations);
   void solveGoal(Goal * g);
+  bool goalAt(Location location);
 
 private:
 
@@ -80,7 +81,6 @@ private:
 	const Node * parent;
 	const Command * action;
 
-	bool goalAt(Location location);
 	bool agentAt(Location location);
 
 	bool cellIsFree(Location location);
