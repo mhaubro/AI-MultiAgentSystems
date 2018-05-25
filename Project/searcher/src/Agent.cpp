@@ -139,7 +139,7 @@ void Agent::gettingJob(Node * startstate){
 	if (myPlanner->hasJob(this, startstate)){
 		task = myPlanner->getJob(this, startstate);
 		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-			//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.first <<"," << tmp->destination.second << " box: " << tmp->box->chr << "\n";
+			//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.toString() << " box: " << tmp->box->getChar() << "\n";
 		}
 		std::list<Node *> searchResult = search(startstate);
 		//std::cerr << "Received a task\n";
