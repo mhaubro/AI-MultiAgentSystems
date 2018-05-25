@@ -4,11 +4,8 @@
 #include <stack>
 #include <list>
 #include <algorithm>
-
-//TODO
-void CentralPlanner::removeTask(Task * t){
-
-}
+#include <ctime>
+#include <cstdlib>
 
 CentralPlanner::CentralPlanner(int region){
 	this->region = region;
@@ -19,7 +16,8 @@ CentralPlanner::CentralPlanner(int region){
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
 	DetectTasks(n);
-	setPredecessors(n);
+	std::cerr << "Returning falseBox\n";
+//setPredecessors(n);
 }
 
 bool CentralPlanner::isGoalCompatible(int goal, Entity::COLOR color){
@@ -105,12 +103,17 @@ bool CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
   return false;
 }
 
-//Todo
+
+int myrandom (int i) { return std::rand()%i;}
+
 bool CentralPlanner::hasJob(Agent * agent, Node * state){
+	std::srand ( unsigned ( std::time(0) ) );
 	for (HandleGoalTask * h : UnassignedGoals){
-		if (h->solvingColors[agent->getColor()])
+		if (h->solvingColors[agent->getColor()] && !h->seemsCompleted(agent, state))
 			return true;
 	}
+
+	std::random_shuffle ( freeSpaceTasks.begin(), freeSpaceTasks.end(), myrandom);
 
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
 		if (!t->seemsCompleted(agent, state))
@@ -125,8 +128,8 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
-		if(!UnassignedGoals[i]->predecessorsComplete(agent, state))
-      continue;
+		//if(!UnassignedGoals[i]->predecessorsComplete(agent, state))
+      //continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
 		//std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
@@ -249,3 +252,18 @@ Node * CentralPlanner::FindSolution(Node * n, Goal g)
 	}
 	return nullptr;
 }
+
+RequestFreeSpaceTask * CentralPlanner::getHelpJob(Agent * agent, Node * state){
+	for (RequestFreeSpaceTask * t : freeSpaceTasks){
+		//std::cerr << "Checking for requests \n";
+		if (!t->seemsCompleted(agent, state)){
+			return t;
+		}
+	}
+	return NULL;
+}
+
+bool CentralPlanner::hasHelpJob(Agent * agent, Node * state){
+	return (NULL != getHelpJob(agent, state));
+}
+
