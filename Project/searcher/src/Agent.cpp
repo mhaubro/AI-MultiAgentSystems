@@ -190,16 +190,17 @@ void Agent::noPlan(Node * startstate){
 }
 
 Command * Agent::handleConflict(Node * state){
-	if (freeSpaceTask){//RequestFreeSpaceTask
-		//myPlanner->removeTask(t);
-		skipNextIte = 2;
-	} else {
+	if (HandleGoalTask * tmp = dynamic_cast<HandleGoalTask *>(task)){
 		if (plan != NULL && !(plan->locations.empty())){
 			myPlanner->removeRequestTask(freeSpaceTask);
 			//delete t;
 
 			freeSpaceTask = new RequestFreeSpaceTask(plan->locations, rank);
 		}
+
+
+	} else {
+
 	}
 	double prob = 0.3;
 	if (((double)rand())/RAND_MAX + prob > 1)
