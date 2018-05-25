@@ -2,9 +2,16 @@
 #include <iostream>
 #include <string>
 
+int Entity::idCounter;
+
 Entity::Entity(char chr, Location location, COLOR color, int region) :
 chr(chr), location(location), color(color), region(region) {
+	id = idCounter;
+	idCounter++;
+}
 
+int Entity::getID() const{
+	return id;
 }
 
 Entity::COLOR Entity::getColor() const{

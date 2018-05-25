@@ -62,12 +62,7 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 int HandleGoalTask::h(Agent * a, Node * n)
 {
 	double hval = 1000.0;
-	//Find box.
-	//Yes, the if below is legal
-	////std::cerr << "Doing a heuristic thing\n";
-	//Box * box;
-	//IT's a moveboxtask
-	//MoveBoxTask * t = dynamic_cast<MoveBoxTask *>( task );
+
 	for (Box b : n->boxes){
 		if (b.getColor() != a->getColor())//We don't care
 			continue;
@@ -83,7 +78,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 				}
 			}
 		}
-		if (b.getChar() == box->getChar()){
+		if (b.getID() == box->getID()){
 			hval += destination.getDistance(b.getLocation());
 
 			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){//Ensures they're next to

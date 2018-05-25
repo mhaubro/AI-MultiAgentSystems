@@ -15,8 +15,10 @@
 
 std::list<Node *> Agent::search(Node * state){
 	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+		std::cerr << "This is a handlegoaltask\n";
 		//There's an agent on our destination
-		if (state->getAgent(tmp->destination)){
+		if (Agent * a = state->getAgent(tmp->destination)){
+			std::cerr << "Putting out agent temporarily\n";
 			Node stateWithoutAgent = *state;
 			stateWithoutAgent.removeAgent(tmp->destination);
 
@@ -32,6 +34,7 @@ std::list<Node *> Agent::search(Node * state){
 		}
 		if (Box * b = state->getBox(tmp->destination)){
 			if (b->getColor() != color){
+				std::cerr << "Putting out box temporarily\n";
 				Node stateWithoutBox = *state;
 				stateWithoutBox.removeBox(tmp->destination);
 

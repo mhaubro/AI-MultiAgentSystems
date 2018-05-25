@@ -16,7 +16,6 @@ CentralPlanner::CentralPlanner(int region){
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
 	DetectTasks(n);
-	std::cerr << "Returning falseBox\n";
 //setPredecessors(n);
 }
 
@@ -266,4 +265,3 @@ RequestFreeSpaceTask * CentralPlanner::getHelpJob(Agent * agent, Node * state){
 bool CentralPlanner::hasHelpJob(Agent * agent, Node * state){
 	return (NULL != getHelpJob(agent, state));
 }
-

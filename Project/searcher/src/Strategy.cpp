@@ -14,6 +14,8 @@
 #include "Agent.h"
 #include "Task.h"
 #include "HandleGoalTask.h"
+#include "GetAwayFromGoalTask.h"
+#include "RequestFreeSpaceTask.h"
 
 using std::pair;
 using std::vector;
@@ -73,9 +75,13 @@ public:
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	if (task == NULL)
 		return std::list<Node*>();
-	int MAXITE = 20000;
+	int MAXITE = 200000;
 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
 		MAXITE = 3000;
+	} else if (GetAwayFromGoalTask * tmp = dynamic_cast<GetAwayFromGoalTask *>(task)){
+
+	} else if (HandleGoalTask * tmp = dynamic_cast<HandleGoalTask *>(task)){
+		std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
 	}
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes

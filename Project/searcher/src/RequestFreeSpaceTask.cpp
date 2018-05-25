@@ -34,7 +34,6 @@ bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
 			}
 		} else if (Box * b = n->getBox(*it)){
 			if (b->getColor() == a->getColor() && (b != serviceBox)){
-				std::cerr << "Returning falseBox\n";
 				return false;
 			}
 		}
@@ -73,4 +72,3 @@ int RequestFreeSpaceTask::h(Agent * a, Node * n)
 
 	return hval;
 }
-

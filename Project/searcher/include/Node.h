@@ -48,7 +48,7 @@ public:
 	bool isInitialState();
 	bool isGoalState();
 	bool isGoalState(Entity::COLOR);
-    bool isGoalState(Goal g);
+	bool isGoalState(Goal g);
 	std::vector<Node> getExpandedNodes();
 	std::vector<Node> getExpandedNodes(char agent);
 	std::list<Node*> extractPlan();
@@ -65,9 +65,11 @@ public:
 
 	Node * getParent() const;
 	Command * getAction() const;
+	bool agentAt(Location location);
+	bool boxAt(Location location);
 
-  std::vector<Location> recordAgentLocations();
-  void resetAgent(std::vector<Location> locations);
+	std::vector<Location> recordAgentLocations();
+	void resetAgent(std::vector<Location> locations);
 
 private:
 
@@ -77,14 +79,12 @@ private:
 	const Command * action;
 
 	bool goalAt(Location location);
-	bool agentAt(Location location);
 
 	bool cellIsFree(Location location);
-	bool boxAt(Location location);
 };
 /*
-* Necessary for hashing using the std::unordered set
-*/
+ * Necessary for hashing using the std::unordered set
+ */
 struct NodeHash {
 public:
 	size_t operator()(const Node * n) const {
@@ -93,8 +93,8 @@ public:
 };
 
 /*
-* Necessary for comparing using the std::unordered set
-*/
+ * Necessary for comparing using the std::unordered set
+ */
 struct NodeEqual {
 public:
 	bool operator()(const Node * n1, const Node * n2) const {

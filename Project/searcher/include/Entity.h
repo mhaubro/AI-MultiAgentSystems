@@ -25,13 +25,16 @@ public:
 	void setLocation(Location loc);
 	void setDLocation(Location loc);
 	Location getLocation() const;
+	int getID() const;
 
 protected:
 	Location location;
 	COLOR color;
 	char chr;
-
+	int id;
 	int region;
+
+	static int idCounter;
 
 };
 
