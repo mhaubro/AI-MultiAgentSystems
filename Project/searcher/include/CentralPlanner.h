@@ -48,9 +48,10 @@ public:
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);
   int region;
+  std::vector<Goal> potentialConflictingGoals(Node * n);
 
 
-private:
+private:  
   void getCompatibleGoals(Node * n);
 };
 
