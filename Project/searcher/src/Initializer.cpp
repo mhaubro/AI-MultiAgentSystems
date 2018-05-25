@@ -134,6 +134,10 @@ namespace Initializer {
     return ss.str();
   }
 
+  bool is_agent_code(uint16_t code, int agent){
+    return code & (1<<agent) > 0;
+  }
+
   bool match_color(const uint16_t code, const string color, std::map<char, string> color_map){
     for (int i = 0; i < 10; i++){
       if (code & (1<<i)){
@@ -144,11 +148,18 @@ namespace Initializer {
     return false;
   }
 
-  vector<vector<string>> split_regions(vector<string> rows, std::map<char, string> color_map){
-    bool agent_missing[10];
+  string print_agent_code(uint16_t code){
+    stringstream ss("");
+    ss << "[";
     for (int i = 0; i < 10; i++){
-      agent_missing[i] = true;
+      ss << (char)('0' + ((code & (1<<i)) > 0));
     }
+    ss << "] " << code;
+    return ss.str();
+  }
+
+  vector<vector<string>> split_regions(vector<string> rows, std::map<char, string> color_map){
+    
 
     // check for unmoveable objects
     check_unmoveable(rows, color_map);
@@ -234,31 +245,46 @@ namespace Initializer {
       }
     }
 
+    // print the analysed map with static boxes
     std::cerr << map_to_string(map, width, height) << std::endl;
 
     vector<vector<string>> regions;
+
+    uint16_t agents_found = 0;
 
     for (int a = 0; a < 10; a++){
       vector<string> region;
       int region_size = 0;
 
+      uint16_t agent_code = 1 << a;
+
+      //std::cerr << "agents_found: " << print_agent_code(agents_found) << std::endl;
+
+      if (agents_found & agent_code)
+        continue;
+
       for (int y = 0; y < height; y++){
         stringstream ss("");
         for (int x = 0; x < width; x++){
+
           if (x > rows[y].size()){
-            ss << char_static;
+            ss << char_free;
             continue;
           }
+
           int index = x + y*width;
-          char c = map[index];
-          if (c == char_agent(a)){
+          uint16_t c = map[index];
+
+          if (c & agent_code){
+            agents_found |= c;
             region_size++;
             ss << rows[y][x];
-          }else if (c == char_wall){
+          }else if (c == wall_code || c == box_code){
             ss << char_wall;
           }else{
             ss << char_free;
           }
+
         }
         region.push_back(ss.str());
       }
@@ -268,11 +294,15 @@ namespace Initializer {
     }
 
     // check each region for unmoveable objects
-    for (auto& region : regions)
+    /*
+    for (auto& region : regions){
+      std::cerr << "\nRegion:\n";
       for (auto& line : region)
         std::cerr << " " << line << std::endl;
+    }
+    */
 
-      std::cerr << std::flush;
+    std::cerr << std::flush;
 
     return regions;
   }
@@ -403,13 +433,9 @@ namespace Initializer {
 
     // Splitting level into regions
     vector<vector<string>> regions = split_regions(level_string, color_map);
-    for (auto& region : regions){
-      std::cerr << "Region:\n";
-      for (auto& line : region)
-        std::cerr << " " << line << std::endl;
-    }
-
+ 
     std::cerr << std::flush;
+
     // parse all regions to a single node
     return parse_regions(regions, color_map);
   }
