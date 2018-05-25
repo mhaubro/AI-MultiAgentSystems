@@ -54,7 +54,7 @@ private:
     void gettingJob(Node * startstate);
 
     CentralPlanner * myPlanner;
-    RequestFreeSpaceTask * t;//Can at max request one at a time
+    RequestFreeSpaceTask * freeSpaceTask;//Can at max request one at a time
     bool workingOnTask = false;//Only set to true, if an agent has started carrying out a task
     int skipNextIte = 0;
     Plan * plan;

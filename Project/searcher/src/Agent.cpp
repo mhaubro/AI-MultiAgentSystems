@@ -23,12 +23,12 @@ std::list<Node *> Agent::search(Node * state){
 			stateWithoutAgent.removeAgent(tmp->destination);
 
 			//This should be a function
-			myPlanner->removeRequestTask(t);
-			delete t;
+			myPlanner->removeRequestTask(freeSpaceTask);
+			delete freeSpaceTask;
 			std::list<Location> loc = std::list<Location>();
 			loc.push_back(tmp->destination);
-			t = new RequestFreeSpaceTask(loc, 0, tmp->box);
-			myPlanner->addRequestFreeSpaceTask(t);
+			freeSpaceTask = new RequestFreeSpaceTask(loc, 0, tmp->box);
+			myPlanner->addRequestFreeSpaceTask(freeSpaceTask);
 
 			return a_star_search(&stateWithoutAgent, this, this->task, 20000);
 		}
@@ -39,12 +39,12 @@ std::list<Node *> Agent::search(Node * state){
 				stateWithoutBox.removeBox(tmp->destination);
 
 				//This should be a function
-				myPlanner->removeRequestTask(t);
-				delete t;
+				myPlanner->removeRequestTask(freeSpaceTask);
+				delete freeSpaceTask;
 				std::list<Location> loc = std::list<Location>();
 				loc.push_back(tmp->destination);
-				t = new RequestFreeSpaceTask(loc, 0, tmp->box);
-				myPlanner->addRequestFreeSpaceTask(t);
+				freeSpaceTask = new RequestFreeSpaceTask(loc, 0, tmp->box);
+				myPlanner->addRequestFreeSpaceTask(freeSpaceTask);
 
 				return a_star_search(&stateWithoutBox, this, this->task, 20000);
 				//There's a box we can't move at destination
@@ -75,7 +75,7 @@ void Agent::cleanTasks(){
 
 	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 		myPlanner->returnGoalTask(tmp);
-		myPlanner->removeRequestTask(t);
+		myPlanner->removeRequestTask(freeSpaceTask);
 		task = NULL;
 	} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
 		if (!myPlanner->stillActiveRequest(tmp)){
@@ -86,8 +86,8 @@ void Agent::cleanTasks(){
 		delete task;
 		task = NULL;
 	}
-	t = NULL;
-	myPlanner->removeRequestTask(t);
+	freeSpaceTask = NULL;
+	myPlanner->removeRequestTask(freeSpaceTask);
 	//t should be deleted, but that would break everything right now
 	//TODO
 
@@ -118,8 +118,8 @@ void Agent::replanTask(Node * state){
 			}
 			//We have a path without agents, we proceed
 			plan = new Plan(searchResult, this->getLocation());
-			t = new RequestFreeSpaceTask(plan->getLocations(), rank, tmp->box);
-			myPlanner->addRequestFreeSpaceTask(t);
+			freeSpaceTask = new RequestFreeSpaceTask(plan->getLocations(), rank, tmp->box);
+			myPlanner->addRequestFreeSpaceTask(freeSpaceTask);
 			Node::resetPool();
 			return;
 		}
@@ -180,15 +180,15 @@ void Agent::noPlan(Node * startstate){
 }
 
 Command * Agent::handleConflict(Node * state){
-	if (t){//RequestFreeSpaceTask
+	if (freeSpaceTask){//RequestFreeSpaceTask
 		//myPlanner->removeTask(t);
 		skipNextIte = 2;
 	} else {
 		if (plan != NULL && !(plan->locations.empty())){
-			myPlanner->removeRequestTask(t);
+			myPlanner->removeRequestTask(freeSpaceTask);
 			//delete t;
 
-			t = new RequestFreeSpaceTask(plan->locations, rank);
+			freeSpaceTask = new RequestFreeSpaceTask(plan->locations, rank);
 		}
 	}
 	double prob = 0.3;
@@ -220,7 +220,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	//Checks if the task is a requestfreespacetask, and if the location is free
 	//If it has been removed, it is okay.
 	if (!myPlanner->stillActiveRequest((RequestFreeSpaceTask *)task))
-		t = NULL;
+		freeSpaceTask = NULL;
 
 	if (plan == NULL || plan->isEmpty()){
 		noPlan(startstate);
@@ -258,7 +258,7 @@ Agent::Agent(char chr, int rank, Location location, COLOR color, int region):
 	this->number = (int)(chr - '0');
 	this->myPlanner = nullptr;
 	plan = NULL;
-	t = NULL;
+	freeSpaceTask = NULL;
 
 }
 
@@ -270,7 +270,7 @@ Agent::Agent(char chr, Location location, COLOR color, int region):
 	this->number = chr - '0';
 	this->myPlanner = nullptr;
 	plan = NULL;
-	t = NULL;
+	freeSpaceTask = NULL;
 }
 
 //No color, for single agent levels
@@ -282,7 +282,7 @@ Agent::Agent(char chr, Location location, int region):
 	this->number = chr - '0';
 	this->myPlanner = nullptr;
 	plan = NULL;
-	t = NULL;
+	freeSpaceTask = NULL;
 }
 
 Agent::Agent(const Agent * agt):
@@ -293,7 +293,7 @@ Agent::Agent(const Agent * agt):
 	this->plan = agt->plan;
 	this->number = chr - '0';
 	this->myPlanner = agt->getPlanner();
-	t = NULL;
+	freeSpaceTask = NULL;
 }
 
 int Agent::hashCode()
