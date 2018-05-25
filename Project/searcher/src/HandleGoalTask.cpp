@@ -68,32 +68,37 @@ int HandleGoalTask::h(Agent * a, Node * n)
 	//Box * box;
 	//IT's a moveboxtask
 	//MoveBoxTask * t = dynamic_cast<MoveBoxTask *>( task );
-	for (Box b : n->boxes){
+	for (Box b : n->boxes)
+  {
 		if (b.getColor() != a->getColor())//We don't care
 			continue;
 		//For all boxes with matching getColor(), deduce like 3 if they're on the right place
-		if (Goal * g = n->getGoal(b.getLocation())){
-			if (g->getChar() == tolower(b.getChar())){
-				if (g->getLocation() == b.getLocation()){
-					////std::cerr << "Goal Match" << b.getChar() << "\n";
-					hval -= 5.0;
-					////std::cerr << n->toString() << "\n";
-				} else {
-
+		if (Goal * g = n->getGoal(b.getLocation()))
+    {
+			if (g->getChar() == tolower(b.getChar()))
+      {
+				if (g->getLocation() == b.getLocation())
+        {
+          hval -= 5;
+				}
+        else
+        {
+          hval += 5;
 				}
 			}
 		}
-		if (b.getChar() == box->getChar()){
+		if (b.getChar() == box->getChar())
+    {
 			hval += destination.getDistance(b.getLocation());
-
 			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){//Ensures they're next to
 				hval -= 5.0;
 				////std::cerr << "Next to box" << b.getChar() << " Position: " << b.getX() <<"," <<b.getY() << "\n";
 				////std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
-			} else {
+			}
+      else
+      {
 				hval += b.getDistance(n->agents[a->getChar() - '0']);
 			}
-
 			//The right box
 		}
 	}

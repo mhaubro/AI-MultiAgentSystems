@@ -77,11 +77,11 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
   int MAXITE = 20000;
   if(start_state->agents.size() == 1)
-      MAXITE = 200000;
+      MAXITE = 40000;
 
-	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
+	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task))
 		MAXITE = 3000;
-	}
+
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();
