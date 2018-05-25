@@ -46,6 +46,10 @@ public:
   bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);
+
+  RequestFreeSpaceTask * getHelpJob(Agent * agent, Node * state);
+  bool hasHelpJob(Agent * agent, Node * state);
+
   int region;
 
 

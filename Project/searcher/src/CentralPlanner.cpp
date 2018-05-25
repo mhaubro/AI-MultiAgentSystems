@@ -4,11 +4,8 @@
 #include <stack>
 #include <list>
 #include <algorithm>
-
-//TODO
-void CentralPlanner::removeTask(Task * t){
-
-}
+#include <ctime>
+#include <cstdlib>
 
 CentralPlanner::CentralPlanner(int region){
 	this->region = region;
@@ -119,12 +116,17 @@ Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
 	return nullptr;
 }
 
-//Todo
+
+int myrandom (int i) { return std::rand()%i;}
+
 bool CentralPlanner::hasJob(Agent * agent, Node * state){
+	std::srand ( unsigned ( std::time(0) ) );
 	for (HandleGoalTask * h : UnassignedGoals){
-		if (h->solvingColors[agent->getColor()] && !h->seemsCompleted(agent, state));
+		if (h->solvingColors[agent->getColor()] && !h->seemsCompleted(agent, state))
 			return true;
 	}
+
+	std::random_shuffle ( freeSpaceTasks.begin(), freeSpaceTasks.end(), myrandom);
 
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
 		if (!t->seemsCompleted(agent, state))
@@ -265,3 +267,18 @@ Node * CentralPlanner::FindSolution(Node * n, Goal g)
 	}
 	return nullptr;
 }
+
+RequestFreeSpaceTask * CentralPlanner::getHelpJob(Agent * agent, Node * state){
+	for (RequestFreeSpaceTask * t : freeSpaceTasks){
+		//std::cerr << "Checking for requests \n";
+		if (!t->seemsCompleted(agent, state)){
+			return t;
+		}
+	}
+	return NULL;
+}
+
+bool CentralPlanner::hasHelpJob(Agent * agent, Node * state){
+	return (NULL != getHelpJob(agent, state));
+}
+
