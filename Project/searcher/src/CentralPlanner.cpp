@@ -237,7 +237,7 @@ Node * CentralPlanner::FindSolution(Node * n, Goal g1, Goal g2)
 				if(a.getColor() == t->box->getColor())
 				{
 					a.task = t;
-					std::list<Node*> solution = a_star_search(n, &a, a.task, g2);
+					std::list<Node*> solution = a_star_search(n, &a, a.task, g1, g2);
 					a.task = nullptr;
 					return solution.back();
 				}

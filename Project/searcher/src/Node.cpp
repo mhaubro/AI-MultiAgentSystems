@@ -513,9 +513,7 @@ bool Node::isGoalState(Goal g)
 	for(auto & b : this->boxes)
 	{
 		if(g.getLocation() == b.getLocation() && g.getChar() == std::tolower(b.getChar()))
-		{
 			return true;
-		}
 	}
 	return false;
 }

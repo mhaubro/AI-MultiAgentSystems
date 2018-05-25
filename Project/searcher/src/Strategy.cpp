@@ -122,14 +122,17 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	}
 }
 
-list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, Goal g){
+list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal g1, Goal g2)
+{
 	if (task == NULL)
 		return std::list<Node*>();
-	int MAXITE = 40000;
-	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
+
+  int MAXITE = 40000;
+
+	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task))
 		MAXITE = 3000;
-	}
-	int iteration = 0;
+
+  int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();
 	// frontier used to select which nodes to process next.
@@ -139,31 +142,26 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, Goal g){
 	frontier.push(start_state, start_state->g());
 
 	// search loop
-	while(true){
+	while(true)
+  {
 		//We shouldn't search for too long, rather we should turn around and pick other solution
-		if (iteration > MAXITE){
+		if (iteration > MAXITE)
 			return std::list<Node *>();
-		}
+
 		// if frontier is empty and no solution is found, return an empty list.
-		if (frontier.empty()){
+		if (frontier.empty())
 			return list<Node*>();
-		}
+
 		Node* leaf = frontier.pull();
 
-		if (iteration % 2500 == 0){
-			//std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
-			//std::cerr << leaf->toString();
-		}
-		//std::cerr << leaf->toString() << "\n";
-		if (task->seemsCompleted(agent, leaf)){
-			return leaf->extractPlan();
-		}
-		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar(), g);
-		for (auto& n : new_nodes){
-			if (!frontier.is_explored(&n)){
-				////std::cerr << "Pushing object\n" << n.toString()<< "\n";
+		if (leaf->isGoalState(g1))
+      return leaf->extractPlan();
+
+		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar(), g2);
+		for (auto& n : new_nodes)
+    {
+			if (!frontier.is_explored(&n))
 				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
-			}
 		}
 		iteration++;
 	}
