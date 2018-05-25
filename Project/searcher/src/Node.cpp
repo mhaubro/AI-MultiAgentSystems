@@ -345,64 +345,65 @@ std::vector<Node> Node::getExpandedNodes(char agent)
 // Do not return nodes that destroy the goal
 std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
 {
-	std::vector<Node> expandedNodes = std::vector<Node>();
-  int agentID = agent-48;
-  Agent a = this->agents[agentID];
-
-	Location agentLoc = a.getLocation();
-	int coms = Command::EVERY.size();
-	for (int i = 0; i < coms; i++)
+  std::vector<Node> expandedNodes = std::vector<Node>();
+	for (const auto & a : agents)
   {
-		Command * c = &(Command::EVERY[i]);
-		// Determine applicability of action
-		Location newAgentLoc = a.getLocation() + c->agentdloc();
-		if (c->getActionType() == Command::Move)
+		if (a.getChar() != agent)
+			continue;
+
+		Location agentLoc = a.getLocation();
+		int coms = Command::EVERY.size();
+		for (int i = 0; i < coms; i++)
     {
-			// Check if there's a wall or box on the cell to which the agent is moving
-			if (this->cellIsFree(newAgentLoc))
+			Command * c = &(Command::EVERY[i]);
+			Location newAgentLoc = a.getLocation() + c->agentdloc();
+			if (c->getActionType() == Command::Move)
       {
-				Node n = Node(this, c);
-				n.getAgent(agentLoc)->setLocation(newAgentLoc);
-			  expandedNodes.push_back(n);
-			}
-		}
-    else if (c->getActionType() == Command::Push)
-    {
-			// Make sure that there's actually a box to move
-			if (this->boxAt(newAgentLoc) && this->getBox(newAgentLoc)->getColor() == a.getColor())
-      {
-				Location newBoxLoc = newAgentLoc + c->boxdloc();
-				//std::cerr << newBoxLoc.toString() << "\n";
-				// .. and that new cell of box is free
-				if (this->cellIsFree(newBoxLoc))
+				// Check if there's a wall or box on the cell to which the agent is moving
+				if (this->cellIsFree(newAgentLoc))
         {
 					Node n = Node(this, c);
 					n.getAgent(agentLoc)->setLocation(newAgentLoc);
-					n.getBox(newAgentLoc)->setLocation(newBoxLoc);
-          if(n.isGoalState(g))
-					  expandedNodes.push_back(n);
+					expandedNodes.push_back(n);
 				}
 			}
-		}
-    else if (c->getActionType() == Command::Pull)
-    {
-			// Cell is free where agent is going
-			if (this->cellIsFree(newAgentLoc))
+      else if (c->getActionType() == Command::Push)
       {
-				Location boxLoc = agentLoc - c->boxdloc();
-				if (this->boxAt(boxLoc) && this->getBox(boxLoc)->getColor() == a.getColor())
+				// Make sure that there's actually a box to move
+				if (this->boxAt(newAgentLoc) && this->getBox(newAgentLoc)->getColor() == a.getColor())
         {
-					Node n = Node(this, c);
-					n.getBox(boxLoc)->setLocation(agentLoc);
-					n.getAgent(agentLoc)->setLocation(newAgentLoc);
-          if(n.isGoalState(g))
-            expandedNodes.push_back(n);
+					Location newBoxLoc = newAgentLoc + c->boxdloc();
+					//std::cerr << newBoxLoc.toString() << "\n";
+					// .. and that new cell of box is free
+					if (this->cellIsFree(newBoxLoc))
+          {
+						Node n = Node(this, c);
+						n.getAgent(agentLoc)->setLocation(newAgentLoc);
+						n.getBox(newAgentLoc)->setLocation(newBoxLoc);
+            if(n.isGoalState(g))
+						  expandedNodes.push_back(n);
+					}
+				}
+			}
+      else if (c->getActionType() == Command::Pull)
+      {
+				// Cell is free where agent is going
+				if (this->cellIsFree(newAgentLoc))
+        {
+					Location boxLoc = agentLoc - c->boxdloc();
+					if (this->boxAt(boxLoc) && this->getBox(boxLoc)->getColor() == a.getColor())
+          {
+						Node n = Node(this, c);
+						n.getBox(boxLoc)->setLocation(agentLoc);
+						n.getAgent(agentLoc)->setLocation(newAgentLoc);
+            if(n.isGoalState(g))
+						  expandedNodes.push_back(n);
+					}
 				}
 			}
 		}
 	}
-	return expandedNodes;
-}
+	return expandedNodes;}
 
 std::list<Node *> Node::extractPlan()
 {
