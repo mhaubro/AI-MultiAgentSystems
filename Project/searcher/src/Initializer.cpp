@@ -246,7 +246,7 @@ namespace Initializer {
     }
 
     // print the analysed map with static boxes
-    std::cerr << map_to_string(map, width, height) << std::endl;
+    std::cerr << "Static entities\n" << map_to_string(map, width, height) << std::endl;
 
     vector<vector<string>> regions;
 
@@ -341,7 +341,6 @@ namespace Initializer {
   }
 
 
-
   std::map<char, string> map_colors(const vector<string> input){
     std::map<char, string> map;
 
@@ -404,6 +403,8 @@ namespace Initializer {
     Node * initialState = new Node();
     initialState->boxes = boxes;
     initialState->agents = agents;
+
+    std::cerr << "Analysed Map:\nRegions: " << regions.size() << "\nAgents: " << agents.size() << "\nBoxes: " << boxes.size() << "\nGoals: " << Node::goals.size() << "\n" << initialState->toString() << std::endl << std::flush;
 
     return initialState;
   }
