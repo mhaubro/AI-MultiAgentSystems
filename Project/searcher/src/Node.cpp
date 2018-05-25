@@ -54,6 +54,41 @@ void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
 	boxes = newB;
 }
 
+void Node::clearGoals(char agent, Goal * g1, Goal * g2){
+	std::vector<Agent> newA = std::vector<Agent>();
+	std::vector<Box> newB = std::vector<Box>();
+  std::vector<Goal> newG = std::vector<Goal>();
+
+	for (const auto & a : agents)
+  {
+		if (a.getChar() == agent)
+      newA.emplace_back(&a);
+	}
+
+  for (const auto & b : boxes)
+  {
+    if(g1->getChar() == std::tolower(b.getChar()) || g2->getChar() == std::tolower(b.getChar()))
+      newB.push_back(b);
+  }
+
+  for (const auto & g : goals)
+  {
+    if(g1->getChar() == g.getChar() && g1->getLocation() == g.getLocation())
+    {
+      newG.push_back(g);
+      continue;
+    }
+    if(g2->getChar() == g.getChar() && g2->getLocation() == g.getLocation())
+    {
+      newG.push_back(g);
+      continue;
+    }
+  }
+	agents = newA;
+	boxes = newB;
+  //goals = newG;
+}
+
 void Node::removeBox(Location loc){
 	std::vector<Box>::iterator it = boxes.begin();
 	for (int i = 0; i < boxes.size(); i++){
@@ -305,7 +340,7 @@ std::vector<Node> Node::getExpandedNodes(char agent)
 }
 
 // Do not return nodes that destroy the goal
-std::vector<Node> Node::getExpandedNodes(char agent, Goal g)
+std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
 {
 	std::vector<Node> expandedNodes = std::vector<Node>();
   int agentID = agent-48;
@@ -428,7 +463,6 @@ bool Node::equals(const Node * obj) const {
 
 std::string Node::toString() {
 	std::string s("");
-
 	for (int y = 0; y < maxY; y++) {
 		for (int x = 0; x < maxX; x++) {
 			if (Node::walls[x+y*maxX]) {
@@ -439,6 +473,7 @@ std::string Node::toString() {
 		}
 		s.append("\n");
 	}
+
 	//Write a goal at location for each goal.
 	for (auto & g : goals){
 		int x = g.getLocation().getX();
@@ -457,7 +492,6 @@ std::string Node::toString() {
 		int y = a.getLocation().getY();
 		s[x+y*(maxX+1)] = a.getChar();
 	}
-
 
 	return s;
 }
@@ -508,11 +542,11 @@ bool Node::isGoalState(Entity::COLOR color)
 	return true;
 }
 
-bool Node::isGoalState(Goal g)
+bool Node::isGoalState(Goal * g)
 {
 	for(auto & b : this->boxes)
 	{
-		if(g.getLocation() == b.getLocation() && g.getChar() == std::tolower(b.getChar()))
+		if(g->getLocation() == b.getLocation() && g->getChar() == std::tolower(b.getChar()))
 			return true;
 	}
 	return false;
@@ -585,13 +619,13 @@ bool Node::agentAt(Location loc)
 	return false;
 }
 
-void Node::solveGoal(Goal g)
+void Node::solveGoal(Goal * g)
 {
   for(auto & b : this->boxes)
 	{
-		if(std::tolower(g.getChar()) == std::tolower(b.getChar()))
+		if(std::tolower(g->getChar()) == std::tolower(b.getChar()))
 		{
-      b.setLocation(g.getLocation());
+      b.setLocation(g->getLocation());
       return;
 		}
 	}

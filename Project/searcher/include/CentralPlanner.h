@@ -39,19 +39,19 @@ public:
 
   bool hasJob(Agent * agent, Node * state);
   Task * getJob(Agent * agent, Node * state);
-  Node * FindSolution(Node * n, Goal g1, Goal g2);
-  bool getOrderOfGoals(Node * n, Goal g1, Goal g2);
+  Node * FindSolution(Node * n, Goal * g1, Goal * g2);
+  bool getOrderOfGoals(Node * n, Goal * g1, Goal * g2);
   void removeTask(Task * t);
   void setPredecessors(Node * n);
-  void setPredecessor(char g1, char g2);
+  void setPredecessor(Goal * g1, Goal * g2);
   bool addRequestFreeSpaceTask(RequestFreeSpaceTask * h);
   bool returnGoalTask(HandleGoalTask * h);
   bool removeRequestTask(RequestFreeSpaceTask * h);
   int region;
-  std::vector<Goal> potentialConflictingGoals(Node * n);
+  std::vector<Goal*> potentialConflictingGoals(Node * n);
 
 
-private:  
+private:
   void getCompatibleGoals(Node * n);
 };
 
