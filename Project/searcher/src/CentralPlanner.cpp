@@ -149,8 +149,8 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
-		//if(!UnassignedGoals[i]->predecessorsComplete(agent, state))
-      //continue;
+		if(!UnassignedGoals[i]->predecessorsComplete(agent, state))
+      continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
 		//std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
