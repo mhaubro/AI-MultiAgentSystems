@@ -153,7 +153,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
       continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
-		//std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
+	  std::cerr << "Trying with goal " << state->getGoal(h->destination)->getChar() << "\n";
 
 		if (h->seemsCompleted(agent, state))
 			continue;

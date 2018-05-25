@@ -94,6 +94,10 @@ bool Location::operator==(const Location& b) const{
 	return (this->x == b.getX() && this->y == b.getY());
 }
 
+bool Location::operator!=(const Location& b) const{
+	return !(this->x == b.getX() && this->y == b.getY());
+}
+
 std::string Location::toString() const{
 	std::stringstream s;
 	s << "(x: " << x << ", y: " << y << ")";

@@ -62,42 +62,33 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 int HandleGoalTask::h(Agent * a, Node * n)
 {
 	double hval = 1000.0;
-	//Find box.
-	//Yes, the if below is legal
-	////std::cerr << "Doing a heuristic thing\n";
-	//Box * box;
-	//IT's a moveboxtask
-	//MoveBoxTask * t = dynamic_cast<MoveBoxTask *>( task );
-	for (Box b : n->boxes){
-		if (b.getColor() != a->getColor())//We don't care
-			continue;
-		//For all boxes with matching getColor(), deduce like 3 if they're on the right place
-		if (Goal * g = n->getGoal(b.getLocation())){
-			if (g->getChar() == tolower(b.getChar())){
-				if (g->getLocation() == b.getLocation()){
-					////std::cerr << "Goal Match" << b.getChar() << "\n";
-					hval -= 5.0;
-					////std::cerr << n->toString() << "\n";
-				} else {
 
-				}
+	for (Box b : n->boxes)
+  {
+		if (b.getColor() != a->getColor())
+			continue;
+
+		if (Goal * g = n->getGoal(b.getLocation()))
+    {
+			if (g->getChar() == tolower(b.getChar()))
+      {
+				if (g->getLocation() == b.getLocation())
+          hval -= 35;
+        else
+          hval += 5;
 			}
 		}
-		if (b.getChar() == box->getChar()){
+
+    // The box in this task
+		if (b.getChar() == box->getChar())
+    {
 			hval += destination.getDistance(b.getLocation());
-
-			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){//Ensures they're next to
-				hval -= 5.0;
-				////std::cerr << "Next to box" << b.getChar() << " Position: " << b.getX() <<"," <<b.getY() << "\n";
-				////std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
-			} else {
+			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3)
+				hval -= 35.0;
+      else
 				hval += b.getDistance(n->agents[a->getChar() - '0']);
-			}
-
-			//The right box
 		}
 	}
-	////std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
 	return n->g()+hval;
 }
 

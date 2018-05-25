@@ -77,11 +77,11 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
   int MAXITE = 20000;
   if(start_state->agents.size() == 1)
-      MAXITE = 200000;
+    MAXITE = 400000;
 
-	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
+	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task))
 		MAXITE = 3000;
-	}
+
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
 	std::vector<Node> explored_nodes = std::vector<Node>();
@@ -95,29 +95,31 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	while(true){
 		//We shouldn't search for too long, rather we should turn around and pick other solution
 		if (iteration > MAXITE){
+      std::cerr << "Max iterations " << iteration << "\n";
 			return std::list<Node *>();
 		}
 		// if frontier is empty and no solution is found, return an empty list.
 		if (frontier.empty()){
+      std::cerr << "Empty after iterations " << iteration << "\n";
 			return list<Node*>();
 		}
 		Node* leaf = frontier.pull();
 
-		if (iteration % 2500 == 0){
-			std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
-			std::cerr << "Searching is done in agent "<< agent->getChar() << "\n";
-			//std::cerr << leaf->toString();
-		}
+		if (iteration % 2500 == 0)
+    {
+      // std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
+      // std::cerr << leaf->toString();
+    }
+
 		//std::cerr << leaf->toString() << "\n";
-		if (task->seemsCompleted(agent, leaf)){
+		if (task->seemsCompleted(agent, leaf))
 			return leaf->extractPlan();
-		}
+
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar());
-		for (auto& n : new_nodes){
-			if (!frontier.is_explored(&n)){
-				////std::cerr << "Pushing object\n" << n.toString()<< "\n";
+		for (auto& n : new_nodes)
+    {
+			if (!frontier.is_explored(&n))
 				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
-			}
 		}
 		iteration++;
 	}

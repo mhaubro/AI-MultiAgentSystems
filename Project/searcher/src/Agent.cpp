@@ -13,10 +13,13 @@
 
 //#define BACKUPLOOKAHEAD 5
 
-std::list<Node *> Agent::search(Node * state){
-	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+std::list<Node *> Agent::search(Node * state)
+{
+	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task))
+  {
 		//There's an agent on our destination
-		if (state->getAgent(tmp->destination)){
+		if (state->getAgent(tmp->destination) && this->getLocation() != tmp->destination)
+    {
 			Node stateWithoutAgent = *state;
 			stateWithoutAgent.removeAgent(tmp->destination);
 
@@ -30,8 +33,10 @@ std::list<Node *> Agent::search(Node * state){
 
 			return a_star_search(&stateWithoutAgent, this, this->task);
 		}
-		if (Box * b = state->getBox(tmp->destination)){
-			if (b->getColor() != color){
+		if (Box * b = state->getBox(tmp->destination))
+    {
+			if (b->getColor() != color)
+      {
 				Node stateWithoutBox = *state;
 				stateWithoutBox.removeBox(tmp->destination);
 
@@ -134,17 +139,19 @@ void Agent::noTask(Node * startstate){
 	plan = new Plan(search(startstate), this->getLocation());
 }
 
-void Agent::gettingJob(Node * startstate){
-
-	if (myPlanner->hasJob(this, startstate)){
+void Agent::gettingJob(Node * startstate)
+{
+	if (myPlanner->hasJob(this, startstate))
+  {
 		task = myPlanner->getJob(this, startstate);
-		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task))
+    {
 			//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.toString() << " box: " << tmp->box->getChar() << "\n";
 		}
 		std::list<Node *> searchResult = search(startstate);
 		//std::cerr << "Received a task\n";
-		if (searchResult.empty()){
-			//std::cerr << "Empty plan?\n";
+		if (searchResult.empty())
+    {
 			return;
 			//Do something
 		}
