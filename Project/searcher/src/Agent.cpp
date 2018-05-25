@@ -75,8 +75,6 @@ void Agent::cleanTasks(){
 
 	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 		myPlanner->returnGoalTask(tmp);
-		myPlanner->removeRequestTask(freeSpaceTask);
-		task = NULL;
 	} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
 		if (!myPlanner->stillActiveRequest(tmp)){
 			task = NULL;
@@ -86,11 +84,23 @@ void Agent::cleanTasks(){
 		delete task;
 		task = NULL;
 	}
-	freeSpaceTask = NULL;
-	myPlanner->removeRequestTask(freeSpaceTask);
+	removeFreeSpaceTask();
 	//t should be deleted, but that would break everything right now
 	//TODO
 
+}
+
+void Agent::removeFreeSpaceTaskMessage(RequestFreeSpaceTask * t){
+	if (task == t){
+		task == NULL;
+		plan->drain();
+	}
+}
+
+void Agent::removeFreeSpaceTask(){
+	myPlanner->removeRequestTask(freeSpaceTask);
+	delete freeSpaceTask;
+	freeSpaceTask = NULL;
 }
 
 void Agent::replanTask(Node * state){

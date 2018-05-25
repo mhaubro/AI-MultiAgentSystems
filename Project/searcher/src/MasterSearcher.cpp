@@ -49,6 +49,11 @@ void getPlan(Node * initialState)
 
 	}
 
+	//Giving each centralplanner their node
+	for (int i = 0; i < regions; i++){
+		planners[i].node = &tempstates[i];
+	}
+
 	//Making a vector of agent pointers to getactions from.
 	std::vector<Agent *> agentptrs = std::vector<Agent *> (agents);
 	for (int j = 0; j < regions; j++){

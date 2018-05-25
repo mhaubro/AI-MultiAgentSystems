@@ -198,10 +198,12 @@ bool CentralPlanner::removeRequestTask(RequestFreeSpaceTask * h){
 	for (int i = 0; i < freeSpaceTasks.size(); i++){
 		if (freeSpaceTasks[i] == h){//Yes, a pointer match
 			freeSpaceTasks.erase(freeSpaceTasks.begin()+i);
-			return true;
 		}
 	}
-	return false;
+	for (int i = 0; i < node->agents.size(); i++){
+		node->agents[i].removeFreeSpaceTaskMessage(h);
+	}
+	return true;
 }
 
 void CentralPlanner::DetectTasks(Node * n)

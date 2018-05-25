@@ -24,6 +24,8 @@ class Agent : public Entity
     int rank;
     int number;
 
+    void removeFreeSpaceTaskMessage(RequestFreeSpaceTask * toBeRemoved);
+
     Command * getAction(Node * startstate, Node * tempstate);
 
 
@@ -37,6 +39,8 @@ class Agent : public Entity
     Agent(char chr, Location location, Entity::COLOR color, int region);
     Agent(char chr, Location location, int region);
     Agent(const Agent * agt);
+
+    void removeFreeSpaceTask();
 
     int hashCode();
 

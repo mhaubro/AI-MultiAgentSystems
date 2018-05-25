@@ -51,6 +51,7 @@ public:
   bool hasHelpJob(Agent * agent, Node * state);
 
   int region;
+  Node * node;
 
 
 private:
