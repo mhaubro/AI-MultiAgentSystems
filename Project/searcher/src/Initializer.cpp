@@ -404,7 +404,19 @@ namespace Initializer {
     initialState->boxes = boxes;
     initialState->agents = agents;
 
-    std::cerr << "Analysed Map:\nRegions: " << regions.size() << "\nAgents: " << agents.size() << "\nBoxes: " << boxes.size() << "\nGoals: " << Node::goals.size() << "\n" << initialState->toString() << std::endl << std::flush;
+    std::cerr << "Analysed Map:\nRegions: " << regions.size() << "\nAgents: " << agents.size() << "\nBoxes: " << boxes.size() << "\nGoals: " << Node::goals.size() << std::endl;
+
+    for (auto& a : agents)
+      std::cerr << "Agent: " << a.getChar() << " " << a.getLocation() << std::endl;
+
+    for (auto& b : boxes)
+      std::cerr << "Box: " << b.getChar() << " " << b.getLocation() << std::endl;
+
+    for (auto& b : Node::goals)
+      std::cerr << "Goal: " << b.getChar() << " " << b.getLocation() << std::endl;
+
+
+    std::cerr << std::endl << initialState->toString() << std::endl << std::flush;
 
     return initialState;
   }
