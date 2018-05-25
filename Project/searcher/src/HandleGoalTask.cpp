@@ -70,9 +70,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 		if (Goal * g = n->getGoal(b.getLocation())){
 			if (g->getChar() == tolower(b.getChar())){
 				if (g->getLocation() == b.getLocation()){
-					////std::cerr << "Goal Match" << b.getChar() << "\n";
 					hval -= 5.0;
-					////std::cerr << n->toString() << "\n";
 				} else {
 
 				}

@@ -2,10 +2,10 @@
 #include <iostream>
 #include <string>
 
-int Entity::idCounter;
 
 Entity::Entity(char chr, Location location, COLOR color, int region) :
 chr(chr), location(location), color(color), region(region) {
+	static int idCounter;
 	id = idCounter;
 	idCounter++;
 }

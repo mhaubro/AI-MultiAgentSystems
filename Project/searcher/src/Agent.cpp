@@ -30,7 +30,7 @@ std::list<Node *> Agent::search(Node * state){
 			t = new RequestFreeSpaceTask(loc, 0, tmp->box);
 			myPlanner->addRequestFreeSpaceTask(t);
 
-			return a_star_search(&stateWithoutAgent, this, this->task);
+			return a_star_search(&stateWithoutAgent, this, this->task, 20000);
 		}
 		if (Box * b = state->getBox(tmp->destination)){
 			if (b->getColor() != color){
@@ -46,26 +46,26 @@ std::list<Node *> Agent::search(Node * state){
 				t = new RequestFreeSpaceTask(loc, 0, tmp->box);
 				myPlanner->addRequestFreeSpaceTask(t);
 
-				return a_star_search(&stateWithoutBox, this, this->task);
+				return a_star_search(&stateWithoutBox, this, this->task, 20000);
 				//There's a box we can't move at destination
 			}
 		}
 	}
-	return a_star_search(state, this, this->task);
+	return a_star_search(state, this, this->task, 20000);
 }
 
 //Commits a search where all things are gone, and asks for the locations.
 std::list<Node *> Agent::Nakedsearch(Node * state){
 	Node nakedstate = *state;
 	nakedstate.clearOtherAgents(chr);
-	return a_star_search(state, this, this->task);
+	return a_star_search(state, this, this->task, 20000);
 }
 
 //Commits a search where all things are gone, and asks for the locations.
 std::list<Node *> Agent::noBoxesOrAgents(Node * state, Box * box){
 	Node nakedstate = *state;
 	nakedstate.clearOtherAgentsAndBoxes(chr, box);
-	return a_star_search(state, this, this->task);
+	return a_star_search(state, this, this->task, 20000);
 }
 
 void Agent::cleanTasks(){

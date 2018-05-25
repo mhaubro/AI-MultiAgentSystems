@@ -72,15 +72,16 @@ public:
 //	} else if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
 //		//std::cerr << "Not a movebox task, not supported yet\n";
 
-list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
+list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, int ite){
 	if (task == NULL)
 		return std::list<Node*>();
-	int MAXITE = 200000;
+	int MAXITE = 20000;
 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
 		MAXITE = 3000;
 	} else if (GetAwayFromGoalTask * tmp = dynamic_cast<GetAwayFromGoalTask *>(task)){
-
+		MAXITE = 500;
 	} else if (HandleGoalTask * tmp = dynamic_cast<HandleGoalTask *>(task)){
+		MAXITE = ite;
 		std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
 	}
 	int iteration = 0;
