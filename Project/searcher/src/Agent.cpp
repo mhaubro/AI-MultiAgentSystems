@@ -8,6 +8,7 @@
 #include "Strategy.h"
 #include "CentralPlanner.h"
 #include "RequestFreeSpaceTask.h"
+#include "GetAwayFromGoalTask.h"
 #include <iostream>
 
 //#define BACKUPLOOKAHEAD 5
@@ -18,12 +19,30 @@ std::list<Node *> Agent::search(Node * state){
 		if (state->getAgent(tmp->destination)){
 			Node stateWithoutAgent = *state;
 			stateWithoutAgent.removeAgent(tmp->destination);
+
+			//This should be a function
+			myPlanner->removeRequestTask(t);
+			delete t;
+			std::list<Location> loc = std::list<Location>();
+			loc.push_back(tmp->destination);
+			t = new RequestFreeSpaceTask(loc, 0, tmp->box);
+			myPlanner->addRequestFreeSpaceTask(t);
+
 			return a_star_search(&stateWithoutAgent, this, this->task);
 		}
 		if (Box * b = state->getBox(tmp->destination)){
 			if (b->getColor() != color){
 				Node stateWithoutBox = *state;
 				stateWithoutBox.removeBox(tmp->destination);
+
+				//This should be a function
+				myPlanner->removeRequestTask(t);
+				delete t;
+				std::list<Location> loc = std::list<Location>();
+				loc.push_back(tmp->destination);
+				t = new RequestFreeSpaceTask(loc, 0, tmp->box);
+				myPlanner->addRequestFreeSpaceTask(t);
+
 				return a_star_search(&stateWithoutBox, this, this->task);
 				//There's a box we can't move at destination
 			}
@@ -46,109 +65,114 @@ std::list<Node *> Agent::noBoxesOrAgents(Node * state, Box * box){
 	return a_star_search(state, this, this->task);
 }
 
-Command * Agent::noPlan(Node * startstate){
-	std::cerr<< "Doing NoPlan from agent" <<  chr << "\n";
+void Agent::cleanTasks(){
+	//Task was completed, there's more tasks for us. We do some cleaning.
+	//std::cerr <<"Task was: " << task << " Doing replanning\n" ;
+	//std::cerr << "Being returned from agent "<< chr<< "\n";
+
+	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+		myPlanner->returnGoalTask(tmp);
+		myPlanner->removeRequestTask(t);
+		task = NULL;
+	} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
+		if (!myPlanner->stillActiveRequest(tmp)){
+			task = NULL;
+
+		}
+	} else 	if (GetAwayFromGoalTask* tmp = dynamic_cast<GetAwayFromGoalTask*>(this->task)){
+		delete task;
+		task = NULL;
+	}
+	t = NULL;
+	myPlanner->removeRequestTask(t);
+	//t should be deleted, but that would break everything right now
+	//TODO
+
+}
+
+void Agent::replanTask(Node * state){
+	std::list<Node *> searchResult = search(state);
+
+	if (searchResult.empty()){
+		std::cerr << "Search Result was empty\n";
+		//No agents, try path
+		if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
+			this->task = NULL;
+			return;
+		} else if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+			//Takes out all agents
+			searchResult = Nakedsearch(state);
+
+			//No boxes or agents, try path
+			if (searchResult.empty()){
+				searchResult = noBoxesOrAgents(state, tmp->box);
+				if (searchResult.empty()){
+					myPlanner->returnGoalTask((HandleGoalTask *)task);
+					this->task = NULL;
+					return;
+				}
+				//We have a path without agents and boxes, we proceed
+			}
+			//We have a path without agents, we proceed
+			plan = new Plan(searchResult, this->getLocation());
+			t = new RequestFreeSpaceTask(plan->getLocations(), rank, tmp->box);
+			myPlanner->addRequestFreeSpaceTask(t);
+			Node::resetPool();
+			return;
+		}
+	}
+
+	plan = new Plan(searchResult, this->getLocation());
+	std::cerr << "Following Plan found\n";
+	std::cerr << plan->toString() << "\n";
+	Node::resetPool();
+
+}
+
+void Agent::noTask(Node * startstate){
+	task = new GetAwayFromGoalTask();
+	plan = new Plan(search(startstate), this->getLocation());
+}
+
+void Agent::gettingJob(Node * startstate){
+
+	if (myPlanner->hasJob(this, startstate)){
+		task = myPlanner->getJob(this, startstate);
+		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+			//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.first <<"," << tmp->destination.second << " box: " << tmp->box->chr << "\n";
+		}
+		std::list<Node *> searchResult = search(startstate);
+		//std::cerr << "Received a task\n";
+		if (searchResult.empty()){
+			//std::cerr << "Empty plan?\n";
+			return;
+			//Do something
+		}
+		plan = new Plan(searchResult, this->getLocation());
+	}
+}
+
+void Agent::noPlan(Node * startstate){
 
 	if (this->task != NULL && this->task->seemsCompleted(this, startstate)){
-		//Task was completed, there's more tasks for us.
-		std::cerr <<"Task was: " << task << " Doing replanning\n" ;
-		std::cerr << "Being returned from agent "<< chr<< "\n";
-
-		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-			myPlanner->returnGoalTask(tmp);
-			myPlanner->removeRequestTask(t);
-		}
-    else if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task))
-    {
-			if (!myPlanner->stillActiveRequest(tmp))
-				task = NULL;
-		}
+		std::cerr<< "2:Doing NoPlan from agent with completed task " <<  chr << "\n";
+		//We are done with the current task
+		cleanTasks();
 	}
 
-	//Short-cirrcuit. We have a task, which is not completed
+	//Short-circuit. We have a task, which is not completed. We replan.
 	if (this->task != NULL && !this->task->seemsCompleted(this, startstate)){
-		//Task wasn't completed, let's replan
-		std::cerr << "Doing replanning with original task\n";
-		//Do replanning
-		//delete plan;
-		std::list<Node *> searchResult = search(startstate);
-
-		if (searchResult.empty()){
-			std::cerr << "Search Result was empty\n";
-			//No agents, try path
-			if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
-				return &Command::EVERY[0];
-			}
-			if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-				//				//std::cerr << "Assigned task " << tmp->box->chr << " to agent " << this->chr << "\n";
-				searchResult = Nakedsearch(startstate);
-
-				//No boxes or agents, try path
-				if (searchResult.empty()){
-					searchResult = noBoxesOrAgents(startstate, tmp->box);
-					if (searchResult.empty()){
-						//We return the task to the centralplanner, and see if it has a helpjob
-						myPlanner->removeRequestTask(t);
-						//delete t;
-						t = NULL;
-						myPlanner->returnGoalTask((HandleGoalTask *)task);
-						this->task = NULL;
-						return &Command::EVERY[0];
-					}
-					//We have a path without agents and boxes, we proceed
-				}
-				//We have a path without agents, we proceed
-			}
-
-			//std::cerr << "Wanting to add a request\n";
-			plan = new Plan(searchResult, this->getLocation());
-			t = new RequestFreeSpaceTask(plan->getLocations(), rank);
-			//Do something
-			myPlanner->addRequestFreeSpaceTask(t);
-			//std::cerr << "NoCrash?\n";
-			Node::resetPool();
-			return NULL;
-		}
-
-		plan = new Plan(searchResult, this->getLocation());
-		std::cerr << "Following Plan found\n";
-		std::cerr << plan->toString() << "\n";
-		Node::resetPool();
-		return NULL;
+		std::cerr<< "2:Doing NoPlan from agent without completed task " <<  chr << "\n";
+		return replanTask(startstate);
 	}
+
 	//We don't have a task/have completed
-	else if (!myPlanner->hasJob(this, startstate)){
-		//Noone has requested anything.
-		//Maybe we should improve our positioning, by moving away from other agents??
-		return &Command::EVERY[0];
+	else if(!myPlanner->hasJob(this, startstate)){
+		std::cerr<< "2:Doing NoPlan from without a job " <<  chr << "\n";
+		return noTask(startstate);
 	} else {
-		//Remove any requests for more space. If it's null, doesn't matter.
-		myPlanner->removeRequestTask(t);
-		//delete t;
-		t = NULL;
-		task = NULL;
-
-		//Do replanning
-		//delete plan;
-
-		if (myPlanner->hasJob(this, startstate)){
-			task = myPlanner->getJob(this, startstate);
-			if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-				//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.first <<"," << tmp->destination.second << " box: " << tmp->box->chr << "\n";
-			}
-			std::list<Node *> searchResult = search(startstate);
-			//std::cerr << "Received a task\n";
-			if (searchResult.empty()){
-				//std::cerr << "Empty plan?\n";
-				return &Command::EVERY[0];;
-				//Do something
-			}
-
-			plan = new Plan(searchResult, this->getLocation());
-			return NULL;
-		}
-
-		return &Command::EVERY[0];;
+		std::cerr<< "2:Doing NoPlan from agent with a job " <<  chr << "\n";
+		return gettingJob(startstate);
 	}
 }
 
@@ -160,6 +184,7 @@ Command * Agent::handleConflict(){
 		if (plan != NULL && !(plan->locations.empty())){
 			myPlanner->removeRequestTask(t);
 			//delete t;
+
 			t = new RequestFreeSpaceTask(plan->locations, rank);
 		}
 	}
@@ -172,43 +197,58 @@ Command * Agent::handleConflict(){
 	return &Command::EVERY[0];
 }
 
+void Agent::checkForHelp(Node * state){
+	if (myPlanner->hasHelpJob(this, state)){
+		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
+			cleanTasks();
+		}
+	}
+	task = myPlanner->getHelpJob(this, state);
+}
+
 Command * Agent::getAction(Node * startstate, Node * tempstate){
 	if (skipNextIte){
 		skipNextIte--;
 		return &Command::EVERY[0];
 	}
+
+	//checkForHelp(tempstate);
+
+	//Checks if the task is a requestfreespacetask, and if the location is free
+	//If it has been removed, it is okay.
+	if (!myPlanner->stillActiveRequest((RequestFreeSpaceTask *)task))
+		t = NULL;
+
 	if (plan == NULL || plan->isEmpty()){
-		if (Command * c = noPlan(startstate)){
-			std::cerr << "C is being returned from agent "<< chr<< "\n";
-			return c;
-		}
+		noPlan(startstate);
 	}
-	//Find next step
-	//std::cerr << "Getting a step\n";
+
+	if (plan == NULL || plan->isEmpty()){
+		//If it's still null, we just say "not today".
+		cleanTasks();
+		return &Command::EVERY[0];
+	}
+
 	Command * c = plan->getStep();
-	std::cerr << "Getting a step from agent " << chr << " cmd: " << c->toString() << "\n";
 	if (c == NULL){
+		//Just a sanity check
 		plan->drain();
 		return &Command::EVERY[0];
 	}
-	//Find number
-	//int number = (int)(chr - '0');
 
 	if (!startstate->checkState(number, c)){
-		std::cerr << "CheckState failed for " << c->toString() << " is being returned from agent "<< chr<< "\n";
 		return handleConflict();
 	}
 	if (!tempstate->checkAndChangeState(number, c)){
-		std::cerr << "CheckandchangeState failed for " << c->toString() << " is being returned from agent "<< chr<< "\n";
 		return handleConflict();
 	}
+
 	plan->popStep();
-	std::cerr << c->toString() << " is being returned from agent "<< chr<< "\n";
 	return c;
 }
 
 Agent::Agent(char chr, int rank, Location location, COLOR color, int region):
-Entity(chr, location, color, region)
+		Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = rank;
@@ -220,7 +260,7 @@ Entity(chr, location, color, region)
 }
 
 Agent::Agent(char chr, Location location, COLOR color, int region):
-Entity(chr, location, color, region)
+		Entity(chr, location, color, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -232,7 +272,7 @@ Entity(chr, location, color, region)
 
 //No color, for single agent levels
 Agent::Agent(char chr, Location location, int region):
-Entity(chr, location, Entity::BLUE, region)
+		Entity(chr, location, Entity::BLUE, region)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -243,14 +283,13 @@ Entity(chr, location, Entity::BLUE, region)
 }
 
 Agent::Agent(const Agent * agt):
-Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
+		Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
 {
 	this->task = agt->task;
 	this->rank = agt->rank;
 	this->plan = agt->plan;
 	this->number = chr - '0';
 	this->myPlanner = agt->getPlanner();
-	//std::cerr << "centralplanner from " << myPlanner->region << "\n";
 	t = NULL;
 }
 

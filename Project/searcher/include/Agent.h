@@ -26,6 +26,8 @@ class Agent : public Entity
 
     Command * getAction(Node * startstate, Node * tempstate);
 
+
+
     Task * task;
     std::list<Node *> search(Node * state);
     std::list<Node *> Nakedsearch(Node * state);
@@ -44,13 +46,22 @@ class Agent : public Entity
     CentralPlanner * getPlanner() const;
 
 private:
+    Command * getAwayFromGoal(Node * startstate);
+
+    void cleanTasks();
+    void replanTask(Node * state);
+    void noTask(Node * startstate);
+    void gettingJob(Node * startstate);
+
     CentralPlanner * myPlanner;
     RequestFreeSpaceTask * t;//Can at max request one at a time
     bool workingOnTask = false;//Only set to true, if an agent has started carrying out a task
     int skipNextIte = 0;
     Plan * plan;
-    Command * noPlan(Node * startstate);
+    void noPlan(Node * startstate);
     Command * handleConflict();
+    void checkForHelp(Node * state);
+
 
 };
 #endif
