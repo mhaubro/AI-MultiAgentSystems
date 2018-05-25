@@ -39,6 +39,7 @@ public:
 	Location operator+=(const Location& b);
 	Location operator-=(const Location& b);
 	bool operator==(const Location& b) const;
+  bool operator!=(const Location& b) const;
 
 	Location operator-();//Unary
 

@@ -89,8 +89,13 @@ Location Location::operator-=(const Location& b){
 	this->setDLocation(Location(0,0)-b);
 	return *this;
 }
+
 bool Location::operator==(const Location& b) const{
 	return (this->x == b.getX() && this->y == b.getY());
+}
+
+bool Location::operator!=(const Location& b) const{
+	return !(this->x == b.getX() && this->y == b.getY());
 }
 
 std::string Location::toString() const{
@@ -104,4 +109,3 @@ std::ostream &operator<< (std::ostream &os, Location const& location){
   os << "[" << location.getX() << "," << location.getY() << "]";
   return os;
 }
-
