@@ -18,7 +18,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 	this->box = NULL;
 	this->destination = loc;
 	this->rank = rank;
-	//  //std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
+	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
@@ -30,7 +30,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
   this->chr = box->getChar();
   this->destination = loc;
   this->rank = rank;
-//  //std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
+//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)
@@ -81,8 +81,8 @@ int HandleGoalTask::h(Agent * a, Node * n)
 
 			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){//Ensures they're next to
 				hval -= 5.0;
-				////std::cerr << "Next to box" << b.getChar() << " Position: " << b.getX() <<"," <<b.getY() << "\n";
-				////std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
+				//////std::cerr << "Next to box" << b.getChar() << " Position: " << b.getX() <<"," <<b.getY() << "\n";
+				//////std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
 			} else {
 				hval += b.getDistance(n->agents[a->getChar() - '0']);
 			}
@@ -90,7 +90,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 			//The right box
 		}
 	}
-	////std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
+	//////std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
 	return n->g()+hval;
 }
 

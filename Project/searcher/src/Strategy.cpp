@@ -25,7 +25,7 @@ class Frontier {
 private:
 	struct valued_node {
 		Node* node;
-		float value;
+		int value;
 		bool operator()(const valued_node& left, const valued_node& right){
 			return left.value > right.value;
 		};
@@ -39,8 +39,8 @@ public:
 	Frontier(){}
 	~Frontier(){}
 
-	void push(Node* n, double score){
-		////std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
+	void push(Node* n, int score){
+		//////std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
 		valued_node vn = {};
 		vn.node = n;
 		vn.value = score;
@@ -51,7 +51,7 @@ public:
 	Node* pull(){
 		valued_node vn = queue.top();
 		queue.pop();
-		////std::cerr << "Pulling best node: value = " << vn.value << " node: " << vn.node << "\n" << std::flush;
+		//////std::cerr << "Pulling best node: value = " << vn.value << " node: " << vn.node << "\n" << std::flush;
 		return vn.node;
 	}
 
@@ -70,7 +70,7 @@ public:
 };
 
 //	} else if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
-//		//std::cerr << "Not a movebox task, not supported yet\n";
+//		////std::cerr << "Not a movebox task, not supported yet\n";
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, int ite){
 	if (task == NULL)
@@ -82,7 +82,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, int ite){
 		MAXITE = 500;
 	} else if (HandleGoalTask * tmp = dynamic_cast<HandleGoalTask *>(task)){
 		MAXITE = ite;
-		std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
+		//std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
 	}
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
@@ -106,18 +106,18 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, int ite){
 		Node* leaf = frontier.pull();
 
 		if (iteration % 2500 == 0){
-			std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
-			std::cerr << "Searching is done in agent "<< agent->getChar() << "\n";
-			//std::cerr << leaf->toString();
+			//std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
+			//std::cerr << "Searching is done in agent "<< agent->getChar() << "\n";
+			////std::cerr << leaf->toString();
 		}
-		//std::cerr << leaf->toString() << "\n";
+		////std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
 			return leaf->extractPlan();
 		}
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar());
 		for (auto& n : new_nodes){
 			if (!frontier.is_explored(&n)){
-				////std::cerr << "Pushing object\n" << n.toString()<< "\n";
+				//////std::cerr << "Pushing object\n" << n.toString()<< "\n";
 				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
 			}
 		}

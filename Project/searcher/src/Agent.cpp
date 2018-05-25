@@ -179,7 +179,7 @@ void Agent::noPlan(Node * startstate){
 	}
 }
 
-Command * Agent::handleConflict(){
+Command * Agent::handleConflict(Node * state){
 	if (t){//RequestFreeSpaceTask
 		//myPlanner->removeTask(t);
 		skipNextIte = 2;
@@ -200,13 +200,13 @@ Command * Agent::handleConflict(){
 	return &Command::EVERY[0];
 }
 
-void Agent::checkForHelp(Node * state){
+bool Agent::checkForHelp(Node * state){
 	if (myPlanner->hasHelpJob(this, state)){
-		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-			cleanTasks();
-		}
+		cleanTasks();
+		task = myPlanner->getHelpJob(this, state);
+		return true;
 	}
-	task = myPlanner->getHelpJob(this, state);
+	return false;
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
@@ -240,10 +240,10 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	}
 
 	if (!startstate->checkState(number, c)){
-		return handleConflict();
+		return handleConflict(tempstate);
 	}
 	if (!tempstate->checkAndChangeState(number, c)){
-		return handleConflict();
+		return handleConflict(tempstate);
 	}
 
 	plan->popStep();

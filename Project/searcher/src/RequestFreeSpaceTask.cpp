@@ -17,6 +17,13 @@ RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int ra
 }
 RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank)
 {
+	std::list<Location>::iterator it;
+
+	std::cerr << "New RequestFreeSpaceTask created over locations: \n";
+	for(it = locations.begin(); it != locations.end(); ++it){
+		std::cerr << *it<< ", ";
+	}
+	std::cerr<< "\n";
 	//this->type = Task::Type::MoveAgentTask;
 	this->locations = locations;
 	this->rank = rank;
@@ -29,7 +36,7 @@ bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
 	for(it = locations.begin(); it != locations.end(); ++it){
 		if (Agent * agent = n->getAgent(*it)){
 			if (a->getChar() == agent->getChar()){
-				std::cerr << "Returning falseAgent\n";
+				//std::cerr << "Returning falseAgent\n";
 				return false;
 			}
 		} else if (Box * b = n->getBox(*it)){
@@ -57,17 +64,32 @@ int RequestFreeSpaceTask::h(Agent * a, Node * n)
 	int hval = 1000.0;
 	//Iterates over locations
 	std::list<Location>::iterator it;
+	bool isBoxOnPath = false;
+	Agent * agent;
+	for (int i = 0; i < n->agents.size(); i++){
+		if (a->getID() == n->agents[i].getID()){
+			agent = &n->agents[i];
+			break;
+		}
+	}
+
 	for(it = locations.begin(); it != locations.end(); ++it){
-		if (Agent * agent = n->getAgent(*it)){
-			if (a->getChar() == agent->getChar()){
-				hval = hval + .9;
-			}
-		} else if (Box * b = n->getBox(*it)){
+		if (Box * b = n->getBox(*it)){
 			if (b->getColor() == a->getColor() && (b != serviceBox)){
-				hval = hval + 2;
+				hval += 1 + b->getDistance(*agent);
 			}
 		}
 	}
+
+	if (!isBoxOnPath){
+		hval -= 20.0;//This is a really good thing
+		for(it = locations.begin(); it != locations.end(); ++it){
+			if (*it == agent->getLocation()){
+				hval = hval + .9;
+			}
+		}
+	}
+
 
 
 	return hval;

@@ -106,7 +106,7 @@ void Node::resetPool(){
 }
 
 Node * Node::getopCopy(Node * n){
-	////std::cerr << "creating Node copy\n";
+	//////std::cerr << "creating Node copy\n";
 	return pool.createNodeCopy(n, n->agents, n->boxes);
 }
 
@@ -275,7 +275,7 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 				// Make sure that there's actually a box to move
 				if (this->boxAt(newAgentLoc) && this->getBox(newAgentLoc)->getColor() == a.getColor()) {
 					Location newBoxLoc = newAgentLoc + c->boxdloc();
-					//std::cerr << newBoxLoc.toString() << "\n";
+					////std::cerr << newBoxLoc.toString() << "\n";
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxLoc)) {
 						Node n = Node(this, c);
@@ -338,7 +338,7 @@ int Node::hashCode() const
 		result = prime * result + b.getLocation().getX();
 		result = prime * result + b.getLocation().getY();
 	}
-	////std::cerr << "Calling hash with val" << result << "\n";
+	//////std::cerr << "Calling hash with val" << result << "\n";
 	return result;
 }
 
@@ -361,7 +361,7 @@ bool Node::equals(const Node * obj) const {
 			return false;
 		}
 	}
-	////std::cerr << "Objects are equal\n";
+	//////std::cerr << "Objects are equal\n";
 	return true;
 }
 
