@@ -74,7 +74,6 @@ void Node::removeAgent(Location loc){
 	}
 }
 
-
 void Node::clearOtherAgents(char agent){
 	std::vector<Agent> newA = std::vector<Agent>();
 	for (const  auto & a : agents){
@@ -83,6 +82,23 @@ void Node::clearOtherAgents(char agent){
 		}
 	}
 	agents = newA;
+}
+
+std::vector<Location> Node::recordAgentLocations()
+{
+  std::vector<Location> locations = std::vector<Location>();
+  for (const auto & a : this->agents)
+    locations.push_back(a.getLocation());
+  return locations;
+}
+
+void Node::resetAgent(std::vector<Location> locations)
+{
+  if(this->agents.size() == locations.size())
+  {
+    for(int i = 0; i < this->agents.size(); i++)
+      this->agents[i].setLocation(locations[i]);
+  }
 }
 
 void Node::resetPool(){
@@ -289,7 +305,6 @@ std::vector<Node> Node::getExpandedNodes(char agent){
 	return expandedNodes;
 }
 
-
 std::list<Node *> Node::extractPlan()
 {
 	std::list<Node*> plan = std::list<Node*>();
@@ -308,8 +323,6 @@ Node * Node::getParent() const {
 Command * Node::getAction() const {
 	return (Command *) action;
 }
-
-
 
 int Node::hashCode() const
 {
@@ -466,7 +479,6 @@ Goal * Node::getGoal(Location loc)
 	//throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 	return NULL;
 }
-
 
 Agent * Node::getAgent(Location loc)
 {

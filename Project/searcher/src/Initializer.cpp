@@ -50,7 +50,7 @@ public:
     return Location(this->x+b.x, this->y+b.y);
   }
 
-}; 
+};
 */
 
 namespace Initializer {
@@ -59,36 +59,29 @@ namespace Initializer {
   const char char_wall = '+';
   const char char_static = '-';
 
-
   char char_agent(const int agent_num){
     return agent_num + '0';
   }
-
 
   bool isAgent(const char c) {
   	return ('0' <= c && c <= '9');
   }
 
-
   bool isBox(const char c) {
   	return ('A' <= c && c <= 'Z');
   }
-
 
   bool isGoal(const char c) {
   	return ('a' <= c && c <= 'z');
   }
 
-
   bool isWall(const char c){
     return c == char_wall;
   }
 
-
   bool isFree(const char c){
     return c == char_free;
   }
-
 
   void check_unmoveable(vector<string>& rows, std::map<char, string> color_map){
     std::set<string> agent_colors;
@@ -103,9 +96,7 @@ namespace Initializer {
           c = char_wall;
   }
 
-
   Location find_char(const char chr, const vector<string> rows){
-
     for (int y = 0; y < rows.size(); y++){
       for (int x = 0; x < rows[y].length(); x++){
         if (rows[y][x] == chr)
@@ -113,9 +104,7 @@ namespace Initializer {
       }
     }
     return Location(-1,-1);
-
   }
-
 
   string map_to_string(vector<char> map, int width, int height){
     stringstream ss("");
@@ -130,9 +119,7 @@ namespace Initializer {
     return ss.str();
   }
 
-
   vector<vector<string>> split_regions(vector<string> rows, std::map<char, string> color_map){
-    
     bool agent_missing[10];
     for (int i = 0; i < 10; i++){
       agent_missing[i] = true;
@@ -187,7 +174,7 @@ namespace Initializer {
       while (!frontier.empty()){
         Location pos = frontier.front();
         frontier.pop();
-        
+
         for (Location n : neighbors){
           auto tmp = pos+n;
           if (tmp.getX() < 0 || tmp.getX() > width || tmp.getY() < 0 || tmp.getY() > height)
@@ -239,21 +226,17 @@ namespace Initializer {
     return regions;
   }
 
-
   bool is_info_string(const string input){
     std::regex multi_regex("[a-z]+:");
     std::smatch match;
-
     return std::regex_search(input, match, multi_regex);
   }
-  
 
   string remove_space(const string in){
     string out = in;
     out.erase(remove(out.begin(), out.end(), ' '), out.end());
     return out;
   }
-
 
   Entity::COLOR parse_color(const string color){
     if (color == (std::string("blue"))){
@@ -276,13 +259,12 @@ namespace Initializer {
     return Entity::BLUE;
   }
 
-
   std::map<char, string> map_colors(const vector<string> input){
     std::map<char, string> map;
 
     for (string line : input){
       stringstream ss(remove_space(line));
-      string color; 
+      string color;
       getline(ss,color,':');
 
       string c;
@@ -293,7 +275,6 @@ namespace Initializer {
     }
     return map;
   }
-
 
   Node* parse_regions(const vector<vector<string>> regions, std::map<char, string> color_map){
 
@@ -336,14 +317,13 @@ namespace Initializer {
     }
 
     std::sort (agents.begin(), agents.end(), compAgents);
-    
+
     Node * initialState = new Node();
     initialState->boxes = boxes;
     initialState->agents = agents;
 
     return initialState;
   }
-
 
   Node* read_level_string(const vector<string> lines){
 
@@ -377,23 +357,18 @@ namespace Initializer {
     }
 
     std::cerr << std::flush;
-
     // parse all regions to a single node
     return parse_regions(regions, color_map);
   }
-  
 
   Node* setupEnvironment(){
-	
+
     vector<string> lines;
 
     string line;
     while(!std::cin.eof() && getline(std::cin, line) && line != ""){
       lines.push_back(line);
     }
-
     return read_level_string(lines);
-
   }
 }
-

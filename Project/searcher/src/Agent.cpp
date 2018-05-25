@@ -247,7 +247,6 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	return c;
 }
 
-
 Agent::Agent(char chr, int rank, Location location, COLOR color, int region):
 		Entity(chr, location, color, region)
 {
@@ -270,6 +269,7 @@ Agent::Agent(char chr, Location location, COLOR color, int region):
 	plan = NULL;
 	t = NULL;
 }
+
 //No color, for single agent levels
 Agent::Agent(char chr, Location location, int region):
 		Entity(chr, location, Entity::BLUE, region)
@@ -311,8 +311,6 @@ void Agent::setMyPlanner(CentralPlanner * planner){
 CentralPlanner * Agent::getPlanner() const{
 	return myPlanner;
 }
-
-
 
 bool Agent::equals(const Agent * agent) const
 {

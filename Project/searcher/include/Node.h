@@ -66,6 +66,9 @@ public:
 	Node * getParent() const;
 	Command * getAction() const;
 
+  std::vector<Location> recordAgentLocations();
+  void resetAgent(std::vector<Location> locations);
+
 private:
 
 	Location getBoxLocation(Agent * agent, Command * c);

@@ -10,15 +10,14 @@
 CentralPlanner::CentralPlanner(int region){
 	this->region = region;
 	UnassignedGoals = std::vector<HandleGoalTask *>();
-	order = std::vector<Goal>();
 	compatibleGoals = std::vector<std::vector<bool>>(Entity::NUMCOLS);
 }
 
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
 	DetectTasks(n);
-	order = getOrderOfAllGoals(n);
-	setPredecessors(order, UnassignedGoals);
+	std::cerr << "Returning falseBox\n";
+//setPredecessors(n);
 }
 
 bool CentralPlanner::isGoalCompatible(int goal, Entity::COLOR color){
@@ -41,79 +40,67 @@ void CentralPlanner::getCompatibleGoals(Node * n){
 	}
 }
 
-void CentralPlanner::setPredecessors(std::vector<Goal> order, std::vector<HandleGoalTask *> tasks)
+void CentralPlanner::setPredecessors(Node * n)
 {
-	// This is really expensive, but as we have a limited amount of goals and tasks it should be quick
-	for(int i = 1; i < order.size(); i++)
+	for(int i = 0; i < n->goals.size(); i++)
 	{
-		for(int j = 0; j < tasks.size(); j++)
+		for(int j = 0; j < n->goals.size(); j++)
 		{
-			// Find matching task with current order goal
-			if(order[i].getChar() == tasks[j]->chr)
-			{
-				for(int k = 0; k < tasks.size(); k++)
-				{
-					// Find predecessor to that goal
-					if(order[i-1].getChar() == tasks[k]->chr)
-						UnassignedGoals[j]->predecessors = tasks[k];
-				}
-			}
-		}
-	}
-}
-
-std::vector<Goal> CentralPlanner::getOrderOfAllGoals(Node * n)
-{
-	Node * tmp_state;
-	std::vector<Goal> order;
-	for(int i = 0; i < tmp_state->goals.size(); i++)
-	{
-		tmp_state = n;
-		order.clear();
-		order.emplace_back(tmp_state->goals[i]);
-		for(int j = 0; j < tmp_state->goals.size(); j++)
-		{
-			// Continue if we are looking at the same goal
 			if(i == j)
-				continue;
+        continue;
 
-			// See if this order works
-			tmp_state = getOrderOfGoals(tmp_state, tmp_state->goals[i], tmp_state->goals[j]);
-
-			// Try next box if it does not find a solution
-			// Otherwise add it to the list
-			if(tmp_state == nullptr)
-				break;
-			else
-				order.emplace_back(tmp_state->goals[j]);
+      // There is a dependency
+      if(getOrderOfGoals(n, n->goals[i], n->goals[j]))
+        setPredecessor(n->goals[i].getChar(), n->goals[j].getChar());
 		}
-		// We found a correct order
-		if(tmp_state != nullptr && tmp_state->isGoalState())
-			return order;
 	}
-	return std::vector<Goal>();
-
 }
 
-Node * CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
+void CentralPlanner::setPredecessor(char g1, char g2)
 {
-	Node * new_state = nullptr;
+  // Find its task and set it
+  for(int k = 0; k < UnassignedGoals.size(); k++)
+  {
+    // Only need to look at the task fitting the goal
+    if(UnassignedGoals[k]->chr != g1)
+      continue;
 
-	if(n == nullptr)
-		//std::cerr << "WTF";
-	new_state = FindSolution(n, g1);
+    for(int l = 0; l < UnassignedGoals.size(); l++)
+    {
+      // Only need to look at the task fitting the goal
+      if(k == l || UnassignedGoals[l]->chr != g2)
+        continue;
 
-	if(new_state != nullptr && new_state->isGoalState(g1))
-	{
-		new_state = FindSolution(new_state, g2);
-		if(new_state != nullptr && new_state->isGoalState(g2) && new_state->isGoalState(g1))
-		{
-			// //std::cerr << "\n" << g1.chr << " and then " << g2.chr << "\n";
-			// //std::cerr << new_state->toString();
-			return new_state;
-		}
-	}
-	return nullptr;
+      UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
+    }
+  }
+}
+
+// Checks if g1 needs to be solved before g2
+bool CentralPlanner::getOrderOfGoals(Node * n, Goal g1, Goal g2)
+{
+	Node * state = nullptr;
+  std::vector<Location> locations = n->recordAgentLocations();
+
+  state = FindSolution(n, g1);
+
+  if(state == nullptr)
+    return false;
+
+  state = FindSolution(n, g2);
+
+  // Can g2 be solved?
+  if(state->isGoalState(g2))
+  {
+    state->resetAgent(locations);
+    state = FindSolution(state, g1);
+
+    // If we cannot solve g1 after having solved g2,
+    // then that means g1 needs to be solved first
+    if(state == nullptr)
+      return true;
+  }
+  return false;
 }
 
 
@@ -137,14 +124,12 @@ bool CentralPlanner::hasJob(Agent * agent, Node * state){
 }
 
 Task * CentralPlanner::getJob(Agent * agent, Node * state){
-
 	//std::cerr << "Finding a job for someone\n";
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 	for (int i = 0; i < UnassignedGoals.size(); i++){
-		// Predecessor is not solved!
-		//if(UnassignedGoals[i]->predecessors != NULL && !UnassignedGoals[i]->predecessors->seemsCompleted(agent, state))
-		//  continue;
+		//if(!UnassignedGoals[i]->predecessorsComplete(agent, state))
+      //continue;
 
 		HandleGoalTask * h = UnassignedGoals[i];
 		//std::cerr << "Trying with goal " << state->getGoal(h->destination.first, h->destination.second)->chr << "\n";
@@ -259,7 +244,7 @@ Node * CentralPlanner::FindSolution(Node * n, Goal g)
 				{
 					a.task = t;
 					std::list<Node*> solution = a.search(n);
-					a.task = nullptr; // Not sure if needed
+					a.task = nullptr;
 					return solution.back();
 				}
 			}

@@ -12,7 +12,7 @@
 HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solvingColors, char chr)
 {
 	this->solvingColors = solvingColors;
-	this->predecessors = NULL;
+	this->predecessors = std::vector<HandleGoalTask *>();
 	this->chr = chr;
 	//  this->type = Task::Type::MoveBoxTask;
 	this->box = NULL;
@@ -24,7 +24,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
 {
   this->solvingColors = std::vector<bool>();
-  this->predecessors = NULL;
+  this->predecessors = std::vector<HandleGoalTask *>();
 //  this->type = Task::Type::MoveBoxTask;
   this->box = box;
   this->chr = box->getChar();
@@ -99,4 +99,17 @@ int HandleGoalTask::h(Agent * a, Node * n)
 	}
 	////std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
 	return n->g()+hval;
+}
+
+bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)
+{
+  if(this->predecessors.size() != 0)
+  {
+    for(int j = 0; j < this->predecessors.size(); j++)
+    {
+      if(!this->predecessors[j]->seemsCompleted(a, n))
+        return false;
+    }
+  }
+  return true;
 }

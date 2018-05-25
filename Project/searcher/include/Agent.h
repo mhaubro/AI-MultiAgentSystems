@@ -24,7 +24,7 @@ class Agent : public Entity
     int rank;
     int number;
 
-    Command * getAction(Node * startstate, Node * temptate);
+    Command * getAction(Node * startstate, Node * tempstate);
 
 
 

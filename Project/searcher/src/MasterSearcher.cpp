@@ -82,7 +82,6 @@ void getPlan(Node * initialState)
 		}
 		printStep(s);
 
-
 		if (isGoal)
 			return;
 	}
