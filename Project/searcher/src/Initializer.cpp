@@ -339,7 +339,7 @@ namespace Initializer {
     auto color_map = map_colors(info_strings);
 
     for (auto& c : color_map){
-      std::cerr << c.first << ": " << c.second << std::endl;
+      //std::cerr << c.first << ": " << c.second << std::endl;
     }
 
     // The rest must be level lines
@@ -356,7 +356,7 @@ namespace Initializer {
         std::cerr << " " << line << std::endl;
     }
 
-    std::cerr << std::flush;
+    //std::cerr << std::flush;
     // parse all regions to a single node
     return parse_regions(regions, color_map);
   }

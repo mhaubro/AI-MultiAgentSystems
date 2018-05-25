@@ -59,8 +59,8 @@ private:
     int skipNextIte = 0;
     Plan * plan;
     void noPlan(Node * startstate);
-    Command * handleConflict();
-    void checkForHelp(Node * state);
+    Command * handleConflict(Node * state);
+    bool checkForHelp(Node * state);
 
 
 };
