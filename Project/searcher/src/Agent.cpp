@@ -15,10 +15,9 @@
 
 std::list<Node *> Agent::search(Node * state){
 	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-		std::cerr << "This is a handlegoaltask\n";
 		//There's an agent on our destination
 		if (Agent * a = state->getAgent(tmp->destination)){
-			std::cerr << "Putting out agent temporarily\n";
+			//std::cerr << "Putting out agent temporarily\n";
 			Node stateWithoutAgent = *state;
 			stateWithoutAgent.removeAgent(tmp->destination);
 
@@ -34,7 +33,7 @@ std::list<Node *> Agent::search(Node * state){
 		}
 		if (Box * b = state->getBox(tmp->destination)){
 			if (b->getColor() != color){
-				std::cerr << "Putting out box temporarily\n";
+				//std::cerr << "Putting out box temporarily\n";
 				Node stateWithoutBox = *state;
 				stateWithoutBox.removeBox(tmp->destination);
 
@@ -107,7 +106,7 @@ void Agent::replanTask(Node * state){
 	std::list<Node *> searchResult = search(state);
 
 	if (searchResult.empty()){
-		std::cerr << "Search Result was empty\n";
+		//std::cerr << "Search Result was empty\n";
 		//No agents, try path
 		if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
 			this->task = NULL;
@@ -136,8 +135,8 @@ void Agent::replanTask(Node * state){
 	}
 
 	plan = new Plan(searchResult, this->getLocation());
-	std::cerr << "Following Plan found\n";
-	std::cerr << plan->toString() << "\n";
+	//std::cerr << "Following Plan found\n";
+	//std::cerr << plan->toString() << "\n";
 	Node::resetPool();
 
 }
@@ -168,23 +167,19 @@ void Agent::gettingJob(Node * startstate){
 void Agent::noPlan(Node * startstate){
 
 	if (this->task != NULL && this->task->seemsCompleted(this, startstate)){
-		std::cerr<< "2:Doing NoPlan from agent with completed task " <<  chr << "\n";
 		//We are done with the current task
 		cleanTasks();
 	}
 
 	//Short-circuit. We have a task, which is not completed. We replan.
 	if (this->task != NULL && !this->task->seemsCompleted(this, startstate)){
-		std::cerr<< "2:Doing NoPlan from agent without completed task " <<  chr << "\n";
 		return replanTask(startstate);
 	}
 
 	//We don't have a task/have completed
 	else if(!myPlanner->hasJob(this, startstate)){
-		std::cerr<< "2:Doing NoPlan from without a job " <<  chr << "\n";
 		return noTask(startstate);
 	} else {
-		std::cerr<< "2:Doing NoPlan from agent with a job " <<  chr << "\n";
 		return gettingJob(startstate);
 	}
 }
@@ -194,8 +189,8 @@ Command * Agent::handleConflict(Node * state){
 		if (plan != NULL && !(plan->locations.empty())){
 			myPlanner->removeRequestTask(freeSpaceTask);
 			//delete t;
-
 			freeSpaceTask = new RequestFreeSpaceTask(plan->locations, rank);
+			myPlanner->addRequestFreeSpaceTask(freeSpaceTask);
 		}
 
 
@@ -212,7 +207,9 @@ Command * Agent::handleConflict(Node * state){
 }
 
 bool Agent::checkForHelp(Node * state){
+	std::cerr << "Checking if i should help\n";
 	if (myPlanner->hasHelpJob(this, state)){
+		std::cerr << "About to help\n";
 		cleanTasks();
 		task = myPlanner->getHelpJob(this, state);
 		return true;
@@ -226,7 +223,7 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 		return &Command::EVERY[0];
 	}
 
-	//checkForHelp(tempstate);
+	checkForHelp(tempstate);
 
 	//Checks if the task is a requestfreespacetask, and if the location is free
 	//If it has been removed, it is okay.
