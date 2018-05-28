@@ -130,7 +130,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g
   int MAXITE = 40000;
 
   HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(task);
-  start_state->clearGoals(agent->getChar(), g1, g2);
+  start_state->clearOtherAgentsKeepBoxes(agent->getChar(), g1, g2);
 
   int iteration = 0;
 	// vector holding and assuming ownership of all nodes
@@ -161,7 +161,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g
 		for (auto& n : new_nodes)
     {
 			if (!frontier.is_explored(&n))
-				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
+        frontier.push(Node::getopCopy(&n), task->h(agent, &n));
 		}
 		iteration++;
 	}

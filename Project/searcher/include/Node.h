@@ -37,7 +37,7 @@ public:
 
 	void clearOtherAgents(char agent);
 	void clearOtherAgentsAndBoxes(char agent, Box * box);
-	void clearGoals(char agent, Goal * g1, Goal * g2);
+	void clearOtherAgentsKeepBoxes(char agent, Goal * g1, Goal * g2);
 
   //Methods
 	Node();
