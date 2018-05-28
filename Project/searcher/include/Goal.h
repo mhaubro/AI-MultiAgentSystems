@@ -12,7 +12,7 @@ public:
 
     bool goalState;
 
-    Goal(char chr, Location location, int region);
-    Goal(char chr, Location location, Box * box, int region);
+    Goal(char chr, Location location, int region, int id);
+    Goal(char chr, Location location, Box * box, int region, int id);
 };
 #endif

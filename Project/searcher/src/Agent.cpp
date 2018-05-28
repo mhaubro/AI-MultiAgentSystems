@@ -254,8 +254,8 @@ Command * Agent::getAction(Node * startstate, Node * tempstate){
 	return c;
 }
 
-Agent::Agent(char chr, int rank, Location location, COLOR color, int region):
-		Entity(chr, location, color, region)
+Agent::Agent(char chr, int rank, Location location, COLOR color, int region, int id):
+		Entity(chr, location, color, region, id)
 {
 	this->task = nullptr;
 	this->rank = rank;
@@ -266,8 +266,8 @@ Agent::Agent(char chr, int rank, Location location, COLOR color, int region):
 
 }
 
-Agent::Agent(char chr, Location location, COLOR color, int region):
-		Entity(chr, location, color, region)
+Agent::Agent(char chr, Location location, COLOR color, int region, int id):
+		Entity(chr, location, color, region, id)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -278,8 +278,8 @@ Agent::Agent(char chr, Location location, COLOR color, int region):
 }
 
 //No color, for single agent levels
-Agent::Agent(char chr, Location location, int region):
-		Entity(chr, location, Entity::BLUE, region)
+Agent::Agent(char chr, Location location, int region, int id):
+		Entity(chr, location, Entity::BLUE, region, id)
 {
 	this->task = nullptr;
 	this->rank = 0;
@@ -290,7 +290,7 @@ Agent::Agent(char chr, Location location, int region):
 }
 
 Agent::Agent(const Agent * agt):
-		Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion())
+		Entity(agt->getChar(), agt->getLocation(), agt->getColor(), agt->getRegion(), agt->getID())
 {
 	this->task = agt->task;
 	this->rank = agt->rank;

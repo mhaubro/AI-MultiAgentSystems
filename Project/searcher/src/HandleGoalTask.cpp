@@ -51,7 +51,7 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 {
   for(auto & b : n->boxes)
   {
-    if(this->box && b.getChar() != this->box->getChar())
+    if(this->box && b.getID() != this->box->getID())
       continue;
     if(b.getLocation() == this->destination)
       return true;
@@ -63,6 +63,10 @@ int HandleGoalTask::h(Agent * a, Node * n)
 {
   double hval = 1000.0;
 
+  if( n->getGoal(a->getLocation())){
+    hval += 10;
+  }
+
 	for (Box b : n->boxes)
   {
 		if (b.getColor() != a->getColor())
@@ -72,26 +76,23 @@ int HandleGoalTask::h(Agent * a, Node * n)
     {
 			if (g->getChar() == tolower(b.getChar()))
       {
-				if (g->getLocation() == b.getLocation())
-        {
           if(a->getPlanner()->isFree(n, b.getLocation()))
-            hval -= 70;
+            // If it is a good position i.e. can not block reward it
+            hval -= 50;
           else
-            hval -= 35;
-        }
-        else
-          hval += 5;
-			}
+          // If not good reward it less
+            hval -= 20;
+			} 
 		}
 
     // The box in this task
-		if (b.getChar() == box->getChar())
+		if (b.getID() == box->getID())
     {
 			hval += destination.getDistance(b.getLocation());
+			hval += b.getDistance(n->agents[a->getChar() - '0']);
 			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3)
-				hval -= 35.0;
-      else
-				hval += b.getDistance(n->agents[a->getChar() - '0']);
+				hval -= 1.0;
+      
 		}
 	}
 	return n->g()+hval;
