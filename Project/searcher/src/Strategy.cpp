@@ -13,6 +13,7 @@
 #include "Node.h"
 #include "Agent.h"
 #include "Task.h"
+#include "Goal.h"
 #include "HandleGoalTask.h"
 #include "GetAwayFromGoalTask.h"
 #include "RequestFreeSpaceTask.h"
@@ -72,16 +73,20 @@ public:
 //	} else if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
 //		////std::cerr << "Not a movebox task, not supported yet\n";
 
-list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, int ite){
+list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	if (task == NULL)
 		return std::list<Node*>();
+
 	int MAXITE = 20000;
+	if(start_state->agents.size() == 1)
+		MAXITE = 400000;
+
 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
 		MAXITE = 3000;
 	} else if (GetAwayFromGoalTask * tmp = dynamic_cast<GetAwayFromGoalTask *>(task)){
 		MAXITE = 500;
 	} else if (HandleGoalTask * tmp = dynamic_cast<HandleGoalTask *>(task)){
-		MAXITE = ite;
+		MAXITE = 20000;
 		//std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
 	}
 	int iteration = 0;
@@ -97,10 +102,12 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, int ite){
 	while(true){
 		//We shouldn't search for too long, rather we should turn around and pick other solution
 		if (iteration > MAXITE){
+			std::cerr << "Max iterations " << iteration << "\n";
 			return std::list<Node *>();
 		}
 		// if frontier is empty and no solution is found, return an empty list.
 		if (frontier.empty()){
+			std::cerr << "Empty after iterations " << iteration << "\n";
 			return list<Node*>();
 		}
 		Node* leaf = frontier.pull();
@@ -113,14 +120,59 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task, int ite){
 		////std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
 			return leaf->extractPlan();
-		}
-		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar());
-		for (auto& n : new_nodes){
-			if (!frontier.is_explored(&n)){
-				//////std::cerr << "Pushing object\n" << n.toString()<< "\n";
-				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
+
+			vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar());
+			for (auto& n : new_nodes){
+				if (!frontier.is_explored(&n)){
+					//////std::cerr << "Pushing object\n" << n.toString()<< "\n";
+					frontier.push(Node::getopCopy(&n), task->h(agent, &n));
+				}
+				iteration++;
 			}
 		}
-		iteration++;
+
 	}
+	return std::list<Node*>();
 }
+
+	list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g1, Goal * g2)
+		{
+		int MAXITE = 40000;
+
+		HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(task);
+		start_state->clearGoals(agent->getChar(), g1, g2);
+
+		int iteration = 0;
+		// vector holding and assuming ownership of all nodes
+		std::vector<Node> explored_nodes = std::vector<Node>();
+		// frontier used to select which nodes to process next.
+		Frontier frontier = Frontier();
+
+		// add start state to frontier
+		frontier.push(start_state, start_state->g());
+
+		// search loop
+		while(true)
+		{
+			//We shouldn't search for too long, rather we should turn around and pick other solution
+			if (iteration > MAXITE)
+				return std::list<Node *>();
+
+			// if frontier is empty and no solution is found, return an empty list.
+			if (frontier.empty())
+				return std::list<Node *>();
+
+			Node* leaf = frontier.pull();
+
+			if (leaf->isGoalState(g1))
+				return leaf->extractPlan();
+
+			vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar(), g2);
+			for (auto& n : new_nodes)
+			{
+				if (!frontier.is_explored(&n))
+					frontier.push(Node::getopCopy(&n), task->h(agent, &n));
+			}
+			iteration++;
+		}
+		}

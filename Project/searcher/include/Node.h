@@ -37,7 +37,9 @@ public:
 
 	void clearOtherAgents(char agent);
 	void clearOtherAgentsAndBoxes(char agent, Box * box);
-	//Methods
+	void clearGoals(char agent, Goal * g1, Goal * g2);
+
+  //Methods
 	Node();
 	Node(Node * parent, Command * action);
 	Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes);
@@ -48,9 +50,11 @@ public:
 	bool isInitialState();
 	bool isGoalState();
 	bool isGoalState(Entity::COLOR);
+    bool isGoalState(Goal * g);
 	bool isGoalState(Goal g);
 	std::vector<Node> getExpandedNodes();
 	std::vector<Node> getExpandedNodes(char agent);
+  std::vector<Node> getExpandedNodes(char agent, Goal * g);
 	std::list<Node*> extractPlan();
 
 	void clearOtherRegions(int regionToRemain);
@@ -68,8 +72,9 @@ public:
 	bool agentAt(Location location);
 	bool boxAt(Location location);
 
-	std::vector<Location> recordAgentLocations();
-	void resetAgent(std::vector<Location> locations);
+  std::vector<Location> recordAgentLocations();
+  void resetAgent(std::vector<Location> locations);
+  void solveGoal(Goal * g);
 
 private:
 

@@ -33,7 +33,7 @@ std::list<Node *> Agent::search(Node * state){
 					freeSpaceTask = req;
 					myPlanner->addRequestFreeSpaceTask(freeSpaceTask);
 				}
-				return a_star_search(&stateWithoutAgent, this, this->task, 20000);
+				return a_star_search(&stateWithoutAgent, this, this->task);
 			}
 		}
 		if (Box * b = state->getBox(tmp->destination)){
@@ -57,12 +57,12 @@ std::list<Node *> Agent::search(Node * state){
 				}
 
 
-				return a_star_search(&stateWithoutBox, this, this->task, 20000);
+				return a_star_search(&stateWithoutBox, this, this->task);
 				//There's a box we can't move at destination
 			}
 		}
 	}
-	return a_star_search(state, this, this->task, 20000);
+	return a_star_search(state, this, this->task);
 }
 
 //Commits a search where all agents are gone, and asks for the locations.
@@ -158,17 +158,19 @@ void Agent::noTask(Node * startstate){
 	plan = new Plan(search(startstate), this->getLocation());
 }
 
-void Agent::gettingJob(Node * startstate){
-
-	if (myPlanner->hasJob(this, startstate)){
+void Agent::gettingJob(Node * startstate)
+{
+	if (myPlanner->hasJob(this, startstate))
+  {
 		task = myPlanner->getJob(this, startstate);
-		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-			//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.first <<"," << tmp->destination.second << " box: " << tmp->box->chr << "\n";
+		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task))
+    {
+			//std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.toString() << " box: " << tmp->box->getChar() << "\n";
 		}
 		std::list<Node *> searchResult = search(startstate);
 		//std::cerr << "Received a task\n";
-		if (searchResult.empty()){
-			//std::cerr << "Empty plan?\n";
+		if (searchResult.empty())
+    {
 			return;
 			//Do something
 		}
