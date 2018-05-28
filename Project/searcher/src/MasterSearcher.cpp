@@ -27,7 +27,7 @@ void getPlan(Node * initialState)
 		//Create a planner with a region
 		planners.push_back(CentralPlanner(i));
 		planners[i].preAnalyse(initialState);
-		//std::cerr << "CentralPlanner created\n";
+		////std::cerr << "CentralPlanner created\n";
 	}
 
 	//Give each agent a pointer to its planner
@@ -47,6 +47,11 @@ void getPlan(Node * initialState)
 		states[i] = state;
 		tempstates[i] = tempstate;
 
+	}
+
+	//Giving each centralplanner their node
+	for (int i = 0; i < regions; i++){
+		planners[i].node = &tempstates[i];
 	}
 
 	//Making a vector of agent pointers to getactions from.
@@ -94,18 +99,18 @@ void printStep(std::string s){
 	std::cout << s;
 	std::cout << "\n";
 	std::string response;
-	////std::cerr << "Printing solution3";
+	//////std::cerr << "Printing solution3";
 	std::getline(std::cin, response);
-	////std::cerr << "Printing solution4";
+	//////std::cerr << "Printing solution4";
 	if (response.find(std::string("false")) != std::string::npos) {
 		ss << "Server responsed with "<< response <<"%s to the inapplicable action: "<< s <<"\n";
-		//std::cerr << ss.str();
+		////std::cerr << ss.str();
 		ss.str("");
 		//Maybe we should actually be able to print the state. However, sending
 		//A plan assumes that the thing actually works, and we will never
 		//Replan out here.
 		ss << s << " was attempted in a state\n";
-		//std::cerr << ss.str();
+		////std::cerr << ss.str();
 		throw ("Command Error, printing step\n");
 	}
 }

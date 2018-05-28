@@ -18,19 +18,19 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 	this->box = NULL;
 	this->destination = loc;
 	this->rank = rank;
-	//  //std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
+	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
 {
-  this->solvingColors = std::vector<bool>();
-  this->predecessors = std::vector<HandleGoalTask *>();
-//  this->type = Task::Type::MoveBoxTask;
-  this->box = box;
-  this->chr = box->getChar();
-  this->destination = loc;
-  this->rank = rank;
-//  //std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
+	this->solvingColors = std::vector<bool>();
+	this->predecessors = std::vector<HandleGoalTask *>();
+	//  this->type = Task::Type::MoveBoxTask;
+	this->box = box;
+	this->chr = box->getChar();
+	this->destination = loc;
+	this->rank = rank;
+	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)
@@ -49,14 +49,14 @@ bool HandleGoalTask::isCompleted(Agent * a, Node * n)
 
 bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 {
-  for(auto & b : n->boxes)
-  {
-    if(this->box && b.getChar() != this->box->getChar())
-      continue;
-    if(b.getLocation() == this->destination)
-      return true;
-  }
-  return false;
+	for(auto & b : n->boxes)
+	{
+		if(this->box && b.getChar() != this->box->getChar())
+			continue;
+		if(b.getLocation() == this->destination)
+			return true;
+	}
+	return false;
 }
 
 int HandleGoalTask::h(Agent * a, Node * n)

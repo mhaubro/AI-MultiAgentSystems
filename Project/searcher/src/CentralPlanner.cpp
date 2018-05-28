@@ -16,7 +16,7 @@ CentralPlanner::CentralPlanner(int region){
 void CentralPlanner::preAnalyse(Node * n){
 	getCompatibleGoals(n);
 	DetectTasks(n);
-  setPredecessors(n);
+	setPredecessors(n);
 }
 
 bool CentralPlanner::isGoalCompatible(int goal, Entity::COLOR color){
@@ -228,7 +228,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 }
 
 bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
-	//std::cerr << "Adding a request\n";
+	std::cerr << "Adding a request\n";
 	if (h == NULL)
 		return false;
 	freeSpaceTasks.push_back(h);
@@ -239,6 +239,7 @@ bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
 bool CentralPlanner::returnGoalTask(HandleGoalTask * h){
 	if (h != NULL){
 		this->UnassignedGoals.push_back(h);
+		h->box->workInProgress = false;
 		return true;
 	}
 	return false;
@@ -250,10 +251,13 @@ bool CentralPlanner::removeRequestTask(RequestFreeSpaceTask * h){
 	for (int i = 0; i < freeSpaceTasks.size(); i++){
 		if (freeSpaceTasks[i] == h){//Yes, a pointer match
 			freeSpaceTasks.erase(freeSpaceTasks.begin()+i);
-			return true;
 		}
 	}
-	return false;
+	for (int i = 0; i < node->agents.size(); i++){
+		node->agents[i].removeFreeSpaceTaskMessage(h);
+	}
+	//std::cerr << "I just put some things to null\n";
+	return true;
 }
 
 void CentralPlanner::DetectTasks(Node * n)

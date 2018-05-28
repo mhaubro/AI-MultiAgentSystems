@@ -436,7 +436,7 @@ namespace Initializer {
     auto color_map = map_colors(info_strings);
 
     for (auto& c : color_map){
-      std::cerr << c.first << ": " << c.second << std::endl;
+      //std::cerr << c.first << ": " << c.second << std::endl;
     }
 
     // The rest must be level lines

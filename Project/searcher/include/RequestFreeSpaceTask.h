@@ -20,10 +20,11 @@ class RequestFreeSpaceTask : public Task
 public:
   int rank;
   Box * serviceBox;
+  Agent * serviceAgent;
   std::list<Location> locations;//Locations to be freed
 
-  RequestFreeSpaceTask(std::list<Location> locations, int rank);
-  RequestFreeSpaceTask(std::list<Location> locations, int rank, Box * serviceBox);
+  RequestFreeSpaceTask(std::list<Location> locations, int rank, Agent * serviceAgent);
+  RequestFreeSpaceTask(std::list<Location> locations, int rank, Agent * serviceAgent, Box * serviceBox);
   bool seemsCompleted(Agent * a, Node * n);
   bool isCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);

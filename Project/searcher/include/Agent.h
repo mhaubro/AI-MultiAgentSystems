@@ -24,6 +24,8 @@ class Agent : public Entity
     int rank;
     int number;
 
+    void removeFreeSpaceTaskMessage(RequestFreeSpaceTask * toBeRemoved);
+
     Command * getAction(Node * startstate, Node * tempstate);
 
 
@@ -38,6 +40,8 @@ class Agent : public Entity
     Agent(char chr, Location location, int region, int id);
     Agent(const Agent * agt);
 
+    void removeFreeSpaceTask();
+
     int hashCode();
 
     bool equals(const Agent * o) const;
@@ -47,6 +51,7 @@ class Agent : public Entity
 
 private:
     Command * getAwayFromGoal(Node * startstate);
+    void maybeSleep(int sleep);
 
     void cleanTasks();
     void replanTask(Node * state);
@@ -54,13 +59,13 @@ private:
     void gettingJob(Node * startstate);
 
     CentralPlanner * myPlanner;
-    RequestFreeSpaceTask * t;//Can at max request one at a time
+    RequestFreeSpaceTask * freeSpaceTask;//Can at max request one at a time
     bool workingOnTask = false;//Only set to true, if an agent has started carrying out a task
     int skipNextIte = 0;
     Plan * plan;
     void noPlan(Node * startstate);
-    Command * handleConflict();
-    void checkForHelp(Node * state);
+    Command * handleConflict(Node * state);
+    bool checkForHelp(Node * state);
 
 
 };

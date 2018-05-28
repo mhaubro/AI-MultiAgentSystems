@@ -54,6 +54,7 @@ public:
   int region;
   std::vector<Goal*> potentialConflictingGoals(Node * n);
   bool isFree(Node * n, Location gLoc);
+  Node * node;
 
 
 private:
