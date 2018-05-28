@@ -1,4 +1,4 @@
-import glob, os, zipfile, datetime, shutil, sys
+import glob, os, zipfile, datetime, shutil, sys, re
 
 def didSolve(filename):
     with open(filename) as f:
@@ -15,33 +15,37 @@ def average(list):
     sum = 0
     for n in list:
         sum += n
-    return int(sum/len(list))
-
+    return sum/len(list)
+            
 if __name__ == "__main__":
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         output = sys.argv[1]
     else:
-        output = 'output.out'
+        output = 'results/NotHardAfterMerge.out'
 
     path = os.getcwd()
-    solves = 0
+    results = 'results/results.txt'
+    tmp = 'results/tmp'
+
+    testResult = []
+    tests = []
     time = []
     actions = []
 
     with zipfile.ZipFile(os.path.join(path, output),"r") as zip_ref:
-        zip_ref.extractall("results")
+        zip_ref.extractall(tmp)
 
-    for f in glob.glob(os.path.join(path, 'results/*.log')):
+    for f in glob.glob(os.path.join(path, tmp + '/*.log')):
         ret = didSolve(f)
         if(didSolve(f)):
             print("Solved: " + os.path.basename(f).replace(".log", "") + " in " + ret[0] + " milliseconds and " + ret[1] + " actions")
+            tests.append(os.path.basename(f).replace(".log", ""))
             time.append(int(ret[0]))
             actions.append(int(ret[1]))
-            solves += 1
+
     print("\n\n")
     print("======================================================")
-    print("Summary - solved " +  str(solves) + " levels in total!")
+    print("Summary - solved " +  str(len(tests)) + " levels in total!")
     print("Average of " + str(average(time)) + " milliseconds and " + str(average(actions)) + " actions")
     print("======================================================")
-    shutil.rmtree("results")
-        
+    shutil.rmtree(tmp)
