@@ -186,6 +186,7 @@ bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
 bool CentralPlanner::returnGoalTask(HandleGoalTask * h){
 	if (h != NULL){
 		this->UnassignedGoals.push_back(h);
+		h->box->workInProgress = false;
 		return true;
 	}
 	return false;
@@ -203,6 +204,7 @@ bool CentralPlanner::removeRequestTask(RequestFreeSpaceTask * h){
 	for (int i = 0; i < node->agents.size(); i++){
 		node->agents[i].removeFreeSpaceTaskMessage(h);
 	}
+	//std::cerr << "I just put some things to null\n";
 	return true;
 }
 

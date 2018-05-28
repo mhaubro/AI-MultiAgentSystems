@@ -8,7 +8,7 @@
 #include "RequestFreeSpaceTask.h"
 #include <vector>
 
-RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank, Box * serviceBox)
+RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank, Agent * serviceAgent, Box * serviceBox)
 {
 	//this->type = Task::Type::MoveAgentTask;
 	this->locations = locations;
@@ -18,9 +18,10 @@ RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int ra
 	for(it = locations.begin(); it != locations.end(); ++it){
 		std::cerr << *it<< ", ";
 	}
+	this->serviceAgent = serviceAgent;
 }
 
-RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank)
+RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int rank, Agent * serviceAgent)
 {
 	std::list<Location>::iterator it;
 
@@ -33,6 +34,7 @@ RequestFreeSpaceTask::RequestFreeSpaceTask(std::list<Location> locations, int ra
 	this->locations = locations;
 	this->rank = rank;
 	this->serviceBox = NULL;
+	this->serviceAgent = serviceAgent;
 }
 
 bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
@@ -40,7 +42,7 @@ bool RequestFreeSpaceTask::isCompleted(Agent * a, Node * n)
 	std::list<Location>::iterator it;
 	for(it = locations.begin(); it != locations.end(); ++it){
 		if (Agent * agent = n->getAgent(*it)){
-			if (a->getChar() == agent->getChar()){
+			if (a->getChar() == agent->getChar() && agent->getChar() != serviceAgent->getChar()){
 				std::cerr << "Returning falseAgent\n";
 				return false;
 			}

@@ -51,6 +51,7 @@ class Agent : public Entity
 
 private:
     Command * getAwayFromGoal(Node * startstate);
+    void maybeSleep(int sleep);
 
     void cleanTasks();
     void replanTask(Node * state);
