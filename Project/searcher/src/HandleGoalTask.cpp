@@ -51,7 +51,7 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 {
   for(auto & b : n->boxes)
   {
-    if(this->box && b.getID() != this->box->getID())
+    if(this->box && b.getChar() != this->box->getChar())
       continue;
     if(b.getLocation() == this->destination)
       return true;

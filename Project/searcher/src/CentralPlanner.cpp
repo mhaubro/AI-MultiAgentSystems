@@ -103,7 +103,7 @@ void CentralPlanner::setPredecessor(Goal * g1, Goal * g2)
 
       if(UnassignedGoals[k]->destination == g1->getLocation() && UnassignedGoals[l]->destination == g2->getLocation())
       {
-        //std::cerr << "Goal " << UnassignedGoals[k]->chr << UnassignedGoals[k]->destination.toString() << " should be done before " << UnassignedGoals[l]->chr << UnassignedGoals[l]->destination.toString() << "\n";
+        std::cerr << "Goal " << UnassignedGoals[k]->chr << UnassignedGoals[k]->destination.toString() << " should be done before " << UnassignedGoals[l]->chr << UnassignedGoals[l]->destination.toString() << "\n";
         UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
         return;
       }
@@ -168,6 +168,9 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 		if(!UnassignedGoals[i]->predecessorsComplete(agent, state)){
 			counter++;
 			continue;
+		}else{
+			std::cerr << i << "\n";
+			std::cerr << "predecessor of " << UnassignedGoals[i]->chr << " solved\n";
 		}
 		Box * bestBox = nullptr;
 		HandleGoalTask * h = UnassignedGoals[i];
@@ -187,22 +190,16 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 				Goal * g = state->getGoal(b.getLocation());
 				// Check if box is on a goal already. If it is only take it with some probability.
 				if((g == NULL) || (g->getChar() != tolower(b.getChar()))){
-					std::cerr << b.getID() << " box not on correct goal " << b.getLocation() << "\n";
 					if (boxh < hval){
 						hval = boxh;
 						bestBox = &b;
 					}
-				} else {
-					std::cerr << "box on correct goal " << b.getID() << "\n"; 
-				}
+				} 
 			}
 			if (bestBox == nullptr){
-				std::cerr << "BOB!!!\n";
 				continue;
 			}
-				
-			std::cerr << "TEST: " << agent->getColor() << " " << bestBox->getColor() << std::endl;
-			h->box = bestBox;
+			h->box = bestBox;	
 			if(hval < hvalTask){
 				bestTask = h;
 				bestIt = i;
