@@ -4,18 +4,18 @@
 #include <utility>
 #include <boost/pool/object_pool.hpp>
 
-Box::Box(char chr, Location location, Entity::COLOR color, int region) :
-Entity(chr, location, color, region)
+Box::Box(char chr, Location location, Entity::COLOR color, int region, int id) :
+Entity(chr, location, color, region, id)
 {
 }
 
-Box::Box(char chr, Location location, int region) :
-Entity(chr, location, Entity::BLUE, region)
+Box::Box(char chr, Location location, int region, int id) :
+Entity(chr, location, Entity::BLUE, region, id)
 {
 }
 
 Box::Box(Box * box) :
-Entity(box->getChar(), box->getLocation(), box->getColor(), box->getRegion())
+Entity(box->getChar(), box->getLocation(), box->getColor(), box->getRegion(), box->getID())
 {
 }
 

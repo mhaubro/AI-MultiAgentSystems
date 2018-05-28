@@ -76,14 +76,14 @@ int HandleGoalTask::h(Agent * a, Node * n)
     {
 			if (g->getChar() == tolower(b.getChar()))
       {
-          if(false){
+          if(a->getPlanner()->isFree(n, b.getLocation())){
             // If it is a good position i.e. can not block reward it
             hval -= 50;
           } else{
             // If not good reward it less
             hval -= 20;
           }
-			}
+			} 
 		}
 
     // The box in this task
@@ -94,7 +94,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){
 				hval -= 1.0;
       }
-
+      
 		}
 	}
 	return n->g() * 0.5f + hval;

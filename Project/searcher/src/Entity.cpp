@@ -2,16 +2,9 @@
 #include <iostream>
 #include <string>
 
+Entity::Entity(char chr, Location location, COLOR color, int region, int id) :
+chr(chr), location(location), color(color), region(region), id(id) {
 
-Entity::Entity(char chr, Location location, COLOR color, int region) :
-chr(chr), location(location), color(color), region(region) {
-	static int idCounter = 0;
-	id = idCounter;
-	idCounter++;
-}
-
-int Entity::getID() const{
-	return id;
 }
 
 Entity::COLOR Entity::getColor() const{
@@ -23,6 +16,10 @@ char Entity::getChar() const{
 
 int Entity::getRegion() const{
 	return region;
+}
+
+int Entity::getID() const {
+	return id;
 }
 
 double Entity::getDistance(Entity e) const{

@@ -379,6 +379,7 @@ namespace Initializer {
     vector<Agent> agents;
     vector<Box> boxes;
 
+    int id_counter = 0;
     for (int r = 0; r < regions.size(); r++){
       auto& region = regions[r];
       for (int y = 0; y < region.size(); y++){
@@ -388,11 +389,11 @@ namespace Initializer {
           if (isWall(c)){
             Node::walls[x + y * width] = true;
           }else if (isAgent(c)){
-            agents.emplace_back(c, Location(x, y), parse_color(color_map[c]),r);
+            agents.emplace_back(c, Location(x, y), parse_color(color_map[c]),r, id_counter++);
           } else if (isBox(c)){
-            boxes.emplace_back(c, Location(x, y), parse_color(color_map[c]),r);
+            boxes.emplace_back(c, Location(x, y), parse_color(color_map[c]),r, id_counter++);
           } else if (isGoal(c)){
-            Node::goals.emplace_back(c, Location(x, y),r);
+            Node::goals.emplace_back(c, Location(x, y),r, id_counter++);
           }
         }
       }

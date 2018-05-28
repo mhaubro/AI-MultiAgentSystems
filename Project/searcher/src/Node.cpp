@@ -54,39 +54,21 @@ void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
 	boxes = newB;
 }
 
-void Node::clearGoals(char agent, Goal * g1, Goal * g2){
+void Node::clearOtherAgentsKeepBoxes(char agent, Goal * g1, Goal * g2)
+{
 	std::vector<Agent> newA = std::vector<Agent>();
 	std::vector<Box> newB = std::vector<Box>();
-  std::vector<Goal> newG = std::vector<Goal>();
 
 	for (const auto & a : agents)
-  {
 		if (a.getChar() == agent)
       newA.emplace_back(&a);
-	}
 
   for (const auto & b : boxes)
-  {
     if(g1->getChar() == std::tolower(b.getChar()) || g2->getChar() == std::tolower(b.getChar()))
       newB.push_back(b);
-  }
 
-  for (const auto & g : goals)
-  {
-    if(g1->getChar() == g.getChar() && g1->getLocation() == g.getLocation())
-    {
-      newG.push_back(g);
-      continue;
-    }
-    if(g2->getChar() == g.getChar() && g2->getLocation() == g.getLocation())
-    {
-      newG.push_back(g);
-      continue;
-    }
-  }
 	agents = newA;
 	boxes = newB;
-  //goals = newG;
 }
 
 void Node::removeBox(Location loc){
@@ -98,6 +80,7 @@ void Node::removeBox(Location loc){
 		}
 	}
 }
+
 void Node::removeAgent(Location loc){
 	std::vector<Agent>::iterator it = agents.begin();
 	for (int i = 0; i < agents.size(); i++){
@@ -381,7 +364,7 @@ std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
 						n.getAgent(agentLoc)->setLocation(newAgentLoc);
 						n.getBox(newAgentLoc)->setLocation(newBoxLoc);
             if(n.isGoalState(g))
-						  expandedNodes.push_back(n);
+              expandedNodes.push_back(n);
 					}
 				}
 			}
@@ -397,13 +380,14 @@ std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
 						n.getBox(boxLoc)->setLocation(agentLoc);
 						n.getAgent(agentLoc)->setLocation(newAgentLoc);
             if(n.isGoalState(g))
-						  expandedNodes.push_back(n);
+              expandedNodes.push_back(n);
 					}
 				}
 			}
 		}
 	}
-	return expandedNodes;}
+	return expandedNodes;
+}
 
 std::list<Node *> Node::extractPlan()
 {

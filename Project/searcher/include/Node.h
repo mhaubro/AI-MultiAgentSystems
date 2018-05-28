@@ -37,7 +37,7 @@ public:
 
 	void clearOtherAgents(char agent);
 	void clearOtherAgentsAndBoxes(char agent, Box * box);
-	void clearGoals(char agent, Goal * g1, Goal * g2);
+	void clearOtherAgentsKeepBoxes(char agent, Goal * g1, Goal * g2);
 
   //Methods
 	Node();
@@ -75,6 +75,7 @@ public:
   std::vector<Location> recordAgentLocations();
   void resetAgent(std::vector<Location> locations);
   void solveGoal(Goal * g);
+  bool goalAt(Location location);
 
 private:
 
@@ -83,7 +84,6 @@ private:
 	const Node * parent;
 	const Command * action;
 
-	bool goalAt(Location location);
 
 	bool cellIsFree(Location location);
 };
