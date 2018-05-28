@@ -75,7 +75,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 				if (g->getLocation() == b.getLocation())
         {
           if(a->getPlanner()->isFree(n, b.getLocation()))
-            hval += 35;
+            hval -= 70;
           else
             hval -= 35;
         }
