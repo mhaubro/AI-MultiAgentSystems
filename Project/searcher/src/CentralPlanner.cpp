@@ -103,7 +103,7 @@ void CentralPlanner::setPredecessor(Goal * g1, Goal * g2)
 
       if(UnassignedGoals[k]->destination == g1->getLocation() && UnassignedGoals[l]->destination == g2->getLocation())
       {
-        std::cerr << "Goal " << UnassignedGoals[k]->chr << UnassignedGoals[k]->destination.toString() << " should be done before " << UnassignedGoals[l]->chr << UnassignedGoals[l]->destination.toString() << "\n";
+        //std::cerr << "Goal " << UnassignedGoals[k]->chr << UnassignedGoals[k]->destination.toString() << " should be done before " << UnassignedGoals[l]->chr << UnassignedGoals[l]->destination.toString() << "\n";
         UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
         return;
       }
