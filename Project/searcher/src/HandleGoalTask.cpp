@@ -23,14 +23,14 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 
 HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
 {
-  this->solvingColors = std::vector<bool>();
-  this->predecessors = std::vector<HandleGoalTask *>();
-//  this->type = Task::Type::MoveBoxTask;
-  this->box = box;
-  this->chr = box->getChar();
-  this->destination = loc;
-  this->rank = rank;
-//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
+	this->solvingColors = std::vector<bool>();
+	this->predecessors = std::vector<HandleGoalTask *>();
+	//  this->type = Task::Type::MoveBoxTask;
+	this->box = box;
+	this->chr = box->getChar();
+	this->destination = loc;
+	this->rank = rank;
+	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)
@@ -49,49 +49,55 @@ bool HandleGoalTask::isCompleted(Agent * a, Node * n)
 
 bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 {
-  for(auto & b : n->boxes)
-  {
-    if(this->box && b.getChar() != this->box->getChar())
-      continue;
-    if(b.getLocation() == this->destination)
-      return true;
-  }
-  return false;
+	for(auto & b : n->boxes)
+	{
+		if(this->box && b.getChar() != this->box->getChar())
+			continue;
+		if(b.getLocation() == this->destination)
+			return true;
+	}
+	return false;
 }
 
 int HandleGoalTask::h(Agent * a, Node * n)
 {
-	double hval = 1000.0;
+  double hval = 1000.0;
 
-	for (Box b : n->boxes){
-		if (b.getColor() != a->getColor())//We don't care
+  if( n->getGoal(a->getLocation())){
+    //hval += 10;
+  }
+
+	for (Box b : n->boxes)
+  {
+		if (b.getColor() != a->getColor())
 			continue;
-		//For all boxes with matching getColor(), deduce like 3 if they're on the right place
-		if (Goal * g = n->getGoal(b.getLocation())){
-			if (g->getChar() == tolower(b.getChar())){
-				if (g->getLocation() == b.getLocation()){
-					hval -= 5.0;
-				} else {
 
-				}
+		if (Goal * g = n->getGoal(b.getLocation()))
+    {
+			if (g->getChar() == tolower(b.getChar()))
+      {
+          if(false){
+            // If it is a good position i.e. can not block reward it
+            hval -= 50;
+          } else{
+            // If not good reward it less
+            hval -= 20;
+          }
 			}
 		}
-		if (b.getID() == box->getID()){
+
+    // The box in this task
+		if (b.getID() == box->getID())
+    {
 			hval += destination.getDistance(b.getLocation());
+			hval += b.getDistance(n->agents[a->getChar() - '0']);
+			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){
+				hval -= 1.0;
+      }
 
-			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){//Ensures they're next to
-				hval -= 5.0;
-				//////std::cerr << "Next to box" << b.getChar() << " Position: " << b.getX() <<"," <<b.getY() << "\n";
-				//////std::cerr << "Destination" << " Position: " << t->destination.first <<"," <<t->destination.second << "\n";
-			} else {
-				hval += b.getDistance(n->agents[a->getChar() - '0']);
-			}
-
-			//The right box
 		}
 	}
-	//////std::cerr << "Heurestic: "<< n->g()+hval <<"\n";
-	return n->g()+hval;
+	return n->g() * 0.5f + hval;
 }
 
 bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)

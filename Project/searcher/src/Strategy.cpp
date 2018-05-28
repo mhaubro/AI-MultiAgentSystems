@@ -120,16 +120,16 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 		////std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
 			return leaf->extractPlan();
-
+		}
 			vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar());
 			for (auto& n : new_nodes){
 				if (!frontier.is_explored(&n)){
 					//////std::cerr << "Pushing object\n" << n.toString()<< "\n";
 					frontier.push(Node::getopCopy(&n), task->h(agent, &n));
 				}
-				iteration++;
 			}
-		}
+
+		iteration++;
 
 	}
 	return std::list<Node*>();
