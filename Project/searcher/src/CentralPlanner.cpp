@@ -175,7 +175,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 }
 
 bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
-	//std::cerr << "Adding a request\n";
+	std::cerr << "Adding a request\n";
 	if (h == NULL)
 		return false;
 	freeSpaceTasks.push_back(h);

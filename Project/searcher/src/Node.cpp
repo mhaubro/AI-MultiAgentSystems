@@ -361,7 +361,6 @@ bool Node::equals(const Node * obj) const {
 			return false;
 		}
 	}
-	//////std::cerr << "Objects are equal\n";
 	return true;
 }
 
