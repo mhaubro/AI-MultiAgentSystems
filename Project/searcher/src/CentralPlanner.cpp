@@ -158,45 +158,67 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	//std::cerr << "Finding a job for someone\n";
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
-	for (int i = 0; i < UnassignedGoals.size(); i++){
-		if(!UnassignedGoals[i]->predecessorsComplete(agent, state))
-      continue;
 
+	double hvalTask = 10000000000.0;
+	HandleGoalTask * bestTask = NULL;
+	int bestIt = 0;
+	int counter = 0;
+
+	for (int i = 0; i < UnassignedGoals.size(); i++){
+		if(!UnassignedGoals[i]->predecessorsComplete(agent, state)){
+			counter++;
+			continue;
+		}
+		Box * bestBox = nullptr;
 		HandleGoalTask * h = UnassignedGoals[i];
 
 		if (h->seemsCompleted(agent, state))
 			continue;
 
-    std::cerr << "Trying with goal " << state->getGoal(h->destination)->getChar() << "\n";
-
 		if (h->solvingColors[agent->getColor()]){
-			//std::cerr << "There's a solvable goal\n";
 			//Deletes the move box thing
 			//Finds most fitting box, by going through all setting and calculating h-val
-			Box * bestBox;
-			double hval = 10000000000.0;
+			double hval = 10000000000000.0;
 			for (auto &b : state->boxes){
-				if ((tolower(b.getChar()) != h->chr) || b.workInProgress)
+				if ((tolower(b.getChar()) != h->chr) || b.workInProgress || b.getColor() != agent->getColor())
 					continue;
 				h->box = &b;
 				double boxh = h->h(agent, state);
-				if (boxh < hval){
-					//std::cerr << "Good box found "<< b.chr << "\n";
-					hval = boxh;
-					bestBox = &b;
+				Goal * g = state->getGoal(b.getLocation());
+				// Check if box is on a goal already. If it is only take it with some probability.
+				if((g == NULL) || (g->getChar() != tolower(b.getChar()))){
+					std::cerr << b.getID() << " box not on correct goal " << b.getLocation() << "\n";
+					if (boxh < hval){
+						hval = boxh;
+						bestBox = &b;
+					}
+				} else {
+					std::cerr << "box on correct goal " << b.getID() << "\n"; 
 				}
 			}
+			if (bestBox == nullptr){
+				std::cerr << "BOB!!!\n";
+				continue;
+			}
+				
+			std::cerr << "TEST: " << agent->getColor() << " " << bestBox->getColor() << std::endl;
 			h->box = bestBox;
-			h->box->workInProgress = true;
-			//std::cerr << "Task assigned with box " << h->box->chr << "\n";
-		} else {
-			continue;
+			if(hval < hvalTask){
+				bestTask = h;
+				bestIt = i;
+				hvalTask = hval;
+			}
 		}
-		UnassignedGoals.erase(UnassignedGoals.begin()+i);
-		//throw "BUG";
-		return h;
 	}
 	//std::cerr << "Agent " << agent->chr<<  "has nothing to do\n";
+
+	if(bestTask != NULL){
+		std::cerr << "Task: " << UnassignedGoals[bestIt]->destination << " assigned to agent " << agent->getChar() << "\n";
+		UnassignedGoals.erase(UnassignedGoals.begin()+bestIt);
+		std::cerr << "Best box " << bestTask->box->getID() << " " << bestTask->box->getLocation() << "\n"; 
+		bestTask->box->workInProgress = true;
+		return bestTask;
+	}
 
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
 		//std::cerr << "Checking for requests \n";

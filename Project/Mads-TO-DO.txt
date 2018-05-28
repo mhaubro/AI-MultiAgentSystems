@@ -1,0 +1,4 @@
+Expand nodes
+
+1. If move task check moves
+2. Boxes only push or pull boxes that have the correct color.
