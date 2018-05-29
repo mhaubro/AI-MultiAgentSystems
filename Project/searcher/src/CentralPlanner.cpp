@@ -117,6 +117,11 @@ void CentralPlanner::setPredecessor(Goal * g1, Goal * g2)
 // Checks if g1 needs to be solved before g2
 bool CentralPlanner::getOrderOfGoals(Node * n, Goal * g1, Goal * g2)
 {
+/*  for (Goal * predecessor : g1->predecessors){
+	  for (Goal * potentialpredecessors : predecessor->predecessors){
+
+	  }
+  }*/
   Node * state = Node::getopCopy(n);
 
   state->solveGoal(g2);
