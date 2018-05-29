@@ -7,6 +7,10 @@ chr(chr), location(location), color(color), region(region), id(id) {
 
 }
 
+int Entity::maxX;
+int Entity::maxY;
+
+
 Entity::COLOR Entity::getColor() const{
 	return color;
 }

@@ -11,6 +11,9 @@ class Entity {
 public:
 	enum COLOR {BLUE, RED, GREEN, CYAN, MAGENTA, ORANGE, PINK, YELLOW, NUMCOLS};
 
+	static int maxX;
+	static int maxY;
+
 
 	Entity(char chr, Location location, COLOR color, int region, int id);
 	//The chr is

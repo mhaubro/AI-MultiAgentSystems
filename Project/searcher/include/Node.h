@@ -10,6 +10,7 @@
 #include "Box.h"
 #include <iostream>
 #include "Location.h"
+#include <unordered_map>
 
 class Goal;
 
@@ -19,10 +20,12 @@ class Node {
 
 public:
 	Node & operator =( const Node &first );
-
 	void removeBox(Location loc);
 	void removeAgent(Location loc);
 	//Fields
+
+	static std::unordered_map<Location, Goal *, LocationHash> goalHash;
+	static void hashGoals();
 	static int maxX;
 	static int maxY;
 	static std::vector<bool> walls;
@@ -79,6 +82,7 @@ public:
 
 private:
 
+
 	Location getBoxLocation(Agent * agent, Command * c);
 	int gval;
 	const Node * parent;
@@ -106,8 +110,5 @@ public:
 		return n1->equals(n2);
 	}
 };
-
-//This is the running state node. Will never be deleted, and always have g = 0, and parent == NULL.
-extern Node stateNode;
 
 #endif
