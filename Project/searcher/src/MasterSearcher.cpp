@@ -10,6 +10,13 @@ namespace MasterSearcher
 {
 void getPlan(Node * initialState)
 {
+	//Yes yes it's ugly but it's needed.
+	Entity::maxX = Node::maxX;
+	Entity::maxY = Node::maxY;
+	Location::maxX = Node::maxX;
+	Location::maxY = Node::maxY;
+	Node::hashGoals();
+
 	std::cerr << "Starts GetPlan\n";
 	int agents = initialState->agents.size();
 

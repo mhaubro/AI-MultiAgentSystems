@@ -12,11 +12,18 @@
 #include <string>
 #include <iostream>
 
+
 class Location {
 public:
+
+	static int maxX;
+	static int maxY;
+
 	Location();
 	Location(int x, int y);
 	Location(const Location& location);
+
+	int getIndex();
 
 	std::pair<int,int> getLocation();
 	int getX() const;
@@ -44,10 +51,28 @@ public:
 	Location operator-();//Unary
 
 	std::string toString() const;
+
 private:
 	int x;
 	int y;
+};
 
+struct LocationHash {
+public:
+	size_t operator()(const Location &b) const {
+		return b.getX()*Location::maxY + b.getX();
+	}
+};
+
+
+/*
+ * Necessary for comparing using the std::unordered set
+ */
+struct LocationEqual {
+public:
+	bool operator()(const Location & b1, const Location & b2) const {
+		return b1 == b2;
+	}
 };
 
 // output stream function for easier printing: kind regards Mathias :)
