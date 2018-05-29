@@ -175,7 +175,7 @@ Takes an agent, takes a command and checks if it is legal
  */
 
 bool Node::checkState(int agent, Command * c){
-	std::cerr << "Checking state\n";
+	//std::cerr << "Checking state\n";
 	Agent * activeAgent;
 	for (int i = 0; i < agents.size(); i++){
 		if (agents[i].number == agent){
@@ -216,7 +216,7 @@ int dirAgent;
 int dirBox;
  */
 bool Node::checkAndChangeState(int agent, Command * c){
-	std::cerr << "Checking temp, changing state\n";
+	//std::cerr << "Checking temp, changing state\n";
 
 	Agent * activeAgent;
 	for (int i = 0; i < agents.size(); i++){
@@ -335,11 +335,6 @@ void Node::insertBoxToHash(Box * b){
 
 std::vector<Node> Node::getExpandedNodes(char agent)
 {
-	//doHash();
-	std::cerr << "Agents size" << agents.size() << "\n";
-	std::cerr << "Agents hash size" << agentHash.size() << "\n";
-	std::cerr << "Boxes size" << boxes.size() << "\n";
-	std::cerr << "Boxes hash size" << boxHash.size() << "\n";
 
 	std::vector<Node> expandedNodes = std::vector<Node>();
 	for (const auto & a : agents)
