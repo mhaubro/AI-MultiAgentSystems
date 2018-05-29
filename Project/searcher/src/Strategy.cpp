@@ -84,12 +84,12 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	} else if (GetAwayFromGoalTask * tmp = dynamic_cast<GetAwayFromGoalTask *>(task)){
 		MAXITE = 5000;
 	} else if (HandleGoalTask * tmp = dynamic_cast<HandleGoalTask *>(task)){
-		MAXITE = 200000;
+		MAXITE = 50000;
 		////std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
 	}
 
   if(start_state->agents.size() == 1)
-    MAXITE *= 5;
+    MAXITE *= 2;
 
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
