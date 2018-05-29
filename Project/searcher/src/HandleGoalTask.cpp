@@ -18,6 +18,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 	this->box = NULL;
 	this->destination = loc;
 	this->rank = rank;
+	this->startHval = 1000;
 	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
@@ -30,6 +31,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
 	this->chr = box->getChar();
 	this->destination = loc;
 	this->rank = rank;
+	this->startHval = 1000;
 	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
@@ -61,10 +63,10 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 
 int HandleGoalTask::h(Agent * a, Node * n)
 {
-  double hval = 1000.0;
+  double hval = this->startHval;
 
   if( n->getGoal(a->getLocation())){
-    //hval += 10;
+     hval += 10;
   }
 
 	for (Box b : n->boxes)

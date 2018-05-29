@@ -28,6 +28,8 @@ public:
   int rank;
   char chr;
 
+  double startHval;
+
   HandleGoalTask(Location loc, int rank, std::vector<bool> solvingColors, char chr);
   HandleGoalTask(Location loc, int rank, Box * b);
   bool seemsCompleted(Agent * a, Node * n);

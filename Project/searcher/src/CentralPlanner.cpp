@@ -175,6 +175,8 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 		Box * bestBox = nullptr;
 		HandleGoalTask * h = UnassignedGoals[i];
 
+		std::cerr << "startHVal now: " << h->startHval;
+
 		if (h->seemsCompleted(agent, state))
 			continue;
 
@@ -238,6 +240,8 @@ bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
 //Returns a goal task from an agent to the planner
 bool CentralPlanner::returnGoalTask(HandleGoalTask * h){
 	if (h != NULL){
+		// Add value to downprioritise if it can not be solved.
+		h->startHval += 50;
 		this->UnassignedGoals.push_back(h);
 		h->box->workInProgress = false;
 		return true;
