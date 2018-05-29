@@ -19,12 +19,21 @@ class Agent;
 class Node {
 
 public:
+
+	void doHash();
+	void deleteAgentFromHash(Agent * a);
+	void deleteBoxFromHash(Box * b);
+	void insertAgentToHash(Agent * a);
+	void insertBoxToHash(Box * b);
+
 	Node & operator =( const Node &first );
 	void removeBox(Location loc);
 	void removeAgent(Location loc);
 	//Fields
 
 	static std::unordered_map<Location, Goal *, LocationHash> goalHash;
+	std::unordered_map<Location, Box *, LocationHash> boxHash;
+	std::unordered_map<Location, Agent *, LocationHash> agentHash;
 	static void hashGoals();
 	static int maxX;
 	static int maxY;
