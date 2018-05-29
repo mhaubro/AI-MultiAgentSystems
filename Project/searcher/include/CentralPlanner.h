@@ -19,6 +19,10 @@ class RequestFreeSpaceTask;
 
 class CentralPlanner {
 public:
+
+	static std::vector<int> allPairsShortestPaths;
+	void computeAllPairsShortestPaths(Node * n);
+
   std::vector<HandleGoalTask*> UnassignedGoals;
   std::vector<RequestFreeSpaceTask *> freeSpaceTasks;
   std::vector<Goal> order;

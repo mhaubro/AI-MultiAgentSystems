@@ -8,6 +8,7 @@
 #include "Location.h"
 #include <cmath>
 #include <sstream>
+#include "CentralPlanner.h"
 
 Location::Location(){
 	this->x = -3;
@@ -24,16 +25,20 @@ Location::Location(const Location& location){
 	y = location.getY();
 }
 
+bool Location::isOutOfBounds(){
+	return !(x > 0 && x < maxX && y > 0 && y < maxY);
+}
+
 int Location::maxX;
 int Location::maxY;
 
-int Location::getIndex(){
+int Location::getIndex() const{
 	return x+y*maxX;
 }
 
 
 double Location::getDistance(Location otherLoc) const{
-	return std::sqrt(std::pow(otherLoc.getX()-x,2) + std::pow(otherLoc.getY()-y,2));
+	return (double)CentralPlanner::allPairsShortestPaths[otherLoc.getIndex()+getIndex()*maxX*maxY];
 }
 
 int Location::getManhattan(Location otherLoc) const{

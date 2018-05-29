@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include <iostream>
 #include <string>
+#include "CentralPlanner.h"
 
 Entity::Entity(char chr, Location location, COLOR color, int region, int id) :
 chr(chr), location(location), color(color), region(region), id(id) {
@@ -27,7 +28,7 @@ int Entity::getID() const {
 }
 
 double Entity::getDistance(Entity e) const{
-	return location.getDistance(e.getLocation());
+	return CentralPlanner::allPairsShortestPaths[location.getIndex()+e.getLocation().getIndex()*maxX*maxY];
 }
 
 int Entity::getManhattan(Entity e) const{

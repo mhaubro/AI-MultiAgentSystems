@@ -7,6 +7,57 @@
 #include <ctime>
 #include <cstdlib>
 
+std::vector<int> CentralPlanner::allPairsShortestPaths;
+
+void CentralPlanner::computeAllPairsShortestPaths(Node * n){
+	allPairsShortestPaths = std::vector<int>(Node::maxX*Node::maxX*Node::maxY*Node::maxY);
+	for (int x = 0; x <Node::maxX; x++){
+		for (int y = 0; y < Node::maxY; y++){
+			Location Thisloc = Location(x, y);
+			Location currloc = Thisloc;
+
+			//allPairsShortestPaths[Thisloc.getIndex()] = std::vector<int>(Node::maxX*Node::maxY);
+			//Theres a wall at current location
+			if (Node::walls[Thisloc.getIndex()]){
+				continue;
+			}
+			std::cerr << currloc.toString() << "\n";
+
+			std::vector<bool> visited = Node::walls;
+			//Initializing all values to something high
+			//Sets base location to 0
+
+			allPairsShortestPaths[currloc.getIndex()+currloc.getIndex()*Node::maxX*Node::maxY] = 0;
+			visited[Thisloc.getIndex()] = true;
+			std::list<Location> q = std::list<Location>();
+
+			q.push_back(Thisloc);
+
+			//Do a BFS
+			std::vector<Location> Locations;
+			while (!q.empty()){
+				Thisloc = q.front();
+				q.pop_front();
+				Locations.clear();
+				Locations.push_back(Thisloc+Location(1,0));
+				Locations.push_back(Thisloc+Location(-1,0));
+				Locations.push_back(Thisloc+Location(0,1));
+				Locations.push_back(Thisloc+Location(0,-1));
+
+				for (Location loc : Locations){
+					if (visited[loc.getIndex()] || loc.isOutOfBounds()){
+						continue;
+					}
+					visited[loc.getIndex()] = true;
+					//A child is 1 more than its parent
+					allPairsShortestPaths[loc.getIndex()+currloc.getIndex()*Node::maxX*Node::maxY] = allPairsShortestPaths[Thisloc.getIndex()+currloc.getIndex()*Node::maxX*Node::maxY] + 1;
+					q.push_back(loc);
+				}
+			}
+		}
+	}
+}
+
 CentralPlanner::CentralPlanner(int region){
 	this->region = region;
 	UnassignedGoals = std::vector<HandleGoalTask *>();
@@ -14,6 +65,7 @@ CentralPlanner::CentralPlanner(int region){
 }
 
 void CentralPlanner::preAnalyse(Node * n){
+	computeAllPairsShortestPaths(n);
 	getCompatibleGoals(n);
 	DetectTasks(n);
 	setPredecessors(n);

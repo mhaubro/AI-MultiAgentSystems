@@ -104,7 +104,7 @@ int HandleGoalTask::h(Agent * a, Node * n)
 			hval += destination.getDistance(b.getLocation());
 			hval += b.getDistance(*activeAgent);
 			if (b.getDistance(*activeAgent) < 1.3){
-				hval -= 1.0;
+				hval -= 5.0;
       }
       
 		}

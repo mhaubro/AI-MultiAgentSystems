@@ -19,11 +19,13 @@ public:
 	static int maxX;
 	static int maxY;
 
+	bool isOutOfBounds();
+
 	Location();
 	Location(int x, int y);
 	Location(const Location& location);
 
-	int getIndex();
+	int getIndex() const;
 
 	std::pair<int,int> getLocation();
 	int getX() const;
