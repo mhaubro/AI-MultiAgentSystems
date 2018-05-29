@@ -80,10 +80,10 @@ int HandleGoalTask::h(Agent * a, Node * n)
       {
           if(a->getPlanner()->isFree(n, b.getLocation())){
             // If it is a good position i.e. can not block reward it
-            hval -= 50;
+            hval -= 20;
           } else{
             // If not good reward it less
-            hval -= 30;
+            hval -= 10;
           }
 			} 
 		}
