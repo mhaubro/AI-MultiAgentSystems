@@ -36,6 +36,7 @@ public:
   bool isCompleted(Agent * a, Node * n);
   int h(Agent * a, Node * n);
   bool predecessorsComplete(Agent * a, Node * n);
+  bool predecessorsCompleteGoal(Goal * g, Node * n);
 };
 
 #include "Agent.h"

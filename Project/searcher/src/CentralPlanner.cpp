@@ -69,7 +69,7 @@ std::vector<Goal*> CentralPlanner::potentialConflictingGoals(Node * n)
 
 void CentralPlanner::setPredecessors(Node * n)
 {
-	std::vector<Goal*> confGoals = potentialConflictingGoals(n);
+  std::vector<Goal*> confGoals = potentialConflictingGoals(n);
   if(confGoals.size() == 0)
     return;
 	for(int i = 0; i < confGoals.size(); i++)
@@ -90,6 +90,7 @@ void CentralPlanner::setPredecessors(Node * n)
 
 void CentralPlanner::setPredecessor(Goal * g1, Goal * g2)
 {
+  g2->predecessors.push_back(g1);
   // Find its task and set it
   for(int k = 0; k < UnassignedGoals.size(); k++)
   {

@@ -76,14 +76,14 @@ int HandleGoalTask::h(Agent * a, Node * n)
 
 		if (Goal * g = n->getGoal(b.getLocation()))
     {
-			if (g->getChar() == tolower(b.getChar()))
+			if (g->getChar() == tolower(b.getChar()) && predecessorsCompleteGoal(g, n))
       {
           if(a->getPlanner()->isFree(n, b.getLocation())){
             // If it is a good position i.e. can not block reward it
-            hval -= 5;
+            hval -= 50;
           } else{
             // If not good reward it less
-            hval -= 3;
+            hval -= 30;
           }
 			} 
 		}
@@ -115,11 +115,13 @@ bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)
   return true;
 }
 
-//bool HandleGoalTask::predecessorsCompleteAllTasks(Node * n)
-//{
-//	bool acc = true;
-//	for (int i = 0; i < UnassignedGoals.size(); i++){
-//  	acc &= UnassignedGoals[i]->predecessorsComplete(NULL, n);
-//	}
-//	return acc;
-//}
+// This is used for goal 
+bool HandleGoalTask::predecessorsCompleteGoal(Goal * g, Node * n)
+{
+	for (int i = 0; i < g->predecessors.size(); i++){
+  	if(!n->isGoalState(g->predecessors[i])){
+			return false;
+		}
+	}
+	return true;
+}
