@@ -53,6 +53,7 @@ void Node::clearOtherAgentsAndBoxes(char agent, Box * box){
 	newB.push_back(getBox(box->getLocation()));
 	agents = newA;
 	boxes = newB;
+	doHash();
 }
 
 void Node::clearOtherAgentsKeepBoxes(char agent, Goal * g1, Goal * g2)
@@ -70,6 +71,7 @@ void Node::clearOtherAgentsKeepBoxes(char agent, Goal * g1, Goal * g2)
 
 	agents = newA;
 	boxes = newB;
+	doHash();
 }
 
 void Node::removeBox(Location loc){
@@ -80,6 +82,7 @@ void Node::removeBox(Location loc){
 			return;
 		}
 	}
+	doHash();
 }
 
 void Node::removeAgent(Location loc){
@@ -100,6 +103,7 @@ void Node::clearOtherAgents(char agent){
 		}
 	}
 	agents = newA;
+	doHash();
 }
 
 std::vector<Location> Node::recordAgentLocations()
@@ -134,8 +138,8 @@ Node::Node(Node * current, std::vector<Agent> * agents, std::vector<Box> * boxes
 	this->parent = current->parent;
 	this->agents = *agents;
 	this->boxes = *boxes;
-	this->agentHash = std::unordered_map<Location, Agent *, LocationHash>();
-	this->boxHash = std::unordered_map<Location, Box *, LocationHash>();
+	agentHash = std::unordered_map<Location, Agent *, LocationHash>();
+	boxHash = std::unordered_map<Location, Box *, LocationHash>();
 	doHash();
 }
 
@@ -171,6 +175,7 @@ Takes an agent, takes a command and checks if it is legal
  */
 
 bool Node::checkState(int agent, Command * c){
+	std::cerr << "Checking state\n";
 	Agent * activeAgent;
 	for (int i = 0; i < agents.size(); i++){
 		if (agents[i].number == agent){
@@ -211,6 +216,8 @@ int dirAgent;
 int dirBox;
  */
 bool Node::checkAndChangeState(int agent, Command * c){
+	std::cerr << "Checking temp, changing state\n";
+
 	Agent * activeAgent;
 	for (int i = 0; i < agents.size(); i++){
 		if (agents[i].number == agent){
@@ -226,9 +233,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 	//Changes state
 	if (c->getActionType() == Command::Move){
 
-		deleteAgentFromHash(activeAgent);
 		activeAgent->setDLocation(c->agentdloc());
-		insertAgentToHash(activeAgent);
 
 	} else if (c->getActionType() == Command::Pull){
 		//Calculates box' former position through knowing
@@ -236,30 +241,23 @@ bool Node::checkAndChangeState(int agent, Command * c){
 		//Used for getting the box whose position changes
 		Location boxloc = getBoxLocation(activeAgent, c);
 		Box * box = getBox(boxloc);
-		deleteBoxFromHash(box);
 		box->setLocation(activeAgent->getLocation());
-		insertBoxToHash(box);
 
-		deleteAgentFromHash(activeAgent);
 		activeAgent->setDLocation(c->agentdloc());
-		insertAgentToHash(activeAgent);
 
 
 	} else if (c->getActionType() == Command::Push){
 		Location boxloc = getBoxLocation(activeAgent, c);
 		Box * box = getBox(boxloc);
 
-		deleteBoxFromHash(box);
 		box->setDLocation(c->boxdloc());
-		insertBoxToHash(box);
 
-		deleteAgentFromHash(activeAgent);
 		activeAgent->setDLocation(c->agentdloc());
-		insertAgentToHash(activeAgent);
 
 	} else {
 		//NoOp, do nothing
 	}
+	doHash();
 	return true;
 }
 
@@ -277,9 +275,8 @@ Node::Node() : gval(0) {
 	this->parent = NULL;
 	this->boxes = std::vector<Box>();
 	this->agents = std::vector<Agent>();
-	this->agentHash = std::unordered_map<Location, Agent *, LocationHash>();
-	this->boxHash = std::unordered_map<Location, Box *, LocationHash>();
-
+	agentHash = std::unordered_map<Location, Agent *, LocationHash>();
+	boxHash = std::unordered_map<Location, Box *, LocationHash>();
 	doHash();
 	action = NULL;
 }
@@ -290,8 +287,8 @@ Node::Node(Node * parent, Command * c) : gval(parent->g()+1), action(c) {
 	this->agents = (parent->agents);
 	this->boxes = (parent->boxes);
 	this->action = c;
-	this->agentHash = std::unordered_map<Location, Agent *, LocationHash>();
-	this->boxHash = std::unordered_map<Location, Box *, LocationHash>();
+	agentHash = std::unordered_map<Location, Agent *, LocationHash>();
+	boxHash = std::unordered_map<Location, Box *, LocationHash>();
 	doHash();
 }
 
@@ -305,12 +302,16 @@ bool Node::isInitialState() {
 
 //Used to do the initial hashing of agents and boxes
 void Node::doHash(){
-	agentHash = std::unordered_map<Location, Agent *, LocationHash>();
-	boxHash = std::unordered_map<Location, Box *, LocationHash>();
+
+	agentHash.clear();
+	boxHash.clear();
 	for (int i = 0; i < agents.size(); i++){
+		//std::cerr << "Inserting Agent\n";
 		agentHash.insert(std::pair<Location, Agent *>(agents[i].getLocation(), (Agent *)&agents[i]));
+		//std::cerr << "AgentHash Size " << agentHash.size() << "\n";
 	}
 	for (int i = 0; i < boxes.size(); i++){
+		//std::cerr << "Inserting box\n";
 		boxHash.insert(std::pair<Location, Box *>(boxes[i].getLocation(), (Box *)&boxes[i]));
 	}
 }
@@ -334,6 +335,12 @@ void Node::insertBoxToHash(Box * b){
 
 std::vector<Node> Node::getExpandedNodes(char agent)
 {
+	//doHash();
+	std::cerr << "Agents size" << agents.size() << "\n";
+	std::cerr << "Agents hash size" << agentHash.size() << "\n";
+	std::cerr << "Boxes size" << boxes.size() << "\n";
+	std::cerr << "Boxes hash size" << boxHash.size() << "\n";
+
 	std::vector<Node> expandedNodes = std::vector<Node>();
 	for (const auto & a : agents)
   {
@@ -353,9 +360,8 @@ std::vector<Node> Node::getExpandedNodes(char agent)
         {
 					Node n = Node(this, c);
 					Agent * a = n.getAgent(agentLoc);
-					n.deleteAgentFromHash(a);
+					n.doHash();
 					a->setLocation(newAgentLoc);
-					n.insertAgentToHash(a);
 					expandedNodes.push_back(n);
 				}
 			}
@@ -374,12 +380,9 @@ std::vector<Node> Node::getExpandedNodes(char agent)
 						//Setting locations and rehashing
 						Agent * a = n.getAgent(agentLoc);
 						Box * b = n.getBox(newAgentLoc);
-						n.deleteAgentFromHash(a);
-						n.deleteBoxFromHash(b);
 						a->setLocation(newAgentLoc);
 						b->setLocation(newBoxLoc);
-						n.insertAgentToHash(a);
-						n.insertBoxToHash(b);
+						n.doHash();
 
 						expandedNodes.push_back(n);
 					}
@@ -398,12 +401,9 @@ std::vector<Node> Node::getExpandedNodes(char agent)
 						//Inserting and rehashing
 						Agent * a = n.getAgent(agentLoc);
 						Box * b = n.getBox(boxLoc);
-						n.deleteAgentFromHash(a);
-						n.deleteBoxFromHash(b);
 						a->setLocation(newAgentLoc);
 						b->setLocation(agentLoc);
-						n.insertAgentToHash(a);
-						n.insertBoxToHash(b);
+						n.doHash();
 
 						expandedNodes.push_back(n);
 					}
@@ -437,9 +437,11 @@ std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
         {
 					Node n = Node(this, c);
 					Agent * a = n.getAgent(agentLoc);
-					n.deleteAgentFromHash(a);
+//					n.deleteAgentFromHash(a);
 					a->setLocation(newAgentLoc);
-					n.insertAgentToHash(a);
+//					n.insertAgentToHash(a);
+					n.doHash();
+
 
 					expandedNodes.push_back(n);
 				}
@@ -457,12 +459,13 @@ std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
 						Node n = Node(this, c);
 						Agent * a = n.getAgent(agentLoc);
 						Box * b = n.getBox(newAgentLoc);
-						n.deleteAgentFromHash(a);
-						n.deleteBoxFromHash(b);
+//						n.deleteAgentFromHash(a);
+//						n.deleteBoxFromHash(b);
 						a->setLocation(newAgentLoc);
 						b->setLocation(newBoxLoc);
-						n.insertAgentToHash(a);
-						n.insertBoxToHash(b);
+//						n.insertAgentToHash(a);
+//						n.insertBoxToHash(b);
+						n.doHash();
 
             if(n.isGoalState(g))
               expandedNodes.push_back(n);
@@ -481,12 +484,9 @@ std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
 						//Inserting and rehashing
 						Agent * a = n.getAgent(agentLoc);
 						Box * b = n.getBox(boxLoc);
-						n.deleteAgentFromHash(a);
-						n.deleteBoxFromHash(b);
 						a->setLocation(newAgentLoc);
 						b->setLocation(agentLoc);
-						n.insertAgentToHash(a);
-						n.insertBoxToHash(b);
+						n.doHash();
 
 						if(n.isGoalState(g)){
 							expandedNodes.push_back(n);
@@ -657,12 +657,12 @@ bool Node::isGoalState(Goal * g)
 
 Box * Node::getBox(Location loc)
 {
-	for(auto & box : this->boxes)
-	{
-		if(box.getLocation() == loc)
-			return &box;
-	}
-	return NULL;
+	  std::unordered_map<Location, Box *, LocationHash>::iterator got = boxHash.find(loc);
+	  if (got == boxHash.end()){
+		  return NULL;
+	  } else {
+		  return got->second;
+	  }
 }
 
 Goal * Node::getGoal(Location loc)
@@ -677,12 +677,12 @@ Goal * Node::getGoal(Location loc)
 
 Agent * Node::getAgent(Location loc)
 {
-	for(auto & a : this->agents)
-	{
-		if(a.getLocation() == loc)
-      return &a;
-	}
-	return NULL;
+	  std::unordered_map<Location, Agent *, LocationHash>::iterator got = agentHash.find(loc);
+	  if (got == agentHash.end()){
+		  return NULL;
+	  } else {
+		  return got->second;
+	  }
 	//throw new NullPointerException("No agent at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
 }
 

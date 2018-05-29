@@ -197,7 +197,7 @@ void Agent::noPlan(Node * startstate){
 	}
 
 	std::list<Node *> searchResult = search(startstate);
-
+	//throw "Hi";
 	if (searchResult.empty()){
 		std::cerr << "A solution was not found\n";
 

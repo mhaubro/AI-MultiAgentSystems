@@ -94,6 +94,7 @@ void getPlan(Node * initialState)
 
 		for (int i = 0; i < regions; i++){
 			states[i] = tempstates[i];
+			states[i].doHash();
 			isGoal &= states[i].isGoalState();
 		}
 		printStep(s);

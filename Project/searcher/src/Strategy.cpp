@@ -111,20 +111,14 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 			return list<Node*>();
 		}
 		Node* leaf = frontier.pull();
+		leaf->doHash();
 
-		if (iteration % 2500 == 0){
-			//std::cerr << "Iteration = " << iteration << "\ng = " << leaf->g() << "\nh = " << task->h(agent,leaf) << std::endl;
-			//std::cerr << "Searching is done in agent "<< agent->getChar() << "\n";
-			////std::cerr << leaf->toString();
-		}
-		////std::cerr << leaf->toString() << "\n";
 		if (task->seemsCompleted(agent, leaf)){
 			return leaf->extractPlan();
 		}
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar());
 		for (auto& n : new_nodes){
 			if (!frontier.is_explored(&n)){
-				//////std::cerr << "Pushing object\n" << n.toString()<< "\n";
 				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
 			}
 		}
@@ -140,7 +134,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g
 	int MAXITE = 40000;
 
 	HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(task);
-  Node * search_state = Node::getopCopy(start_state);
+	Node * search_state = Node::getopCopy(start_state);
 	search_state->clearOtherAgentsKeepBoxes(agent->getChar(), g1, g2);
 
 	int iteration = 0;
@@ -164,6 +158,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g
 			return std::list<Node *>();
 
 		Node* leaf = frontier.pull();
+		leaf->doHash();
 
 		if (leaf->isGoalState(g1))
 			return leaf->extractPlan();
