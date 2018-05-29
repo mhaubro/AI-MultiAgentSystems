@@ -136,11 +136,12 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 }
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g1, Goal * g2)
-				{
+{
 	int MAXITE = 40000;
 
 	HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(task);
-	start_state->clearOtherAgentsKeepBoxes(agent->getChar(), g1, g2);
+  Node * search_state = Node::getopCopy(start_state);
+	search_state->clearOtherAgentsKeepBoxes(agent->getChar(), g1, g2);
 
 	int iteration = 0;
 	// vector holding and assuming ownership of all nodes
@@ -149,7 +150,7 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g
 	Frontier frontier = Frontier();
 
 	// add start state to frontier
-	frontier.push(start_state, start_state->g());
+	frontier.push(search_state, search_state->g());
 
 	// search loop
 	while(true)
@@ -169,10 +170,10 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g
 
 		vector<Node> new_nodes = leaf->getExpandedNodes(agent->getChar(), g2);
 		for (auto& n : new_nodes)
-		{
 			if (!frontier.is_explored(&n))
-				frontier.push(Node::getopCopy(&n), task->h(agent, &n));
-		}
+        frontier.push(Node::getopCopy(&n), task->h(agent, &n));
+
+    iteration++;
 	}
 	return list<Node *>();
-				}
+}
