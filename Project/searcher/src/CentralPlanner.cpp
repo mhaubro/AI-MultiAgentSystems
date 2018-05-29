@@ -69,7 +69,9 @@ std::vector<Goal*> CentralPlanner::potentialConflictingGoals(Node * n)
 
 void CentralPlanner::setPredecessors(Node * n)
 {
-	std::vector<Goal*> confGoals = potentialConflictingGoals(n);
+  std::vector<Goal*> confGoals = potentialConflictingGoals(n);
+  if(confGoals.size() == 0)
+    return;
 	for(int i = 0; i < confGoals.size(); i++)
 	{
 		for(int j = 0; j < confGoals.size(); j++)
@@ -88,6 +90,7 @@ void CentralPlanner::setPredecessors(Node * n)
 
 void CentralPlanner::setPredecessor(Goal * g1, Goal * g2)
 {
+  g2->predecessors.push_back(g1);
   // Find its task and set it
   for(int k = 0; k < UnassignedGoals.size(); k++)
   {
@@ -175,6 +178,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 		Box * bestBox = nullptr;
 		HandleGoalTask * h = UnassignedGoals[i];
 
+
 		if (h->seemsCompleted(agent, state))
 			continue;
 
@@ -183,8 +187,9 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 			//Finds most fitting box, by going through all setting and calculating h-val
 			double hval = 10000000000000.0;
 			for (auto &b : state->boxes){
-				if ((tolower(b.getChar()) != h->chr) || b.workInProgress || b.getColor() != agent->getColor())
+				if ((tolower(b.getChar()) != h->chr) || b.workInProgress || b.getColor() != agent->getColor()){
 					continue;
+				}
 				h->box = &b;
 				double boxh = h->h(agent, state);
 				Goal * g = state->getGoal(b.getLocation());
@@ -194,12 +199,12 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 						hval = boxh;
 						bestBox = &b;
 					}
-				} 
+				}
 			}
 			if (bestBox == nullptr){
 				continue;
 			}
-			h->box = bestBox;	
+			h->box = bestBox;
 			if(hval < hvalTask){
 				bestTask = h;
 				bestIt = i;
@@ -212,7 +217,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	if(bestTask != NULL){
 		std::cerr << "Task: " << UnassignedGoals[bestIt]->destination << " assigned to agent " << agent->getChar() << "\n";
 		UnassignedGoals.erase(UnassignedGoals.begin()+bestIt);
-		std::cerr << "Best box " << bestTask->box->getID() << " " << bestTask->box->getLocation() << "\n"; 
+		std::cerr << "Best box " << bestTask->box->getID() << " " << bestTask->box->getLocation() << "\n";
 		bestTask->box->workInProgress = true;
 		return bestTask;
 	}
@@ -238,6 +243,8 @@ bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
 //Returns a goal task from an agent to the planner
 bool CentralPlanner::returnGoalTask(HandleGoalTask * h){
 	if (h != NULL){
+		// Add value to downprioritise if it can not be solved.
+		h->startHval += 50;
 		this->UnassignedGoals.push_back(h);
 		h->box->workInProgress = false;
 		return true;

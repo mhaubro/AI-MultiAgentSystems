@@ -15,9 +15,10 @@ def average(list):
     sum = 0
     for n in list:
         sum += n
-    return sum/len(list)
+    return int(sum/len(list))
             
 if __name__ == "__main__":
+    print("\n\n")
     if len(sys.argv) > 1:
         output = sys.argv[1]
     else:
@@ -29,6 +30,7 @@ if __name__ == "__main__":
 
     testResult = []
     tests = []
+    testsTotal = 0
     time = []
     actions = []
 
@@ -36,16 +38,19 @@ if __name__ == "__main__":
         zip_ref.extractall(tmp)
 
     for f in sorted(glob.glob(os.path.join(path, tmp + '/*.log'))):
+        testsTotal += 1
         ret = didSolve(f)
         if(didSolve(f)):
             print("Solved: " + os.path.basename(f).replace(".log", "") + " in " + ret[0] + " milliseconds and " + ret[1] + " actions")
             tests.append(os.path.basename(f).replace(".log", ""))
             time.append(int(ret[0]))
             actions.append(int(ret[1]))
+        else:
+            print("Could not solve: " + os.path.basename(f).replace(".log", ""))
 
     print("\n\n")
     print("======================================================")
-    print("Summary - solved " +  str(len(tests)) + " levels in total!")
-    print("Average of " + str(average(time)) + " milliseconds and " + str(average(actions)) + " actions")
+    print("Summary - solved " +  str(len(tests)) + " out of " + str(testsTotal))
+    print("Average of " + str(average(time)) + " milliseconds and " + str(average(actions)) + " actions for solved levels")
     print("======================================================")
     shutil.rmtree(tmp)

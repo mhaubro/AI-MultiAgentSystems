@@ -18,6 +18,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 	this->box = NULL;
 	this->destination = loc;
 	this->rank = rank;
+	this->startHval = 1000;
 	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
@@ -30,6 +31,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
 	this->chr = box->getChar();
 	this->destination = loc;
 	this->rank = rank;
+	this->startHval = 1000;
 	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
@@ -61,10 +63,10 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 
 int HandleGoalTask::h(Agent * a, Node * n)
 {
-  double hval = 1000.0;
+  double hval = this->startHval;
 
   if( n->getGoal(a->getLocation())){
-    //hval += 10;
+     hval += 10;
   }
 
 	for (Box b : n->boxes)
@@ -74,14 +76,14 @@ int HandleGoalTask::h(Agent * a, Node * n)
 
 		if (Goal * g = n->getGoal(b.getLocation()))
     {
-			if (g->getChar() == tolower(b.getChar()))
+			if (g->getChar() == tolower(b.getChar()) && predecessorsCompleteGoal(g, n))
       {
           if(a->getPlanner()->isFree(n, b.getLocation())){
             // If it is a good position i.e. can not block reward it
-            hval -= 50;
+            hval -= 20;
           } else{
             // If not good reward it less
-            hval -= 20;
+            hval -= 10;
           }
 			} 
 		}
@@ -111,4 +113,15 @@ bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)
     }
   }
   return true;
+}
+
+// This is used for goal 
+bool HandleGoalTask::predecessorsCompleteGoal(Goal * g, Node * n)
+{
+	for (int i = 0; i < g->predecessors.size(); i++){
+  	if(!n->isGoalState(g->predecessors[i])){
+			return false;
+		}
+	}
+	return true;
 }
