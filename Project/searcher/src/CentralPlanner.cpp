@@ -45,7 +45,7 @@ void CentralPlanner::computeAllPairsShortestPaths(Node * n){
 				Locations.push_back(Thisloc+Location(0,-1));
 
 				for (Location loc : Locations){
-					if (visited[loc.getIndex()] || loc.isOutOfBounds()){
+					if (loc.isOutOfBounds() || visited[loc.getIndex()]){
 						continue;
 					}
 					visited[loc.getIndex()] = true;
