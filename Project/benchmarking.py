@@ -35,7 +35,7 @@ if __name__ == "__main__":
     with zipfile.ZipFile(os.path.join(path, output),"r") as zip_ref:
         zip_ref.extractall(tmp)
 
-    for f in glob.glob(os.path.join(path, tmp + '/*.log')):
+    for f in sorted(glob.glob(os.path.join(path, tmp + '/*.log'))):
         ret = didSolve(f)
         if(didSolve(f)):
             print("Solved: " + os.path.basename(f).replace(".log", "") + " in " + ret[0] + " milliseconds and " + ret[1] + " actions")
