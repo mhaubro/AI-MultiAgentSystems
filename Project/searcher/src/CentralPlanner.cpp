@@ -70,6 +70,8 @@ std::vector<Goal*> CentralPlanner::potentialConflictingGoals(Node * n)
 void CentralPlanner::setPredecessors(Node * n)
 {
 	std::vector<Goal*> confGoals = potentialConflictingGoals(n);
+  if(confGoals.size() == 0)
+    return;
 	for(int i = 0; i < confGoals.size(); i++)
 	{
 		for(int j = 0; j < confGoals.size(); j++)
@@ -194,12 +196,12 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 						hval = boxh;
 						bestBox = &b;
 					}
-				} 
+				}
 			}
 			if (bestBox == nullptr){
 				continue;
 			}
-			h->box = bestBox;	
+			h->box = bestBox;
 			if(hval < hvalTask){
 				bestTask = h;
 				bestIt = i;
@@ -212,7 +214,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 	if(bestTask != NULL){
 		std::cerr << "Task: " << UnassignedGoals[bestIt]->destination << " assigned to agent " << agent->getChar() << "\n";
 		UnassignedGoals.erase(UnassignedGoals.begin()+bestIt);
-		std::cerr << "Best box " << bestTask->box->getID() << " " << bestTask->box->getLocation() << "\n"; 
+		std::cerr << "Best box " << bestTask->box->getID() << " " << bestTask->box->getLocation() << "\n";
 		bestTask->box->workInProgress = true;
 		return bestTask;
 	}
