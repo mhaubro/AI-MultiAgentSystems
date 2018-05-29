@@ -10,6 +10,7 @@ namespace MasterSearcher
 {
 void getPlan(Node * initialState)
 {
+	std::cerr << "Starts GetPlan\n";
 	int agents = initialState->agents.size();
 
 	//Get number of regions
@@ -23,12 +24,14 @@ void getPlan(Node * initialState)
 
 	//Init centralPlanners
 	std::vector<CentralPlanner> planners = std::vector<CentralPlanner>();
+	std::cerr << "Pre preanalysis\n";
 	for (int i = 0; i < regions; i++){
 		//Create a planner with a region
 		planners.push_back(CentralPlanner(i));
 		planners[i].preAnalyse(initialState);
 		////std::cerr << "CentralPlanner created\n";
 	}
+	std::cerr << "Post preanalysis\n";
 
 	//Give each agent a pointer to its planner
 	for (int i = 0; i < agents; i++){
