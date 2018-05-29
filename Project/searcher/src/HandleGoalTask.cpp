@@ -115,11 +115,11 @@ bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)
   return true;
 }
 
-bool HandleGoalTask::predecessorsCompleteAllTasks(Node * n)
-{
-	for (int i = 0; i < UnassignedGoals.size(); i++){
-  	
-	}
-  
-	return true;
-}
+//bool HandleGoalTask::predecessorsCompleteAllTasks(Node * n)
+//{
+//	bool acc = true;
+//	for (int i = 0; i < UnassignedGoals.size(); i++){
+//  	acc &= UnassignedGoals[i]->predecessorsComplete(NULL, n);
+//	}
+//	return acc;
+//}
