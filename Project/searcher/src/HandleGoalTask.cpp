@@ -19,7 +19,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 	this->destination = loc;
 	this->rank = rank;
 	this->startHval = 1000;
-	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
+	//  //////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
@@ -32,7 +32,7 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
 	this->destination = loc;
 	this->rank = rank;
 	this->startHval = 1000;
-	//  ////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
+	//  //////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)
@@ -63,6 +63,16 @@ bool HandleGoalTask::seemsCompleted(Agent * a, Node * n)
 
 int HandleGoalTask::h(Agent * a, Node * n)
 {
+	//Finding right agent:
+	Agent * activeAgent;
+	for (int i = 0; i < n->agents.size(); i++){
+		if (n->agents[i].number == a->number){
+			activeAgent = &n->agents[i];
+			break;
+		}
+	}
+
+
   double hval = this->startHval;
 
   if( n->getGoal(a->getLocation())){
@@ -92,8 +102,8 @@ int HandleGoalTask::h(Agent * a, Node * n)
 		if (b.getID() == box->getID())
     {
 			hval += destination.getDistance(b.getLocation());
-			hval += b.getDistance(n->agents[a->getChar() - '0']);
-			if (b.getDistance(n->agents[a->getChar() - '0']) < 1.3){
+			hval += b.getDistance(*activeAgent);
+			if (b.getDistance(*activeAgent) < 1.3){
 				hval -= 1.0;
       }
       

@@ -41,7 +41,7 @@ public:
 	~Frontier(){}
 
 	void push(Node* n, int score){
-		//////std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
+		////////std::cerr << "pushing node: value = " << score << " node = " << n << "\n" << std::flush;
 		valued_node vn = {};
 		vn.node = n;
 		vn.value = score;
@@ -52,7 +52,7 @@ public:
 	Node* pull(){
 		valued_node vn = queue.top();
 		queue.pop();
-		//////std::cerr << "Pulling best node: value = " << vn.value << " node: " << vn.node << "\n" << std::flush;
+		////////std::cerr << "Pulling best node: value = " << vn.value << " node: " << vn.node << "\n" << std::flush;
 		return vn.node;
 	}
 
@@ -71,21 +71,21 @@ public:
 };
 
 //	} else if (HandleGoalTask * t = dynamic_cast<HandleGoalTask *>(task)){
-//		////std::cerr << "Not a movebox task, not supported yet\n";
+//		//////std::cerr << "Not a movebox task, not supported yet\n";
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	if (task == NULL)
 		return std::list<Node*>();
 
-	int MAXITE = 20000;
+	int MAXITE;
 
 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(task)){
-		MAXITE = 3000;
+		MAXITE = 30000;
 	} else if (GetAwayFromGoalTask * tmp = dynamic_cast<GetAwayFromGoalTask *>(task)){
-		MAXITE = 500;
+		MAXITE = 5000;
 	} else if (HandleGoalTask * tmp = dynamic_cast<HandleGoalTask *>(task)){
-		MAXITE = 20000;
-		//std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
+		MAXITE = 200000;
+		////std::cerr << "Agent number " << agent->getChar() << " Is trying to do " << tmp->box->getChar() << " to " << tmp->destination.toString() << "\n";
 	}
 
   if(start_state->agents.size() == 1)
@@ -104,12 +104,12 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 	while(true){
 		//We shouldn't search for too long, rather we should turn around and pick other solution
 		if (iteration > MAXITE){
-			std::cerr << "Max iterations " << iteration << "\n";
+			//std::cerr << "Max iterations " << iteration << "\n";
 			return std::list<Node *>();
 		}
 		// if frontier is empty and no solution is found, return an empty list.
 		if (frontier.empty()){
-			std::cerr << "Empty after iterations " << iteration << "\n";
+			//std::cerr << "Empty after iterations " << iteration << "\n";
 			return list<Node*>();
 		}
 		Node* leaf = frontier.pull();
@@ -133,11 +133,8 @@ list<Node*> a_star_search(Node* start_state, Agent* agent, Task* task){
 
 list<Node*> a_star_search(Node* start_state, Agent* agent, Task * task, Goal * g1, Goal * g2)
 {
-	int MAXITE = 10000;
+	int MAXITE = 100000;
   int iteration = 0;
-
-  if(start_state->agents.size() == 1)
-    MAXITE *= 5;
 
 	HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(task);
 	Node * search_state = Node::getopCopy(start_state);
