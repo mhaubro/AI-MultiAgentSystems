@@ -80,10 +80,10 @@ int HandleGoalTask::h(Agent * a, Node * n)
       {
           if(a->getPlanner()->isFree(n, b.getLocation())){
             // If it is a good position i.e. can not block reward it
-            hval -= 50;
+            hval -= 5;
           } else{
             // If not good reward it less
-            hval -= 20;
+            hval -= 3;
           }
 			} 
 		}
@@ -113,4 +113,13 @@ bool HandleGoalTask::predecessorsComplete(Agent * a, Node * n)
     }
   }
   return true;
+}
+
+bool HandleGoalTask::predecessorsCompleteAllTasks(Node * n)
+{
+	for (int i = 0; i < UnassignedGoals.size(); i++){
+  	
+	}
+  
+	return true;
 }

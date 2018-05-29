@@ -175,7 +175,6 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 		Box * bestBox = nullptr;
 		HandleGoalTask * h = UnassignedGoals[i];
 
-		std::cerr << "startHVal now: " << h->startHval;
 
 		if (h->seemsCompleted(agent, state))
 			continue;
@@ -185,8 +184,9 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 			//Finds most fitting box, by going through all setting and calculating h-val
 			double hval = 10000000000000.0;
 			for (auto &b : state->boxes){
-				if ((tolower(b.getChar()) != h->chr) || b.workInProgress || b.getColor() != agent->getColor())
+				if ((tolower(b.getChar()) != h->chr) || b.workInProgress || b.getColor() != agent->getColor()){
 					continue;
+				}
 				h->box = &b;
 				double boxh = h->h(agent, state);
 				Goal * g = state->getGoal(b.getLocation());
