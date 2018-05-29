@@ -19,7 +19,7 @@ class Agent;
 class Node {
 
 public:
-/*
+
 	void doHash();
 	void deleteAgentFromHash(Agent * a);
 	void deleteBoxFromHash(Box * b);
@@ -27,7 +27,7 @@ public:
 	void insertBoxToHash(Box * b);
 	std::unordered_map<Location, Box *, LocationHash> boxHash;
 	std::unordered_map<Location, Agent *, LocationHash> agentHash;
-*/
+
 	Node & operator =( const Node &first );
 	void removeBox(Location loc);
 	void removeAgent(Location loc);

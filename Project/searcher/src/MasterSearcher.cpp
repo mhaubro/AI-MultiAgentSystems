@@ -52,6 +52,7 @@ void getPlan(Node * initialState)
 	for (int i = 0; i < regions; i++){
 		Node state = *initialState;
 		state.clearOtherRegions(i);
+		state.doHash();
 		Node tempstate = state;
 
 		states[i] = state;
