@@ -15,7 +15,7 @@ def average(list):
     sum = 0
     for n in list:
         sum += n
-    return sum/len(list)
+    return int(sum/len(list))
             
 if __name__ == "__main__":
     print("\n\n")

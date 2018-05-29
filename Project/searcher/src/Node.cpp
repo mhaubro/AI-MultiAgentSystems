@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cctype>
 #include <iomanip>
+#include <utility>
 #include "Goal.h"
 #include "Agent.h"
 #include "ManualNodePool.h"
@@ -167,7 +168,13 @@ Takes an agent, takes a command and checks if it is legal
  */
 
 bool Node::checkState(int agent, Command * c){
-	Agent * activeAgent = &agents[agent];
+	Agent * activeAgent;
+	for (int i = 0; i < agents.size(); i++){
+		if (agents[i].number == agent){
+			activeAgent = &agents[i];
+			break;
+		}
+	}
 	//Checks for an agent command that it is legal.
 	if (c->getActionType() == Command::Move){
 		Location newL = activeAgent->getLocation() + c->agentdloc();
@@ -201,7 +208,13 @@ int dirAgent;
 int dirBox;
  */
 bool Node::checkAndChangeState(int agent, Command * c){
-	Agent * activeAgent = &agents[agent];
+	Agent * activeAgent;
+	for (int i = 0; i < agents.size(); i++){
+		if (agents[i].number == agent){
+			activeAgent = &agents[i];
+			break;
+		}
+	}
 	//Checks for legality
 	//if (c == )
 	if (!checkState(agent, c)){
@@ -236,6 +249,7 @@ bool Node::checkAndChangeState(int agent, Command * c){
 int Node::maxX;
 int Node::maxY;
 std::vector<bool> Node::walls;
+std::unordered_map<Location, Goal *, LocationHash> Node::goalHash;
 //Maybe make it true goals instead of pointers, as this one never needs editing.
 std::vector<Goal> Node::goals;
 
@@ -483,6 +497,12 @@ std::string Node::toString() {
 	return s;
 }
 
+void Node::hashGoals(){
+	for (int i = 0; i < goals.size(); i++){
+		goalHash.insert(std::pair<Location, Goal *>(goals[i].getLocation(), (Goal *)&goals[i]));
+	}
+}
+
 bool Node::isGoalState()
 {
 	for(auto & goal : Node::goals)
@@ -551,13 +571,12 @@ Box * Node::getBox(Location loc)
 
 Goal * Node::getGoal(Location loc)
 {
-	for(auto & goal : goals)
-	{
-		if(goal.getLocation() == loc)
-			return &goal;
-	}
-	//throw new NullPointerException("No goal at row: " + String.valueOf(row) + " and col: " + String.valueOf(col));
-	return NULL;
+	  std::unordered_map<Location, Goal *, LocationHash>::iterator got = goalHash.find(loc);
+	  if (got == goalHash.end()){
+		  return NULL;
+	  } else {
+		  return got->second;
+	  }
 }
 
 Agent * Node::getAgent(Location loc)

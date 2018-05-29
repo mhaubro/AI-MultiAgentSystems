@@ -24,6 +24,14 @@ Location::Location(const Location& location){
 	y = location.getY();
 }
 
+int Location::maxX;
+int Location::maxY;
+
+int Location::getIndex(){
+	return x+y*maxX;
+}
+
+
 double Location::getDistance(Location otherLoc) const{
 	return std::sqrt(std::pow(otherLoc.getX()-x,2) + std::pow(otherLoc.getY()-y,2));
 }
