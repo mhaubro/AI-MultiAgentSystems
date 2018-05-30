@@ -156,9 +156,6 @@ void Agent::gettingJob(Node * startstate)
 	if (myPlanner->hasJob(this, startstate))
   {
 		task = myPlanner->getJob(this, startstate);
-		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task))
-    {
-		}
 		std::list<Node *> searchResult = search(startstate);
 		if (searchResult.empty())
     {
@@ -178,12 +175,14 @@ void Agent::noPlan(Node * startstate){
 	//If we still don't have a task
 	if (task == NULL){
 		task = new GetAwayFromGoalTask();
+		if (task->isCompleted(this, startstate)){
+			delete task;
+			task = NULL;
+		}
 	}
 
 	std::list<Node *> searchResult = search(startstate);
-	//throw "Hi";
 	if (searchResult.empty()){
-
 		//We check if we can help. If not, we ask for help ourselfes.
 		if (checkForHelp(startstate)){
 			//We can help. Let's help.

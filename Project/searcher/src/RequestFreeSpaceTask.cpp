@@ -67,7 +67,9 @@ bool RequestFreeSpaceTask::seemsCompleted(Agent * a, Node * n)
 
 int RequestFreeSpaceTask::h(Agent * a, Node * n)
 {
+	//std::cerr << "Trying to do a requestfreespacetask\n";
 	int hval = 1000.0;
+	n->doHash();
 	//Iterates over locations
 	std::list<Location>::iterator it;
 	bool isBoxOnPath = false;
@@ -83,7 +85,7 @@ int RequestFreeSpaceTask::h(Agent * a, Node * n)
 		if (Box * b = n->getBox(*it)){
 			if (b->getColor() == a->getColor()){
 				if (!(serviceBox && (b->getChar() == serviceBox->getChar())))
-					hval += 1 + b->getDistance(*agent);
+					hval += 1 + b->getLocation().getDistance(agent->getLocation());
 			}
 		}
 	}
