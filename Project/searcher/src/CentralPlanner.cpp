@@ -137,7 +137,7 @@ for (int i = 0; i < n->goals.size(); i++){
 
 		std::vector<bool> visited = Node::walls;
 
-		std::vector<bool> solCols = std::vector<bool>(Entity::NUMCOLS);
+		std::vector<bool> solCols = std::vector<bool>(Entity::NUMCOLS, false);
 
 		visited[currloc.getIndex()] = true;
 		visited[Thisloc.getIndex()] = true;
@@ -215,8 +215,6 @@ for (int i = 0; i < n->goals.size(); i++){
 				visited[loc.getIndex()] = true;
 				//A child is 1 more than its parent
 				if (Agent * a = n->getAgent(loc)){
-					//std::cerr << "A box was found\n";
-					//It is solvable
 					if (solCols[a->getColor()]){
 						//std::cerr << "It was a right box was found\n";
 						agentFound = true;
