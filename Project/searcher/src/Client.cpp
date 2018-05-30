@@ -6,7 +6,6 @@
 #include <iostream>
 #include <iterator>
 #include "Command.h"
-#include "Memory.h"
 #include "MasterSearcher.h"
 #include "Initializer.h"
 #include "ManualNodePool.h"
@@ -40,8 +39,7 @@ int main(int argc, char * argv[]){
 	argv[1] contains memory limit in MB. This is the FIRST input, as argv[0] is program name
 	argv[2] contains how often the print should happen. This is optional, default is 1000
 	*/
-	Memory::limit = atoi(argv[1]);
-	pool.setup(Memory::limit);
+	pool.setup(atoi(argv[1]));
 
 	int printfreq = 1000;
 	if (argc > 2){

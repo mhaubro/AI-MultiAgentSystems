@@ -17,8 +17,6 @@
 //Very possibly we should do our own, considering we don't have to "destruct" node *.
 //boost::object_pool<Node> Node::pool;
 
-Node stateNode;
-
 /*
  * Removes boxes & agents for all other regions, so the node only contains that regions stuff
  * Maybe goals should be removed here as well, but currently it only matters for preanalysis,

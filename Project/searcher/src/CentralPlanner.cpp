@@ -100,25 +100,6 @@ bool CentralPlanner::isFree(Node * n, Location gLoc)
 		return noWalls < 2;
 }
 
-std::vector<Goal*> CentralPlanner::potentialConflictingGoals(Node * n)
-{
-	/*
-	// This function finds the goals that might create locks.
-	std::vector<Goal*> confGoals;
-	for(int i = 0; i < n->goals.size(); i++)
-	{
-		Location gLoc = n->goals[i].getLocation();
-		int west = (int) n->walls[gLoc.getX()-1 + gLoc.getY()*n->maxX];
-		int north = (int) n->walls[gLoc.getX() + (gLoc.getY()-1)*n->maxX];
-		int east = (int) n->walls[gLoc.getX()+1 + gLoc.getY()*n->maxX];
-		int south = (int) n->walls[gLoc.getX()+(gLoc.getY()+1)*n->maxX];
-		int noWalls = west+north+east+south;
-		if(noWalls >= 2 && noWalls <= 3)
-      confGoals.push_back(&n->goals[i]);
-	}
-	return confGoals;*/
-}
-
 void CentralPlanner::setPredecessors(Node * n)
 {
 
