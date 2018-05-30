@@ -3,7 +3,6 @@
 #include "HandleGoalTask.h"
 #include <functional>
 #include <utility>
-#include <boost/pool/object_pool.hpp>
 #include "Entity.h"
 #include "Strategy.h"
 #include "CentralPlanner.h"

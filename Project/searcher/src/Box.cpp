@@ -2,7 +2,6 @@
 #include "Box.h"
 #include <string>
 #include <utility>
-#include <boost/pool/object_pool.hpp>
 
 Box::Box(char chr, Location location, Entity::COLOR color, int region, int id) :
 Entity(chr, location, color, region, id)

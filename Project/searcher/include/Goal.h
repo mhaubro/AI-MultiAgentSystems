@@ -4,7 +4,6 @@
 #include <utility>
 #include "Box.h"
 #include "Agent.h"
-#include <boost/pool/object_pool.hpp>
 #include <unordered_set>
 
 

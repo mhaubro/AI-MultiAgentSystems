@@ -3,7 +3,6 @@
 
 #include <utility>
 #include <string>
-#include <boost/pool/object_pool.hpp>
 #include "Entity.h"
 
 class Box : public Entity

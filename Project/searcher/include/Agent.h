@@ -3,7 +3,6 @@
 
 #include <utility>
 #include <string>
-#include <boost/pool/object_pool.hpp>
 
 #include "Task.h"
 #include "Node.h"
