@@ -136,6 +136,9 @@ for (int i = 0; i < n->goals.size(); i++){
 		Location currloc = n->goals[j].getLocation();
 
 		std::vector<bool> visited = Node::walls;
+
+		std::vector<bool> solCols = std::vector<bool>(Entity::NUMCOLS);
+
 		visited[currloc.getIndex()] = true;
 		visited[Thisloc.getIndex()] = true;
 
@@ -169,17 +172,64 @@ for (int i = 0; i < n->goals.size(); i++){
 					//It is solvable
 					if (std::tolower(b->getChar()) == n->goals[i].getChar()){
 						//std::cerr << "It was a right box was found\n";
+						solCols[b->getColor()] = true;
 						boxFound = true;
+					}
+				}
+				q.push_back(loc);
+			}
+			if (!boxFound){
+				continue;
+			}
+		}
+
+		Thisloc = n->goals[i].getLocation();
+		currloc = n->goals[j].getLocation();
+
+		visited = Node::walls;
+		visited[currloc.getIndex()] = true;
+		visited[Thisloc.getIndex()] = true;
+
+		//Initializing all values to something high
+		//Sets base location to 0
+
+		q = std::list<Location>();
+
+		q.push_back(Thisloc);
+
+		//Do a BFS
+		while (!q.empty()){
+			Thisloc = q.front();
+			q.pop_front();
+			Locations.clear();
+			Locations.push_back(Thisloc+Location(1,0));
+			Locations.push_back(Thisloc+Location(-1,0));
+			Locations.push_back(Thisloc+Location(0,1));
+			Locations.push_back(Thisloc+Location(0,-1));
+
+			for (Location loc : Locations){
+				if (loc.isOutOfBounds() || visited[loc.getIndex()]){
+					continue;
+				}
+				////std::cerr << "We visit a location\n";
+				visited[loc.getIndex()] = true;
+				//A child is 1 more than its parent
+				if (Agent * a = n->getAgent(loc)){
+					//std::cerr << "A box was found\n";
+					//It is solvable
+					if (solCols[a->getColor()]){
+						//std::cerr << "It was a right box was found\n";
+						agentFound = true;
 						break;
 					}
 				}
 				q.push_back(loc);
 			}
-			if (boxFound){
+			if (boxFound && agentFound){
 				break;
 			}
 		}
-		if (!boxFound){
+		if (!(boxFound && agentFound)){
 			//std::cerr << "Setting a predecessor\n";
 			 setPredecessor(&n->goals[i], &n->goals[j]);
 		}
