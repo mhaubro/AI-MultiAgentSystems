@@ -50,7 +50,6 @@ int main(int argc, char * argv[]){
 	char buffer[200];
 
 	Client client = Client();
-	////std::cerr << "Search started\n";
 
 	//StrategyBFS strategy = StrategyBFS();
 

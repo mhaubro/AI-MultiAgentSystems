@@ -19,7 +19,6 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, std::vector<bool> solving
 	this->destination = loc;
 	this->rank = rank;
 	this->startHval = 1000;
-	//  ////////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
@@ -32,7 +31,6 @@ HandleGoalTask::HandleGoalTask(Location loc, int rank, Box * box)
 	this->destination = loc;
 	this->rank = rank;
 	this->startHval = 1000;
-	//  ////////std::cerr << "Compatible getColor()s for " << this->destination.first <<"," << this->destination.second <<" : " << solvinggetColor()s ;
 }
 
 bool HandleGoalTask::isCompleted(Agent * a, Node * n)

@@ -16,7 +16,6 @@ std::list<Node *> Agent::search(Node * state){
 		//There's an agent on our destination
 		if (Agent * a = state->getAgent(tmp->destination)){
 			if (a->getChar() != chr){
-				////std::cerr << "Putting out agent temporarily\n";
 				Node stateWithoutAgent = *state;
 				stateWithoutAgent.removeAgent(tmp->destination);
 
@@ -38,7 +37,6 @@ std::list<Node *> Agent::search(Node * state){
 		}
 		if (Box * b = state->getBox(tmp->destination)){
 			if (b->getColor() != color){
-				////std::cerr << "Putting out box temporarily\n";
 				Node stateWithoutBox = *state;
 				stateWithoutBox.removeBox(tmp->destination);
 
@@ -87,7 +85,6 @@ void Agent::cleanTasks(){
 	} else 	if (RequestFreeSpaceTask* tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
 		if (!myPlanner->stillActiveRequest(tmp)){
 			task = NULL;
-			//std::cerr << "We have ourselves a bug\n";
 		}
 	} else 	if (GetAwayFromGoalTask* tmp = dynamic_cast<GetAwayFromGoalTask*>(this->task)){
 		delete task;
@@ -112,17 +109,14 @@ void Agent::removeFreeSpaceTask(){
 }
 
 void Agent::replanTask(Node * state){
-	//std::cerr << "Replanning from agent " << chr << "\n";
 	std::list<Node *> searchResult = search(state);
 
 	if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
-		//std::cerr << "We tried to help\n";
 		//We won't be bothered
 		this->task = NULL;
 		return;
 	} else if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
 		//Takes out all agents
-		//std::cerr << "We're trying to fix a goal\n";
 		searchResult = Nakedsearch(state);
 
 		//No boxes or agents, try path
@@ -133,7 +127,6 @@ void Agent::replanTask(Node * state){
 				this->task = NULL;
 				return;
 			}
-			//std::cerr << "Found a path without boxes or agents\n";
 			//We have a path without agents and boxes, we proceed
 		}
 		//We have a path without agents, we proceed
@@ -165,10 +158,8 @@ void Agent::gettingJob(Node * startstate)
 		task = myPlanner->getJob(this, startstate);
 		if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task))
     {
-			////std::cerr << "Goal: "<< tmp->chr << " destination: " << tmp->destination.toString() << " box: " << tmp->box->getChar() << "\n";
 		}
 		std::list<Node *> searchResult = search(startstate);
-		////std::cerr << "Received a task\n";
 		if (searchResult.empty())
     {
 			return;
@@ -179,27 +170,19 @@ void Agent::gettingJob(Node * startstate)
 }
 
 void Agent::noPlan(Node * startstate){
-	//std::cerr << "Doing noPlan from agent" << chr << "\n";
 
 	if (task == NULL){
-		//std::cerr << "My task is null\n";
 		task = myPlanner->getJob(this, startstate);
-	}
-
-	if (HandleGoalTask* tmp = dynamic_cast<HandleGoalTask*>(this->task)){
-		//std::cerr << "This is a handleGoalTask\n";
 	}
 
 	//If we still don't have a task
 	if (task == NULL){
-		//std::cerr << "My task is still null\n";
 		task = new GetAwayFromGoalTask();
 	}
 
 	std::list<Node *> searchResult = search(startstate);
 	//throw "Hi";
 	if (searchResult.empty()){
-		//std::cerr << "A solution was not found\n";
 
 		//We check if we can help. If not, we ask for help ourselfes.
 		if (checkForHelp(startstate)){
@@ -213,7 +196,6 @@ void Agent::noPlan(Node * startstate){
 
 
 	} else {
-		//std::cerr << "A solution was found\n";
 		//We found a way to handle our current task.
 		delete plan;
 		removeFreeSpaceTask();
@@ -230,7 +212,6 @@ void Agent::maybeSleep(int sleep){
 
 bool Agent::checkForHelp(Node * state){
 	if (myPlanner->hasHelpJob(this, state) && !myPlanner->stillActiveRequest((RequestFreeSpaceTask *) task)){
-		//std::cerr << "My helpjob exists\n";
 		cleanTasks();
 		task = myPlanner->getHelpJob(this, state);
 		plan->drain();
@@ -240,7 +221,6 @@ bool Agent::checkForHelp(Node * state){
 }
 
 Command * Agent::getAction(Node * startstate, Node * tempstate){
-	//std::cerr << "Gets action for agent " << chr << "\n";
 
 	if (skipNextIte){
 		skipNextIte--;
