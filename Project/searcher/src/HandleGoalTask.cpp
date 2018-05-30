@@ -73,10 +73,6 @@ int HandleGoalTask::h(Agent * a, Node * n)
 
   double hval = this->startHval;
 
-  if( n->getGoal(a->getLocation())){
-     hval += 10;
-  }
-
 	for (Box b : n->boxes)
   {
 		if (b.getColor() != a->getColor())
