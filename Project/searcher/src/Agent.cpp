@@ -109,7 +109,7 @@ void Agent::removeFreeSpaceTask(){
 }
 
 void Agent::replanTask(Node * state){
-	std::list<Node *> searchResult = search(state);
+	std::list<Node *> searchResult;
 
 	if (RequestFreeSpaceTask * tmp = dynamic_cast<RequestFreeSpaceTask*>(this->task)){
 		//We won't be bothered
