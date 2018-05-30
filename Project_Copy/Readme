@@ -9,3 +9,6 @@ java -jar cserver.jar -d competition_levels/ -c "bin/searcher 1500"
 There is also a binary supplied already, which is created using Arch Linux, and meant for this platform. We recommend recompiling (make clean -> make) for the platform of desire.
 
 The script benchmarking.py is only for optional, handy use. It takes a log-folder from e.g. the cserver, e.g. output.out, and prints the solved levels with time and action, as well as the unsolved levels.
+
+
+The levels supplied in the levels-folder are levels from the report.
