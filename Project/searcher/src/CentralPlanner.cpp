@@ -21,7 +21,7 @@ void CentralPlanner::computeAllPairsShortestPaths(Node * n){
 			if (Node::walls[Thisloc.getIndex()]){
 				continue;
 			}
-			std::cerr << currloc.toString() << "\n";
+			//std::cerr << currloc.toString() << "\n";
 
 			std::vector<bool> visited = Node::walls;
 			//Initializing all values to something high
@@ -103,6 +103,7 @@ bool CentralPlanner::isFree(Node * n, Location gLoc)
 
 std::vector<Goal*> CentralPlanner::potentialConflictingGoals(Node * n)
 {
+	/*
 	// This function finds the goals that might create locks.
 	std::vector<Goal*> confGoals;
 	for(int i = 0; i < n->goals.size(); i++)
@@ -116,12 +117,79 @@ std::vector<Goal*> CentralPlanner::potentialConflictingGoals(Node * n)
 		if(noWalls >= 2 && noWalls <= 3)
       confGoals.push_back(&n->goals[i]);
 	}
-	return confGoals;
+	return confGoals;*/
 }
 
 void CentralPlanner::setPredecessors(Node * n)
 {
-  std::vector<Goal*> confGoals = potentialConflictingGoals(n);
+
+for (int i = 0; i < n->goals.size(); i++){
+	for (int j = 0; j < n->goals.size(); j++){
+		bool boxFound = false;
+		bool agentFound = false;
+
+		if (j==i){
+			continue;
+		}
+
+		Location Thisloc = n->goals[i].getLocation();
+		Location currloc = n->goals[j].getLocation();
+
+		std::vector<bool> visited = Node::walls;
+		visited[currloc.getIndex()] = true;
+		visited[Thisloc.getIndex()] = true;
+
+		//Initializing all values to something high
+		//Sets base location to 0
+
+		std::list<Location> q = std::list<Location>();
+
+		q.push_back(Thisloc);
+
+		//Do a BFS
+		std::vector<Location> Locations;
+		while (!q.empty()){
+			Thisloc = q.front();
+			q.pop_front();
+			Locations.clear();
+			Locations.push_back(Thisloc+Location(1,0));
+			Locations.push_back(Thisloc+Location(-1,0));
+			Locations.push_back(Thisloc+Location(0,1));
+			Locations.push_back(Thisloc+Location(0,-1));
+
+			for (Location loc : Locations){
+				if (loc.isOutOfBounds() || visited[loc.getIndex()]){
+					continue;
+				}
+				////std::cerr << "We visit a location\n";
+				visited[loc.getIndex()] = true;
+				//A child is 1 more than its parent
+				if (Box * b = n->getBox(loc)){
+					//std::cerr << "A box was found\n";
+					//It is solvable
+					if (std::tolower(b->getChar()) == n->goals[i].getChar()){
+						//std::cerr << "It was a right box was found\n";
+						boxFound = true;
+						break;
+					}
+				}
+				q.push_back(loc);
+			}
+			if (boxFound){
+				break;
+			}
+		}
+		if (!boxFound){
+			//std::cerr << "Setting a predecessor\n";
+			 setPredecessor(&n->goals[i], &n->goals[j]);
+		}
+	}
+}
+
+
+
+/*  std::vector<Goal*> confGoals = potentialConflictingGoals(n);
+  throw "Hi";
   if(confGoals.size() == 0)
     return;
 	for(int i = 0; i < confGoals.size(); i++)
@@ -131,13 +199,13 @@ void CentralPlanner::setPredecessors(Node * n)
       if(confGoals[i] == confGoals[j])
         continue;
 
-      // std::cerr << "Looking at " << confGoals[i] << " and " << confGoals[j] << "\n";
+      // //std::cerr << "Looking at " << confGoals[i] << " and " << confGoals[j] << "\n";
 
       // There is a dependency
     	if(getOrderOfGoals(n, confGoals[j], confGoals[i]))
         setPredecessor(confGoals[j], confGoals[i]);
 		}
-	}
+	}*/
 }
 
 void CentralPlanner::setPredecessor(Goal * g1, Goal * g2)
@@ -158,7 +226,7 @@ void CentralPlanner::setPredecessor(Goal * g1, Goal * g2)
 
       if(UnassignedGoals[k]->destination == g1->getLocation() && UnassignedGoals[l]->destination == g2->getLocation())
       {
-        std::cerr << "Goal " << UnassignedGoals[k]->chr << UnassignedGoals[k]->destination.toString() << " should be done before " << UnassignedGoals[l]->chr << UnassignedGoals[l]->destination.toString() << "\n";
+        //std::cerr << "Goal " << UnassignedGoals[k]->chr << UnassignedGoals[k]->destination.toString() << " should be done before " << UnassignedGoals[l]->chr << UnassignedGoals[l]->destination.toString() << "\n";
         UnassignedGoals[l]->predecessors.push_back(UnassignedGoals[k]);
         return;
       }
@@ -215,7 +283,7 @@ bool CentralPlanner::hasJob(Agent * agent, Node * state){
 }
 
 Task * CentralPlanner::getJob(Agent * agent, Node * state){
-	//std::cerr << "Finding a job for someone\n";
+	////std::cerr << "Finding a job for someone\n";
 	//The agent will be the only one to get this task
 	//For all boxes and goals, find the one with lowest h-value.
 
@@ -226,11 +294,12 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 
 	for (int i = 0; i < UnassignedGoals.size(); i++){
 		if(!UnassignedGoals[i]->predecessorsComplete(agent, state)){
+			//std::cerr << "Unassigned goal is not complete "<< UnassignedGoals[i]->destination.toString() << "\n";
 			counter++;
 			continue;
 		}else{
-			std::cerr << i << "\n";
-			std::cerr << "predecessor of " << UnassignedGoals[i]->chr << " solved\n";
+			//std::cerr << i << "\n";
+			//std::cerr << "predecessor of " << UnassignedGoals[i]->chr << " solved\n";
 		}
 		Box * bestBox = nullptr;
 		HandleGoalTask * h = UnassignedGoals[i];
@@ -269,18 +338,18 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 			}
 		}
 	}
-	//std::cerr << "Agent " << agent->chr<<  "has nothing to do\n";
+	////std::cerr << "Agent " << agent->chr<<  "has nothing to do\n";
 
 	if(bestTask != NULL){
-		std::cerr << "Task: " << UnassignedGoals[bestIt]->destination << " assigned to agent " << agent->getChar() << "\n";
+		//std::cerr << "Task: " << UnassignedGoals[bestIt]->destination << " assigned to agent " << agent->getChar() << "\n";
 		UnassignedGoals.erase(UnassignedGoals.begin()+bestIt);
-		std::cerr << "Best box " << bestTask->box->getID() << " " << bestTask->box->getLocation() << "\n";
+		//std::cerr << "Best box " << bestTask->box->getID() << " " << bestTask->box->getLocation() << "\n";
 		bestTask->box->workInProgress = true;
 		return bestTask;
 	}
 
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
-		//std::cerr << "Checking for requests \n";
+		////std::cerr << "Checking for requests \n";
 		if (!t->seemsCompleted(agent, state)){
 			return t;
 		}
@@ -290,7 +359,7 @@ Task * CentralPlanner::getJob(Agent * agent, Node * state){
 }
 
 bool CentralPlanner::addRequestFreeSpaceTask(RequestFreeSpaceTask * h){
-	std::cerr << "Adding a request\n";
+	//std::cerr << "Adding a request\n";
 	if (h == NULL)
 		return false;
 	freeSpaceTasks.push_back(h);
@@ -320,7 +389,7 @@ bool CentralPlanner::removeRequestTask(RequestFreeSpaceTask * h){
 	for (int i = 0; i < node->agents.size(); i++){
 		node->agents[i].removeFreeSpaceTaskMessage(h);
 	}
-	//std::cerr << "I just put some things to null\n";
+	////std::cerr << "I just put some things to null\n";
 	return true;
 }
 
@@ -373,7 +442,7 @@ Node * CentralPlanner::FindSolution(Node * n, Goal * g1, Goal * g2)
 
 RequestFreeSpaceTask * CentralPlanner::getHelpJob(Agent * agent, Node * state){
 	for (RequestFreeSpaceTask * t : freeSpaceTasks){
-		//std::cerr << "Checking for requests \n";
+		////std::cerr << "Checking for requests \n";
 		if (!t->seemsCompleted(agent, state)){
 			return t;
 		}

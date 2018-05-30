@@ -31,7 +31,7 @@ ManualNodePool::~ManualNodePool() {
 Node * ManualNodePool::createNodeCopy(Node * n, std::vector<Agent> a, std::vector<Box> b){
 	//Out of memory
 	if (numberOfNodes <= currentNode - 1){
-		////std::cerr << "Out of nodes\n";
+		//////std::cerr << "Out of nodes\n";
 		return NULL;
 	}
 

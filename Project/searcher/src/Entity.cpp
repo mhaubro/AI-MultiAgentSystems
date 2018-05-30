@@ -39,9 +39,9 @@ void Entity::setLocation(Location loc){
 	location = loc;
 }
 void Entity::setDLocation(Location loc){
-	//std::cerr << "delta: " << loc.toString() << "current "<< location.toString() << "\n";
+	////std::cerr << "delta: " << loc.toString() << "current "<< location.toString() << "\n";
 	location += loc;
-	//std::cerr << "current "<< location.toString() << "\n";
+	////std::cerr << "current "<< location.toString() << "\n";
 }
 
 Location Entity::getLocation() const

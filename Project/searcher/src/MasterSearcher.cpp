@@ -17,7 +17,7 @@ void getPlan(Node * initialState)
 	Location::maxY = Node::maxY;
 	Node::hashGoals();
 
-	std::cerr << "Starts GetPlan\n";
+	//std::cerr << "Starts GetPlan\n";
 	int agents = initialState->agents.size();
 
 	//Get number of regions
@@ -31,14 +31,15 @@ void getPlan(Node * initialState)
 
 	//Init centralPlanners
 	std::vector<CentralPlanner> planners = std::vector<CentralPlanner>();
-	std::cerr << "Pre preanalysis\n";
+	//std::cerr << "Pre preanalysis\n";
 	for (int i = 0; i < regions; i++){
 		//Create a planner with a region
 		planners.push_back(CentralPlanner(i));
+		initialState->doHash();
 		planners[i].preAnalyse(initialState);
-		////std::cerr << "CentralPlanner created\n";
+		//////std::cerr << "CentralPlanner created\n";
 	}
-	std::cerr << "Post preanalysis\n";
+	//std::cerr << "Post preanalysis\n";
 
 	//Give each agent a pointer to its planner
 	for (int i = 0; i < agents; i++){
@@ -111,18 +112,18 @@ void printStep(std::string s){
 	std::cout << s;
 	std::cout << "\n";
 	std::string response;
-	//////std::cerr << "Printing solution3";
+	////////std::cerr << "Printing solution3";
 	std::getline(std::cin, response);
-	//////std::cerr << "Printing solution4";
+	////////std::cerr << "Printing solution4";
 	if (response.find(std::string("false")) != std::string::npos) {
 		ss << "Server responsed with "<< response <<"%s to the inapplicable action: "<< s <<"\n";
-		////std::cerr << ss.str();
+		//////std::cerr << ss.str();
 		ss.str("");
 		//Maybe we should actually be able to print the state. However, sending
 		//A plan assumes that the thing actually works, and we will never
 		//Replan out here.
 		ss << s << " was attempted in a state\n";
-		////std::cerr << ss.str();
+		//////std::cerr << ss.str();
 		throw ("Command Error, printing step\n");
 	}
 }

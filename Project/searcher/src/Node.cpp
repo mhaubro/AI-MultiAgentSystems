@@ -128,7 +128,7 @@ void Node::resetPool(){
 }
 
 Node * Node::getopCopy(Node * n){
-	//////std::cerr << "creating Node copy\n";
+	////////std::cerr << "creating Node copy\n";
 	return pool.createNodeCopy(n, n->agents, n->boxes);
 }
 
@@ -175,7 +175,7 @@ Takes an agent, takes a command and checks if it is legal
  */
 
 bool Node::checkState(int agent, Command * c){
-	//std::cerr << "Checking state\n";
+	////std::cerr << "Checking state\n";
 	Agent * activeAgent;
 	for (int i = 0; i < agents.size(); i++){
 		if (agents[i].number == agent){
@@ -216,7 +216,7 @@ int dirAgent;
 int dirBox;
  */
 bool Node::checkAndChangeState(int agent, Command * c){
-	//std::cerr << "Checking temp, changing state\n";
+	////std::cerr << "Checking temp, changing state\n";
 
 	Agent * activeAgent;
 	for (int i = 0; i < agents.size(); i++){
@@ -306,12 +306,12 @@ void Node::doHash(){
 	agentHash.clear();
 	boxHash.clear();
 	for (int i = 0; i < agents.size(); i++){
-		//std::cerr << "Inserting Agent\n";
+		////std::cerr << "Inserting Agent\n";
 		agentHash.insert(std::pair<Location, Agent *>(agents[i].getLocation(), (Agent *)&agents[i]));
-		//std::cerr << "AgentHash Size " << agentHash.size() << "\n";
+		////std::cerr << "AgentHash Size " << agentHash.size() << "\n";
 	}
 	for (int i = 0; i < boxes.size(); i++){
-		//std::cerr << "Inserting box\n";
+		////std::cerr << "Inserting box\n";
 		boxHash.insert(std::pair<Location, Box *>(boxes[i].getLocation(), (Box *)&boxes[i]));
 	}
 }
@@ -366,7 +366,7 @@ std::vector<Node> Node::getExpandedNodes(char agent)
 				if (this->boxAt(newAgentLoc) && this->getBox(newAgentLoc)->getColor() == a.getColor())
         {
 					Location newBoxLoc = newAgentLoc + c->boxdloc();
-					////std::cerr << newBoxLoc.toString() << "\n";
+					//////std::cerr << newBoxLoc.toString() << "\n";
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxLoc))
           {
@@ -447,7 +447,7 @@ std::vector<Node> Node::getExpandedNodes(char agent, Goal * g)
 				if (this->boxAt(newAgentLoc) && this->getBox(newAgentLoc)->getColor() == a.getColor())
         {
 					Location newBoxLoc = newAgentLoc + c->boxdloc();
-					//std::cerr << newBoxLoc.toString() << "\n";
+					////std::cerr << newBoxLoc.toString() << "\n";
 					// .. and that new cell of box is free
 					if (this->cellIsFree(newBoxLoc))
           {
@@ -527,7 +527,7 @@ int Node::hashCode() const
 		result = prime * result + b.getLocation().getX();
 		result = prime * result + b.getLocation().getY();
 	}
-	//////std::cerr << "Calling hash with val" << result << "\n";
+	////////std::cerr << "Calling hash with val" << result << "\n";
 	return result;
 }
 

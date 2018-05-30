@@ -159,7 +159,7 @@ namespace Initializer {
   }
 
   vector<vector<string>> split_regions(vector<string> rows, std::map<char, string> color_map){
-    
+
 
     // check for unmoveable objects
     check_unmoveable(rows, color_map);
@@ -172,7 +172,7 @@ namespace Initializer {
         width = length;
     }
 
-    
+
 
     vector<uint16_t> map(width*height);
     for (int y = 0; y < height; y++){
@@ -224,11 +224,11 @@ namespace Initializer {
           // continue if the location is a wall or have already been visited
           continue;
         }else if (map_code == box_code){
-          // if the location is a box, check if it's moveable 
+          // if the location is a box, check if it's moveable
           const string b_color = color_map[rows[pos.getY()][pos.getX()]];
           if (!match_color(search_code, b_color, color_map))
             continue;
-        }else if (map_code < box_code){ 
+        }else if (map_code < box_code){
           // if lower than box code, its moveable space
           search_code |= map_code;
         }
@@ -246,7 +246,7 @@ namespace Initializer {
     }
 
     // print the analysed map with static boxes
-    //std::cerr << "Static entities\n" << map_to_string(map, width, height) << std::endl;
+    ////std::cerr << "Static entities\n" << map_to_string(map, width, height) << std::endl;
 
     vector<vector<string>> regions;
 
@@ -258,7 +258,7 @@ namespace Initializer {
 
       uint16_t agent_code = 1 << a;
 
-      ////std::cerr << "agents_found: " << print_agent_code(agents_found) << std::endl;
+      //////std::cerr << "agents_found: " << print_agent_code(agents_found) << std::endl;
 
       if (agents_found & agent_code)
         continue;
@@ -296,13 +296,13 @@ namespace Initializer {
     // check each region for unmoveable objects
     /*
     for (auto& region : regions){
-      //std::cerr << "\nRegion:\n";
+      ////std::cerr << "\nRegion:\n";
       for (auto& line : region)
-        //std::cerr << " " << line << std::endl;
+        ////std::cerr << " " << line << std::endl;
     }
     */
 
-    //std::cerr << std::flush;
+    ////std::cerr << std::flush;
 
     return regions;
   }
@@ -405,19 +405,19 @@ namespace Initializer {
     initialState->boxes = boxes;
     initialState->agents = agents;
 
-    //std::cerr << "Analysed Map:\nRegions: " << regions.size() << "\nAgents: " << agents.size() << "\nBoxes: " << boxes.size() << "\nGoals: " << Node::goals.size() << std::endl;
+    ////std::cerr << "Analysed Map:\nRegions: " << regions.size() << "\nAgents: " << agents.size() << "\nBoxes: " << boxes.size() << "\nGoals: " << Node::goals.size() << std::endl;
 
     //for (auto& a : agents)
-      //std::cerr << "Agent: " << a.getChar() << " " << a.getLocation() << std::endl;
+      ////std::cerr << "Agent: " << a.getChar() << " " << a.getLocation() << std::endl;
 
     //for (auto& b : boxes)
-      //std::cerr << "Box: " << b.getChar() << " " << b.getLocation() << std::endl;
+      ////std::cerr << "Box: " << b.getChar() << " " << b.getLocation() << std::endl;
 
     //for (auto& b : Node::goals)
-      //std::cerr << "Goal: " << b.getChar() << " " << b.getLocation() << std::endl;
+      ////std::cerr << "Goal: " << b.getChar() << " " << b.getLocation() << std::endl;
 
 
-    //std::cerr << std::endl << initialState->toString() << std::endl << std::flush;
+    ////std::cerr << std::endl << initialState->toString() << std::endl << std::flush;
 
     return initialState;
   }
@@ -436,7 +436,7 @@ namespace Initializer {
     auto color_map = map_colors(info_strings);
 
     for (auto& c : color_map){
-      ////std::cerr << c.first << ": " << c.second << std::endl;
+      //////std::cerr << c.first << ": " << c.second << std::endl;
     }
 
     // The rest must be level lines
@@ -447,8 +447,8 @@ namespace Initializer {
 
     // Splitting level into regions
     vector<vector<string>> regions = split_regions(level_string, color_map);
- 
-    //std::cerr << std::flush;
+
+    ////std::cerr << std::flush;
 
     // parse all regions to a single node
     return parse_regions(regions, color_map);

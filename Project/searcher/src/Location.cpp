@@ -38,7 +38,7 @@ int Location::getIndex() const{
 
 
 double Location::getDistance(Location otherLoc) const{
-	return (double)CentralPlanner::allPairsShortestPaths[otherLoc.getIndex()+getIndex()*maxX*maxY];
+	return CentralPlanner::allPairsShortestPaths[otherLoc.getIndex()+getIndex()*maxX*maxY];
 }
 
 int Location::getManhattan(Location otherLoc) const{

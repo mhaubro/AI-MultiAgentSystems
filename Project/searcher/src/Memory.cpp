@@ -33,7 +33,7 @@
 
 	bool Memory::checkMemory(){
 		if (used() > limit){
-			////std::cerr << "\nFailed memory check\n\n";
+			//////std::cerr << "\nFailed memory check\n\n";
 			throw "Out of memory";
 			return false;
 		}
