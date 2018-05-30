@@ -42,9 +42,6 @@ int main(int argc, char * argv[]){
 	pool.setup(atoi(argv[1]));
 
 	int printfreq = 1000;
-	if (argc > 2){
-		printfreq = atoi(argv[2]);
-	}
 	char buffer[200];
 
 	Client client = Client();
